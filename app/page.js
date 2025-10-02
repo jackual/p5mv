@@ -52,7 +52,7 @@ class Region {
     this.project = project
   }
   select(event) {
-    if (!event?.shiftKey)
+    if (!event?.shiftKey && !this.selected)
       this.project.deselectAll()
     this.selected = !this.selected
   }
