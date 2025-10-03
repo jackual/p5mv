@@ -9,9 +9,10 @@ export default function useRegionResize(project) {
 
         const region = project.tracks[trackIndex].regions[regionIndex]
 
-        // Get all selected regions and their starting positions
+        // Get all selected regions and their starting positions and lengths
         const selectedRegions = project.selected
         const startingPositions = selectedRegions.map(r => r.position)
+        const startingLengths = selectedRegions.map(r => r.length)
 
         setResizeState({
             trackIndex,
@@ -21,7 +22,8 @@ export default function useRegionResize(project) {
             startPosition: region.position,
             startLength: region.length,
             selectedRegions, // Store selected regions
-            startingPositions // Store their starting positions
+            startingPositions, // Store their starting positions
+            startingLengths // Store their starting lengths
         })
     }
 
@@ -49,18 +51,45 @@ export default function useRegionResize(project) {
 
         if (resizeState.edge === 'left') {
             // Resize from left edge - adjust position and length
-            const newPosition = resizeState.startPosition + deltaBeats
-            const newLength = resizeState.startLength - deltaBeats
+            if (project.selected.length > 1) {
+                // Resize all selected regions from left edge
+                resizeState.selectedRegions.forEach((selectedRegion, index) => {
+                    const originalPosition = resizeState.startingPositions[index]
+                    const originalLength = resizeState.startingLengths[index]
+                    const newPosition = originalPosition + deltaBeats
+                    const newLength = originalLength - deltaBeats
 
-            if (newLength >= 1 && newPosition >= 0) {
-                region.setPosition(newPosition)
-                region.setLength(newLength)
+                    if (newLength >= 1 && newPosition >= 0) {
+                        selectedRegion.setPosition(newPosition)
+                        selectedRegion.setLength(newLength)
+                    }
+                })
+            } else {
+                const newPosition = resizeState.startPosition + deltaBeats
+                const newLength = resizeState.startLength - deltaBeats
+
+                if (newLength >= 1 && newPosition >= 0) {
+                    region.setPosition(newPosition)
+                    region.setLength(newLength)
+                }
             }
         } else if (resizeState.edge === 'right') {
             // Resize from right edge - only adjust length
-            const newLength = resizeState.startLength + deltaBeats
-            if (newLength >= 1) {
-                region.setLength(newLength)
+            if (project.selected.length > 1) {
+                // Resize all selected regions from right edge
+                resizeState.selectedRegions.forEach((selectedRegion, index) => {
+                    const originalLength = resizeState.startingLengths[index]
+                    const newLength = originalLength + deltaBeats
+
+                    if (newLength >= 1) {
+                        selectedRegion.setLength(newLength)
+                    }
+                })
+            } else {
+                const newLength = resizeState.startLength + deltaBeats
+                if (newLength >= 1) {
+                    region.setLength(newLength)
+                }
             }
 
         } else if (resizeState.edge === 'drag') {
