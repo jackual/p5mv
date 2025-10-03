@@ -40,10 +40,10 @@
         background: #616161;
         text-decoration: underline;
         color: white;
+    }
 
-        .resize-handle {
-            // background-color: rgba(0, 123, 255, 0.5);
-        }
+    .resizing:hover {
+        background: #444 !important;
     }
 
     .resizing {

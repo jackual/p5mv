@@ -9,6 +9,8 @@ export default function useRegionResize(project) {
 
         const region = project.tracks[trackIndex].regions[regionIndex]
 
+        project.deselectAll()
+
         setResizeState({
             trackIndex,
             regionIndex,
@@ -47,9 +49,7 @@ export default function useRegionResize(project) {
         } else if (resizeState.edge === 'drag') {
             // Drag to move - only adjust position, keep length the same
             const newPosition = resizeState.startPosition + deltaBeats
-            console.log('Drag: newPosition =', newPosition)
             if (newPosition >= 0) {
-                console.log('Setting position to:', newPosition)
                 region.setPosition(newPosition)
             }
         }
