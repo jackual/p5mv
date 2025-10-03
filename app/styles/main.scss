@@ -10,12 +10,43 @@
         background: lightgrey;
         user-select: none;
         -webkit-user-select: none;
+        position: relative;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        .resize-handle {
+            position: absolute;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            cursor: ew-resize;
+            background-color: transparent;
+            z-index: 10;
+
+            &.left {
+                left: -2px;
+            }
+
+            &.right {
+                right: -2px;
+            }
+        }
     }
 
     .selected {
         background: #616161;
         text-decoration: underline;
         color: white;
+
+        .resize-handle {
+            // background-color: rgba(0, 123, 255, 0.5);
+        }
+    }
+
+    .resizing {
+        cursor: ew-resize;
     }
 }
 
