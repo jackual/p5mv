@@ -1,17 +1,21 @@
-.region {
-    border: 1px solid #8c8c8c;
-    background: lightgrey;
-}
-
-
-
 .track {
     background: grey;
     width: 100%;
     height: 30px;
+    user-select: none;
+    -webkit-user-select: none;
+
+    .region {
+        border: 1px solid #8c8c8c;
+        background: lightgrey;
+        user-select: none;
+        -webkit-user-select: none;
+    }
 
     .selected {
-        border: 3px solid #4b4b4b;
+        background: #616161;
+        text-decoration: underline;
+        color: white;
     }
 }
 

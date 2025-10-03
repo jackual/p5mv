@@ -16,6 +16,17 @@ class Track {
       this
     ))
   }
+
+  select() {
+    const allSelected = this.regions.every(region => region.selected)
+    project.deselectAll()
+    if (!allSelected) {
+      this.regions.map(i => {
+        i.selected = true
+      })
+    }
+  }
+
   export() {
     return {
       name: this.name,
@@ -99,7 +110,9 @@ export default function Home() {
   function renderTracks(tracks) {
     return tracks.map((track, index) => (
       <div className="trackContainer" key={index}>
-        <div className="trackHeader">
+        <div className="trackHeader" onClick={event => {
+          project.tracks[index].select()
+        }}>
           <p>{track.name}</p>
         </div>
         <div className="track" style={{ position: 'relative' }}>
