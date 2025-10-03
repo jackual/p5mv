@@ -56,7 +56,11 @@ export default function Home() {
         }}>
           <p>{track.name}</p>
         </div>
-        <div className="track" style={{ position: 'relative' }}>
+        <div className="track" onClick={event => {
+          if (event.target.classList.contains('track')) {
+            project.deselectAll()
+          }
+        }} style={{ position: 'relative' }}>
           {renderTrackRegions(track.regions, index)}
         </div>
       </div>
@@ -71,7 +75,19 @@ export default function Home() {
 }
 
 onkeydown = (e) => {
-  if (e.key === "Delete" || e.key === "Backspace") {
-    project.selected.forEach(region => region.del())
+  switch (e.key) {
+    case "Delete":
+    case "Backspace":
+      project.selected.forEach(region => region.del())
+      break
+    case "Escape":
+      project.deselectAll()
+      break
+    case "a":
+      if (e.metaKey || e.ctrlKey) {
+        project.selectAll()
+        e.preventDefault()
+      }
+      break
   }
 }
