@@ -16,9 +16,11 @@ function draw() {
     line(i * sw, 0, i * sw, 300), strokeWeight(sw), stroke(...randRgb(x))
   }
   if (counter < 10) {
+    saveCanvas('f' + counter, 'png')
     counter++
-    // saveCanvas('f' + counter, 'png')
   } else {
     noLoop()
+    // Signal completion to Puppeteer
+    window.captureComplete = true
   }
 }
