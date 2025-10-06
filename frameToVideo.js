@@ -41,9 +41,11 @@ async function framesToVideo({
 
         console.log(`Found ${frameFiles.length} frame files`);
 
+        const FPS = 24
+
         // FFmpeg command to create video from image sequence
         // First, let's use a glob pattern approach
-        const command = `ffmpeg -y -framerate 10 -pattern_type glob -i "${frameDir}/*.png" -c:v libx264 -pix_fmt yuv420p "${outputVideoPath}"`;
+        const command = `ffmpeg -y -framerate ${FPS} -pattern_type glob -i "${frameDir}/*.png" -c:v libx264 -pix_fmt yuv420p "${outputVideoPath}"`;
 
         console.log('Running FFmpeg command:', command);
 

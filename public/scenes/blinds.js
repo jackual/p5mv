@@ -15,7 +15,7 @@ function draw() {
     x = (i / (w / sw)) * 100
     line(i * sw, 0, i * sw, 300), strokeWeight(sw), stroke(...randRgb(x))
   }
-  if (window.frameNumber < 10) {
+  if (window.frameNumber < captureInput.frameCount) {
     console.log("Capturing frame:", window.frameNumber)
     saveCanvas('f' + window.frameNumber.toString().padStart(4, '0'), 'png')
     console.log("Captured:", window.frameNumber)

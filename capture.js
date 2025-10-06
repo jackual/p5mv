@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 
 async function captureFrames(input = {
   scene: 'blinds',
-  frameCount: 10,
+  frameCount: 30,
   width: 600,
   height: 300,
   brush: false
@@ -24,6 +24,7 @@ async function captureFrames(input = {
     <main>
     </main>
     <script>
+    const captureInput = JSON.parse('${JSON.stringify(input)}');
     ${fs.readFileSync(path.join(__dirname, 'public', 'scenes', input.scene + '.js'), 'utf8')}
     </script>
 </body>
