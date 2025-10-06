@@ -54,8 +54,29 @@
 .trackHeader {
     height: 30px;
     background: #333;
-    width: 100px;
+    width: 150px;
     color: white;
+    display: flex;
+
+    a,
+    p {
+        margin-left: 7px;
+    }
+
+    .add-button:hover {
+        color: greenyellow;
+    }
+
+    .remove-button:hover {
+        color: red;
+    }
+
+    a {
+        cursor: pointer;
+        font-weight: bold;
+
+
+    }
 }
 
 .trackContainer {
