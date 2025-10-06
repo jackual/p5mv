@@ -2,7 +2,35 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs-extra');
 
-async function captureFrames() {
+async function captureFrames(input = {
+  scene: 'blinds',
+  frameCount: 10,
+  width: 600,
+  height: 300,
+  brush: false
+}) {
+
+  const htmlString = `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>${fs.readFileSync(path.join(__dirname, 'node_modules', 'p5', 'lib', 'p5.min.js'), 'utf8')}</script> 
+    <!-- <script src="https://cdn.jsdelivr.net/npm/p5.brush"></script> -->
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <main>
+    </main>
+    <script>
+    ${fs.readFileSync(path.join(__dirname, 'public', 'scenes', input.scene + '.js'), 'utf8')}
+    </script>
+</body>
+
+</html>
+  `
+
   const downloadPath = path.join(__dirname, 'output', 'frames');
 
   // Create output directory
@@ -24,8 +52,9 @@ async function captureFrames() {
     downloadPath: downloadPath
   });
 
-  const htmlPath = `file://${path.join(__dirname, 'public/sketch.html')}`;
-  await page.goto(htmlPath);
+  await page.setContent(htmlString)
+  console.log("Set page content");
+
 
   page.on('console', msg => console.log('Browser:', msg.text()));
 
