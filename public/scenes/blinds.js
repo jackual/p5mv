@@ -1,6 +1,6 @@
 let w = 600
 let sw = 4
-let counter = 0
+window.frameNumber = 0
 
 function setup() {
   createCanvas(w, 300)
@@ -15,9 +15,11 @@ function draw() {
     x = (i / (w / sw)) * 100
     line(i * sw, 0, i * sw, 300), strokeWeight(sw), stroke(...randRgb(x))
   }
-  if (counter < 10) {
-    saveCanvas('f' + counter, 'png')
-    counter++
+  if (window.frameNumber < 10) {
+    console.log("Capturing frame:", window.frameNumber)
+    saveCanvas('f' + window.frameNumber, 'png')
+    console.log("Captured:", window.frameNumber)
+    window.frameNumber++
   } else {
     noLoop()
     // Signal completion to Puppeteer

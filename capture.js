@@ -27,8 +27,14 @@ async function captureFrames() {
   const htmlPath = `file://${path.join(__dirname, 'public/sketch.html')}`;
   await page.goto(htmlPath);
 
+  page.on('console', msg => console.log('Browser:', msg.text()));
+
   // Wait for completion flag
-  await page.waitForFunction(() => window.captureComplete === true, {
+  await page.waitForFunction(() => {
+    if (window.captureComplete === true) {
+      return true;
+    }
+  }, {
     timeout: 30000
   });
 
