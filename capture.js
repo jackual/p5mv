@@ -27,7 +27,7 @@ async function captureFrames(input = {
 </head>
 <body>
   <main></main>
-  <script>${fs.readFileSync(path.join(__dirname, 'public', 'scenes', input.scene + '.js'), 'utf8')}</script>
+  <script>${fs.readFileSync(path.join(__dirname, 'scenes', input.scene + '.js'), 'utf8')}</script>
 </body>
 </html>`.trim();
 
