@@ -4,9 +4,8 @@ const fs = require('fs-extra');
 
 async function captureFrames(input = {
   scene: 'blinds',
-  frameCount: 30,
-  width: 600,
-  height: 300,
+  frameCount: 500,
+  dims: [1920, 1080],
   brush: false
 }) {
 
@@ -16,6 +15,9 @@ async function captureFrames(input = {
 
 <head>
     <script>${fs.readFileSync(path.join(__dirname, 'node_modules', 'p5', 'lib', 'p5.min.js'), 'utf8')}</script> 
+    <script>
+    const captureInput = JSON.parse('${JSON.stringify(input)}');
+    </script>
     <script>${fs.readFileSync(path.join(__dirname, 'captureLib.js'), 'utf8')}</script> 
     <!-- <script src="https://cdn.jsdelivr.net/npm/p5.brush"></script> -->
     <meta charset="utf-8" />
@@ -24,8 +26,8 @@ async function captureFrames(input = {
 <body>
     <main>
     </main>
+
     <script>
-    const captureInput = JSON.parse('${JSON.stringify(input)}');
     ${fs.readFileSync(path.join(__dirname, 'public', 'scenes', input.scene + '.js'), 'utf8')}
     </script>
 </body>
