@@ -16,6 +16,7 @@ async function captureFrames(input = {
 
 <head>
     <script>${fs.readFileSync(path.join(__dirname, 'node_modules', 'p5', 'lib', 'p5.min.js'), 'utf8')}</script> 
+    <script>${fs.readFileSync(path.join(__dirname, 'captureLib.js'), 'utf8')}</script> 
     <!-- <script src="https://cdn.jsdelivr.net/npm/p5.brush"></script> -->
     <meta charset="utf-8" />
 </head>
