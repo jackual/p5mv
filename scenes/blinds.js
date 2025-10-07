@@ -4,8 +4,8 @@ let sw = 4
 
 function setup() {
   createCanvas(...captureInput.dims)
-  pixelDensity(1)   // headless: avoid hi-DPI surprises
-  noLoop()          // we control frames from Puppeteer
+  pixelDensity(1)
+  noLoop()
 }
 
 let randRgb = (x) => ([
@@ -23,8 +23,6 @@ function draw() {
   }
 }
 
-// called from Node to produce exactly one frame
 window.renderFrame = (i) => {
-  // set any time/state you want based on i here
   redraw();
 };

@@ -1,5 +1,5 @@
 {
-  "name": "jbreact",
+  "name": "music-tl",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "fs-extra": "^11.3.2",
+    "keyframes": "^2.3.0",
     "next": "15.1.4",
     "p5": "^2.0.5",
     "puppeteer": "^24.23.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sass": "^1.83.1",
+    "skia-canvas": "^3.0.8",
     "valtio": "^2.1.8"
   }
 }
