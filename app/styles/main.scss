@@ -82,3 +82,13 @@
 .trackContainer {
     display: flex;
 }
+
+.inspector {
+    .error {
+        color: red;
+    }
+
+    label::after {
+        content: ": ";
+    }
+}

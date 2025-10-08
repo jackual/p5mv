@@ -83,6 +83,7 @@ export default function Home() {
 
   return (
     <div>
+      <p>{snap.meta.title} | {snap.meta.bpm}BPM | {snap.meta.width}x{snap.meta.height}@{snap.meta.fps}fps</p>
       {renderTracks(snap.tracks)}
       <Inspector project={project} />
     </div>
