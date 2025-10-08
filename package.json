@@ -18,6 +18,7 @@
     "puppeteer": "^24.23.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.64.0",
     "sass": "^1.83.1",
     "skia-canvas": "^3.0.8",
     "valtio": "^2.1.8"
