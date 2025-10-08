@@ -1,28 +1,38 @@
 $track-header-width: 150px;
 
-.timeGrid {
+.timeline-container {
     display: flex;
-    border-bottom: 1px solid #555;
-    background: #222;
-    height: 20px;
-    width: 100%;
-    user-select: none;
-    -webkit-user-select: none;
-    margin-left: $track-header-width;
 
-    .notch {
-        border-left: 1px dashed #555;
-        height: 100%;
-        display: inline-block;
-        box-sizing: border-box;
+    .timeline-header {
+        width: $track-header-width;
+        height: 20px;
+        background: #222;
+        border-bottom: 1px solid #555;
     }
 
-    .bar {
-        border-left: 1px solid #555;
-    }
+    .timeGrid {
+        display: flex;
+        border-bottom: 1px solid #555;
+        background: #222;
+        height: 20px;
+        width: 100%;
+        -webkit-user-select: none;
+        user-select: none;
 
-    .major-bar {
-        border-left: 1px solid #ffee00;
+        .notch {
+            border-left: 1px dashed #555;
+            height: 100%;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        .bar {
+            border-left: 1px solid #555;
+        }
+
+        .major-bar {
+            border-left: 1px solid #ffee00;
+        }
     }
 }
 
@@ -30,15 +40,15 @@ $track-header-width: 150px;
     background: grey;
     width: 100%;
     height: 30px;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
 
     .region {
         border: 1px solid #8c8c8c;
         color: black;
         background: lightgrey;
-        user-select: none;
         -webkit-user-select: none;
+        user-select: none;
         position: relative;
 
         &:hover {
