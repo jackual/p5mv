@@ -1,3 +1,31 @@
+$track-header-width: 150px;
+
+.timeGrid {
+    display: flex;
+    border-bottom: 1px solid #555;
+    background: #222;
+    height: 20px;
+    width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    margin-left: $track-header-width;
+
+    .notch {
+        border-left: 1px dashed #555;
+        height: 100%;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
+    .bar {
+        border-left: 1px solid #555;
+    }
+
+    .major-bar {
+        border-left: 1px solid #ffee00;
+    }
+}
+
 .track {
     background: grey;
     width: 100%;
@@ -54,7 +82,7 @@
 .trackHeader {
     height: 30px;
     background: #333;
-    width: 150px;
+    width: $track-header-width;
     color: white;
     display: flex;
 
