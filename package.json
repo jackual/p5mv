@@ -2,6 +2,7 @@
   "name": "music-tl",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "current-module-paths": "^1.1.2",
     "fs-extra": "^11.3.2",
     "keyframes": "^2.3.0",
     "next": "15.1.4",

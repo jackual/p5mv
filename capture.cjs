@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 
 async function captureFrames(input = {
-  scene: 'matrix',
+  scene: 'blinds',
   frameCount: 20,
   dims: [1920, 1080],
   brush: false,
