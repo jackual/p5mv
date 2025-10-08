@@ -18,7 +18,7 @@ export default function Home() {
 
   return (
     <div>
-      <p>{snap.meta.title} | {snap.meta.bpm}BPM | {snap.meta.width}×{snap.meta.height}@{snap.meta.fps}fps</p>
+      <p>{snap.meta.title} | {snap.meta.bpm}bpm | {snap.meta.width}×{snap.meta.height}@{snap.meta.fps}fps</p>
       <div className="timeline-container">
         <div className="timeline-header"></div>
         <TimeGrid snap={snap} />
