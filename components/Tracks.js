@@ -14,7 +14,7 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
                         project.tracks[index].select()
                         break
                     case "add-button":
-                        project.tracks[index].addRegion()
+                        project.tracks[index].addTrack()
                         break
                     case "remove-button":
                         if (confirm(`Are you sure you want to delete track "${track.name}"? This action cannot be undone.`))

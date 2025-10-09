@@ -64,6 +64,8 @@ export default function TimeGrid({ snap, nearestBeat }) {
             }))
     }
 
+    const length = Math.min(snap.view.end, snap.length + 1) // fix this
+
     return (
         <div
             className="timeGrid"
@@ -85,7 +87,8 @@ export default function TimeGrid({ snap, nearestBeat }) {
                     zIndex: 10
                 }} />
             ) : null}
-            {Array.from({ length: snap.length + 1 }, (_, i) => {
+            {Array.from({ length }, (_, i) => {
+                if (snap.view.start > i) return null
                 let className = "notch"
                 if (i % 4 === 0) className += " bar"
                 if (i % 16 === 0) className += " major-bar"
@@ -97,7 +100,7 @@ export default function TimeGrid({ snap, nearestBeat }) {
                 const timecode = `${minutes}:${seconds.toString().padStart(2, '0')}:${frames.toString().padStart(2, '0')}`
 
                 return <>
-                    {i % 16 === 0 && <p style={{ left: (i * snap.view.beatWidth) + 130 }} key={"tg-label-" + i}>
+                    {i % 16 === 0 && <p style={{ left: ((i - snap.view.start) * snap.view.beatWidth) + 130 }} key={"tg-label-" + i}>
                         {timecode}
                     </p>}
                     <div className={className} data-pos={i} style={style} key={"tg" + i}></div>

@@ -108,6 +108,10 @@ $time-grid-height: 14px;
         }
     }
 
+    .truncated-left {
+        border-left-color: red 2px solid !important;
+    }
+
     .selected {
         background: #616161;
         text-decoration: underline;
