@@ -69,6 +69,7 @@ export default function TimeGrid({ snap, nearestBeat }) {
     return (
         <div
             className="timeGrid"
+            key={length + "tg"}
             ref={timeGridRef}
             onMouseDown={mouseDown}
             onMouseMove={mouseMove}
