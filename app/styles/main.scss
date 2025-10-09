@@ -1,11 +1,12 @@
 $track-header-width: 150px;
+$time-grid-height: 14px;
 
 .timeline-container {
     display: flex;
 
     .timeline-header {
         width: $track-header-width;
-        height: 20px;
+        height: $time-grid-height;
         background: #222;
         border-bottom: 1px solid #555;
     }
@@ -14,7 +15,7 @@ $track-header-width: 150px;
         display: flex;
         border-bottom: 1px solid #555;
         background: #222;
-        height: 20px;
+        height: $time-grid-height;
         width: 100%;
         -webkit-user-select: none;
         user-select: none;
@@ -32,6 +33,11 @@ $track-header-width: 150px;
 
         .major-bar {
             border-left: 1px solid #ffee00;
+        }
+
+        .nearest {
+            border-left-color: #fff !important;
+            border-left-width: 2px !important;
         }
     }
 }

@@ -15,21 +15,51 @@ const project = proxy(new Project(saveData))
 export default function Home() {
   const { resizeState, handleResizeStart } = useRegionResize(project)
   const snap = useSnapshot(project)
+  const [nearestBeat, setNearestBeat] = useState(null)
+
+  const handleMouseMove = (e) => {
+    // Find the timeline container to get the reference point
+    const timelineContainer = e.currentTarget.querySelector('.timeline-container')
+    const timeGrid = e.currentTarget.querySelector('.timeGrid')
+
+    if (!timelineContainer || !timeGrid) return
+
+    const timelineRect = timelineContainer.getBoundingClientRect()
+    const timeGridRect = timeGrid.getBoundingClientRect()
+
+    const relativeX = e.clientX - timeGridRect.left
+    if (relativeX >= 0) {
+      const beatPosition = relativeX / snap.view.beatWidth
+      const nearestBeatIndex = Math.round(beatPosition)
+      setNearestBeat(nearestBeatIndex)
+    } else {
+      setNearestBeat(null)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setNearestBeat(null)
+  }
 
   return (
     <div>
       <p>{snap.meta.title} | {snap.meta.bpm}bpm | {snap.meta.width}×{snap.meta.height}@{snap.meta.fps}fps</p>
-      <div className="timeline-container">
-        <div className="timeline-header"></div>
-        <TimeGrid snap={snap} />
-      </div>
-      <Tracks
-        tracks={snap.tracks}
-        project={project}
-        resizeState={resizeState}
-        handleResizeStart={handleResizeStart}
-        snap={snap}
-      />
+      <div
+        className='editor'
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="timeline-container">
+          <div className="timeline-header"></div>
+          <TimeGrid snap={snap} nearestBeat={nearestBeat} />
+        </div>
+        <Tracks
+          tracks={snap.tracks}
+          project={project}
+          resizeState={resizeState}
+          handleResizeStart={handleResizeStart}
+          snap={snap}
+        /></div>
       <Inspector project={project} />
     </div>
   )
