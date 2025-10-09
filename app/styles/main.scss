@@ -19,6 +19,7 @@ $time-grid-height: 14px;
         width: 100%;
         -webkit-user-select: none;
         user-select: none;
+        position: relative; // Added for cycle positioning
 
         .notch {
             border-left: 1px dashed #555;
@@ -38,6 +39,16 @@ $time-grid-height: 14px;
         .nearest {
             border-left-color: #fff !important;
             border-left-width: 2px !important;
+        }
+
+        .cycle {
+            position: absolute;
+            top: 0;
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            pointer-events: none;
+            z-index: 10;
+            height: 100%;
         }
     }
 }
@@ -135,4 +146,13 @@ $time-grid-height: 14px;
     label::after {
         content: ": ";
     }
+}
+
+.cycle {
+    border: 1px dashed #00ff00;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background-color: rgba(0, 255, 0, 0.1);
+    pointer-events: none;
 }

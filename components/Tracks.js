@@ -1,8 +1,13 @@
 import TrackRegions from "./TrackRegions"
 
 export default function Tracks({ tracks, project, resizeState, handleResizeStart, snap }) {
+    const newRegion = (event) => {
+        if (event.target.classList.contains('track') && project.selectionMode == 'none') {
+            console.log('new region')
+        }
+    }
     return tracks.map((track, index) => (
-        <div className="trackContainer" key={index}>
+        <div className="trackContainer" key={index} onClick={newRegion}>
             <div className="trackHeader" onClick={event => {
                 switch (event.target.className) {
                     case "trackHeader":
