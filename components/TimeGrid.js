@@ -91,7 +91,10 @@ export default function TimeGrid({ snap, nearestBeat }) {
                 if (i % 16 === 0) className += " major-bar"
                 if (i === nearestBeat) className += " nearest"
 
-                return <div className={className} data-pos={i} style={style} key={i}></div>
+                return <>
+                    {i % 16 === 0 && <p style={{ left: (i * snap.view.beatWidth) + 130 }}>{(60 / snap.meta.bpm) * i}</p>}
+                    <div className={className} data-pos={i} style={style} key={"tg" + i}></div>
+                </>
             })}
         </div>
     )

@@ -21,6 +21,23 @@ $time-grid-height: 14px;
         user-select: none;
         position: relative; // Added for cycle positioning
 
+        .cycle {
+            border: 1px dashed #00ff00;
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background-color: rgba(0, 255, 0, 0.1);
+            pointer-events: none;
+        }
+
+        p {
+            position: fixed;
+            font-size: smaller;
+            color: #ccc;
+            user-select: none;
+            margin: 0;
+        }
+
         .notch {
             border-left: 1px dashed #555;
             height: 100%;
@@ -146,13 +163,4 @@ $time-grid-height: 14px;
     label::after {
         content: ": ";
     }
-}
-
-.cycle {
-    border: 1px dashed #00ff00;
-    position: absolute;
-    top: 0;
-    height: 100%;
-    background-color: rgba(0, 255, 0, 0.1);
-    pointer-events: none;
 }
