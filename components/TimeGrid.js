@@ -90,9 +90,16 @@ export default function TimeGrid({ snap, nearestBeat }) {
                 if (i % 4 === 0) className += " bar"
                 if (i % 16 === 0) className += " major-bar"
                 if (i === nearestBeat) className += " nearest"
+                const secondsFloat = (60 / snap.meta.bpm) * i
+                const minutes = Math.floor(secondsFloat / 60)
+                const seconds = Math.floor(secondsFloat % 60)
+                const frames = Math.floor((secondsFloat % 1) * snap.meta.fps)
+                const timecode = `${minutes}:${seconds.toString().padStart(2, '0')}:${frames.toString().padStart(2, '0')}`
 
                 return <>
-                    {i % 16 === 0 && <p style={{ left: (i * snap.view.beatWidth) + 130 }}>{(60 / snap.meta.bpm) * i}</p>}
+                    {i % 16 === 0 && <p style={{ left: (i * snap.view.beatWidth) + 130 }} key={"tg-label-" + i}>
+                        {timecode}
+                    </p>}
                     <div className={className} data-pos={i} style={style} key={"tg" + i}></div>
                 </>
             })}
