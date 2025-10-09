@@ -20,12 +20,6 @@ export default function TimeGrid({ snap, nearestBeat }) {
 
     const mouseDown = (e) => {
         e.stopPropagation()
-        if (e.target.classList.contains('cycle')) {
-            setCycle({
-                startPosition: null, position: null, length: null, cycling: false
-            })
-            return // Stop execution here
-        }
         const startBeat = getBeatFromMouseEvent(e)
         setCycle({
             startPosition: startBeat,
@@ -55,10 +49,19 @@ export default function TimeGrid({ snap, nearestBeat }) {
 
     const mouseUp = (e) => {
         e.stopPropagation()
-        setCycle(prev => ({
-            ...prev,
-            cycling: false
-        }))
+        if (cycle.length === 1) {
+            setCycle({
+                startPosition: null,
+                position: null,
+                length: null,
+                cycling: false
+            })
+        }
+        else
+            setCycle(prev => ({
+                ...prev,
+                cycling: false
+            }))
     }
 
     return (
