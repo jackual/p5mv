@@ -69,7 +69,7 @@ export default function TimeGrid({ snap, nearestBeat }) {
     return (
         <div
             className="timeGrid"
-            key={length + "tg"}
+            key={"tg-" + snap.view.start + "-" + snap.view.end}
             ref={timeGridRef}
             onMouseDown={mouseDown}
             onMouseMove={mouseMove}
@@ -100,12 +100,12 @@ export default function TimeGrid({ snap, nearestBeat }) {
                 const frames = Math.floor((secondsFloat % 1) * snap.meta.fps)
                 const timecode = `${minutes}:${seconds.toString().padStart(2, '0')}:${frames.toString().padStart(2, '0')}`
 
-                return <>
-                    {i % 16 === 0 && <p style={{ left: ((i - snap.view.start) * snap.view.beatWidth) + 130 }} key={"tg-label-" + i}>
+                return <div key={`tg-beat-${i}`} style={{ position: 'relative' }}>
+                    {i % 16 === 0 && <p style={{ left: ((i - snap.view.start) * snap.view.beatWidth) + 130 }} key={`tg-label-${i}`}>
                         {timecode}
                     </p>}
-                    <div className={className} data-pos={i} style={style} key={"tg" + i}></div>
-                </>
+                    <div className={className} data-pos={i} style={style} key={`tg-notch-${i}`}></div>
+                </div>
             })}
         </div>
     )
