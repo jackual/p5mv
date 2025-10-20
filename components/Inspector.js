@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import blendModes from '@/data/blendModes'
 
 export default function Inspector({ project }) {
     const {
@@ -65,10 +66,93 @@ export default function Inspector({ project }) {
         });
     }, [project, reset]);
 
+    const BlendMenu = () => {
+        const [selectedBlendMode, setSelectedBlendMode] = useState(
+            project.selected.length > 0 && project.selected[0].blendMode
+                ? project.selected[0].blendMode
+                : 'source-over'
+        );
+
+        // Update selected blend mode when project selection changes
+        useEffect(() => {
+            if (project.selected.length > 0 && project.selected[0].blendMode) {
+                setSelectedBlendMode(project.selected[0].blendMode);
+            }
+        }, [project.selected]);
+
+        const handleBlendModeChange = (event) => {
+            const selectedValue = event.target.value;
+            setSelectedBlendMode(selectedValue);
+
+            // Update the selected region's blend mode
+            if (project.selected.length > 0) {
+                project.selected[0].blendMode = selectedValue;
+            }
+        };
+
+        // Find the description for the currently selected blend mode
+        const getSelectedModeDescription = () => {
+            for (const [category, modes] of Object.entries(blendModes)) {
+                const mode = modes.find(m => m.value === selectedBlendMode);
+                if (mode) {
+                    return mode.description;
+                }
+            }
+            return '';
+        };
+
+        return (
+            <div>
+                <div className="form-group">
+                    <label htmlFor="opacity">Opacity</label>
+                    <input
+                        id="opacity"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={50}
+                        readOnly
+                    />
+                    <br />
+                    <label htmlFor="blendMode">Blend Mode</label>
+                    <select
+                        id="blendMode"
+                        value={selectedBlendMode}
+                        onChange={handleBlendModeChange}
+                        className="blend-mode-select"
+                    >
+                        {Object.entries(blendModes).map(([category, modes]) => (
+                            <optgroup key={category} label={category}>
+                                {modes.map((mode) => (
+                                    <option key={mode.value} value={mode.value}>
+                                        {mode.name}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        ))}
+                    </select>
+                    <br />
+                    {getSelectedModeDescription() && (
+                        <small className="blend-mode-description">
+                            {getSelectedModeDescription()}
+                        </small>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     const form = {
-        region: () => (<h3>{project.selected[0].name}</h3>),
+        region: () => (
+            <>
+                <h3>{project.selected[0].name}</h3>
+                <BlendMenu />
+            </>),
         'same-track': () => (<h3>{project.selected.length} regions selected</h3>),
-        'whole-track': () => (<h3>Whole track selected</h3>),
+        'whole-track': () => (<>
+            <h3>{project.selected[0].track.name} regions selected</h3>
+            <BlendMenu />
+        </>),
         mixed: () => (<h3>Mixed selection</h3>),
         none: () => (
             <div>
