@@ -60,7 +60,7 @@ export default function Home() {
           handleResizeStart={handleResizeStart}
           snap={snap}
         /></div>
-      <Inspector project={project} />
+      <Inspector project={project} snapshot={snap} />
     </div>
   )
 }

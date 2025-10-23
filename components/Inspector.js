@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import blendModes from '@/data/blendModes'
+import { useEffect } from 'react';
+import blendModes from '@/data/blendModes';
+import Blend from '@/lib/classes/Blend';
 
-export default function Inspector({ project }) {
+export default function Inspector({ project, snapshot }) {
     const {
         register,
         reset,
@@ -67,26 +68,38 @@ export default function Inspector({ project }) {
     }, [project, reset]);
 
     const BlendMenu = () => {
-        const [selectedBlendMode, setSelectedBlendMode] = useState(
-            project.selected.length > 0 && project.selected[0].blendMode
-                ? project.selected[0].blendMode
-                : 'source-over'
-        );
+        // Get current values from snapshot
 
-        // Update selected blend mode when project selection changes
-        useEffect(() => {
-            if (project.selected.length > 0 && project.selected[0].blendMode) {
-                setSelectedBlendMode(project.selected[0].blendMode);
-            }
-        }, [project.selected]);
+        // Bug fix: track blend not working
+        const selectedBlendMode = snapshot.selected.length > 0 && snapshot.selected[0].blend
+            ? snapshot.selected[0].blend.mode
+            : 'source-over';
+
+        const opacity = snapshot.selected.length > 0 && snapshot.selected[0].blend
+            ? snapshot.selected[0].blend.opacityPercentage
+            : 100;
 
         const handleBlendModeChange = (event) => {
             const selectedValue = event.target.value;
-            setSelectedBlendMode(selectedValue);
 
-            // Update the selected region's blend mode
+            // Update the selected region's blend mode directly on the project
             if (project.selected.length > 0) {
-                project.selected[0].blendMode = selectedValue;
+                if (!project.selected[0].blend) {
+                    project.selected[0].blend = new Blend();
+                }
+                project.selected[0].blend.mode = selectedValue;
+            }
+        };
+
+        const handleOpacityChange = (event) => {
+            const opacityValue = parseFloat(event.target.value);
+
+            // Update the selected region's blend opacity directly on the project
+            if (project.selected.length > 0) {
+                if (!project.selected[0].blend) {
+                    project.selected[0].blend = new Blend();
+                }
+                project.selected[0].blend.opacityPercentage = opacityValue;
             }
         };
 
@@ -104,14 +117,15 @@ export default function Inspector({ project }) {
         return (
             <div>
                 <div className="form-group">
-                    <label htmlFor="opacity">Opacity</label>
+                    <label htmlFor="opacity">Opacity (%)</label>
                     <input
                         id="opacity"
                         type="number"
                         min="0"
                         max="100"
-                        value={50}
-                        readOnly
+                        step="1"
+                        value={opacity}
+                        onChange={handleOpacityChange}
                     />
                     <br />
                     <label htmlFor="blendMode">Blend Mode</label>
@@ -147,6 +161,9 @@ export default function Inspector({ project }) {
             <>
                 <h3>{project.selected[0].name}</h3>
                 <BlendMenu />
+                <button onClick={() => {
+                    console.log(project.selected[0]);
+                }}>console region</button>
             </>),
         'same-track': () => (<h3>{project.selected.length} regions selected</h3>),
         'whole-track': () => (<>
