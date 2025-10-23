@@ -1,6 +1,6 @@
 'use client'
 
-import { proxy, useSnapshot } from 'valtio'
+import { proxy, useSnapshot, subscribe } from 'valtio'
 import { useState, useEffect } from 'react'
 import useRegionResize from '@/hooks/useRegionResize'
 import Project from '@/lib/classes/Project'
@@ -8,9 +8,23 @@ import Inspector from '@/components/Inspector'
 import Tracks from '@/components/Tracks'
 import TimeGrid from '@/components/TimeGrid'
 
-const saveData = '{"tracks":[{"name":"top","regions":[{"name":"a","length":4,"position":0},{"name":"b","length":2,"position":5},{"name":"c","length":2,"position":10}]},{"name":"layer1","regions":[{"name":"intro","length":8,"position":0},{"name":"verse","length":16,"position":8},{"name":"chorus","length":8,"position":24},{"name":"bridge","length":4,"position":32}]},{"name":"text","regions":[{"name":"pattern1","length":12,"position":0},{"name":"pattern2","length":8,"position":12},{"name":"breakdown","length":4,"position":20}]},{"name":"background","regions":[{"name":"verse1","length":16,"position":8},{"name":"chorus1","length":8,"position":24},{"name":"verse2","length":16,"position":40},{"name":"outro","length":6,"position":56}]}]}'
+const saveData = '{"tracks":[{"name":"top","regions":[{"name":"a","length":4,"position":0,"blendConstructor":["source-over",1]},{"name":"b","length":2,"position":5,"blendConstructor":["source-over",1]},{"name":"c","length":2,"position":10,"blendConstructor":["source-over",1]}]},{"name":"layer1","regions":[{"name":"intro","length":8,"position":0,"blendConstructor":["source-over",1]},{"name":"verse","length":16,"position":8,"blendConstructor":["source-over",1]},{"name":"chorus","length":8,"position":24,"blendConstructor":["source-over",1]},{"name":"bridge","length":4,"position":32,"blendConstructor":["source-over",1]}]},{"name":"text","regions":[{"name":"pattern1","length":12,"position":0,"blendConstructor":["source-over",1]},{"name":"pattern2","length":8,"position":12,"blendConstructor":["source-over",1]},{"name":"breakdown","length":4,"position":20,"blendConstructor":["source-over",1]}]},{"name":"background","regions":[{"name":"verse1","length":16,"position":8,"blendConstructor":["source-over",1]},{"name":"chorus1","length":8,"position":24,"blendConstructor":["source-over",1]},{"name":"verse2","length":16,"position":40,"blendConstructor":["source-over",1]},{"name":"outro","length":6,"position":56,"blendConstructor":["source-over",1]}]}],"meta":{"bpm":120,"title":"Untitled Project","width":800,"height":600,"fps":24}}'
 
 const project = proxy(new Project(saveData))
+
+// Auto-save project data whenever it changes
+subscribe(project, () => {
+  const saveData = JSON.stringify({
+    tracks: project.tracks.map(track => track.export()),
+    meta: project.meta
+  })
+
+  // Save to localStorage
+  // localStorage.setItem('project-save-data', saveData)
+
+  // Optional: Also log the save data to console for debugging
+  console.log('Project auto-saved:', saveData)
+})
 
 export default function Home() {
   const { resizeState, handleResizeStart } = useRegionResize(project)
