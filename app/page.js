@@ -40,6 +40,7 @@ export default function Home() {
   const handleMouseLeave = () => {
     setNearestBeat(null)
   }
+  //playhead needs to be able to zoom
 
   return (
     <div>
@@ -48,7 +49,12 @@ export default function Home() {
         className='editor'
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        style={{
+          position: 'relative',
+          '--playhead-offset': `${(snap.playhead - snap.view.start) * snap.view.beatWidth}px`
+        }}
       >
+        <div className='playhead' />
         <div className="timeline-container">
           <div className="timeline-header"></div>
           <TimeGrid snap={snap} nearestBeat={nearestBeat} />
@@ -59,6 +65,7 @@ export default function Home() {
           resizeState={resizeState}
           handleResizeStart={handleResizeStart}
           snap={snap}
+          nearestBeat={nearestBeat}
         /></div>
       <Inspector project={project} snapshot={snap} />
     </div>

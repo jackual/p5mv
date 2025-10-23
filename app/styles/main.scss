@@ -168,3 +168,14 @@ $time-grid-height: 14px;
         content: ": ";
     }
 }
+
+.playhead {
+    position: absolute;
+    width: 2px;
+    background-color: rgba(200, 0, 255, 0.5);
+    z-index: 20;
+    top: 0;
+    bottom: 0;
+    left: calc(calc(#{$track-header-width} + var(--playhead-offset, 0px)) - 18px);
+    pointer-events: none;
+}
