@@ -2,8 +2,17 @@ import TrackRegions from "./TrackRegions"
 
 export default function Tracks({ tracks, project, resizeState, handleResizeStart, snap, nearestBeat }) {
     const setPlayheadPosition = (event) => {
+        project.newRegion = [];
+        project.playhead = nearestBeat + snap.view.start;
+        if (event.target.classList.contains('new-region-indicator') && nearestBeat !== null) {
+            console.log("Adding region at", nearestBeat + snap.view.start);
+            const trackIndex = Number(event.target.closest('.trackContainer').getAttribute('data-track-index'))
+            project.tracks[trackIndex].addRegionAt(nearestBeat + snap.view.start);
+            return
+        }
         if (event.target.classList.contains('track') && project.selectionMode == 'none' && nearestBeat !== null) {
-            project.playhead = nearestBeat + snap.view.start;
+            const trackIndex = Number(event.target.getAttribute('data-track-index'))
+            project.newRegion = [trackIndex, nearestBeat + snap.view.start]
         }
     }
     return tracks.map((track, index) => (
@@ -28,11 +37,16 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
                 <a className="add-button">+</a>
                 <a className="remove-button">-</a>
             </div>
-            <div className="track" onClick={event => {
+            <div className="track" data-track-index={index} onClick={event => {
                 if (event.target.classList.contains('track')) {
                     project.deselectAll()
                 }
             }} style={{ position: 'relative' }}>
+                {project.newRegion.length && project.newRegion[0] === index ?
+                    <div className="new-region-indicator" style={{
+                        left: project.newRegion[1] * snap.view.beatWidth,
+                        position: 'absolute'
+                    }}>+</div> : ""}
                 <TrackRegions
                     trackRegions={track.regions}
                     trackIndex={index}

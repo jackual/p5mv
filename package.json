@@ -21,6 +21,7 @@
     "react-hook-form": "^7.64.0",
     "sass": "^1.83.1",
     "skia-canvas": "^3.0.8",
-    "valtio": "^2.1.8"
+    "valtio": "^2.1.8",
+    "yup": "^1.7.1"
   }
 }

@@ -23,7 +23,7 @@ subscribe(project, () => {
   // localStorage.setItem('project-save-data', saveData)
 
   // Optional: Also log the save data to console for debugging
-  console.log('Project auto-saved:', saveData)
+  // console.log('Project auto-saved:', saveData)
 })
 
 export default function Home() {
