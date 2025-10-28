@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { beatsToTimecode } from '@/lib/timeUtils'
 
 export default function TimeGrid({ snap, nearestBeat }) {
     const style = { width: snap.view.beatWidth }
@@ -94,11 +95,7 @@ export default function TimeGrid({ snap, nearestBeat }) {
                 if (i % 4 === 0) className += " bar"
                 if (i % 16 === 0) className += " major-bar"
                 if (i === nearestBeat) className += " nearest"
-                const secondsFloat = (60 / snap.meta.bpm) * i
-                const minutes = Math.floor(secondsFloat / 60)
-                const seconds = Math.floor(secondsFloat % 60)
-                const frames = Math.floor((secondsFloat % 1) * snap.meta.fps)
-                const timecode = `${minutes}:${seconds.toString().padStart(2, '0')}:${frames.toString().padStart(2, '0')}`
+                const timecode = beatsToTimecode(i, snap.meta.bpm, snap.meta.fps)
 
                 return <div key={`tg-beat-${i}`} style={{ position: 'relative' }}>
                     {i % 16 === 0 && <p style={{ left: ((i - snap.view.start) * snap.view.beatWidth) + 130 }} key={`tg-label-${i}`}>

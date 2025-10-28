@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
-import { beatsToMusicalTimeString } from '@/lib/beatsToMusicalTimeString';
+import { beatsToMusicalTimeString, beatsToTimecode, timeReport } from '@/lib/timeUtils';
 
 export default function Inspector({ project, snapshot }) {
     const {
@@ -158,15 +158,22 @@ export default function Inspector({ project, snapshot }) {
     }
 
     const form = {
-        region: () => (
-            <>
+        region: () => {
+            const times = timeReport(
+                project.selected[0].position,
+                project.selected[0].length,
+                project.meta.bpm,
+                project.meta.fps
+            );
+            return (<>
                 <h3>{project.selected[0].name}</h3>
+                <p>{times}</p>
                 <BlendMenu />
                 <button onClick={() => {
                     console.log(project.selected[0]);
                 }}>console region</button>
-                <p>Length: {beatsToMusicalTimeString(project.selected[0].length)}</p>
-            </>),
+            </>)
+        },
         'same-track': () => (<h3>{project.selected.length} regions selected</h3>),
         'whole-track': () => (<>
             <h3>{project.selected[0].track.name} regions selected</h3>
