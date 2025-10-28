@@ -31,7 +31,7 @@ export default function useRegionResize(project) {
         if (!resizeState) return
         console.log('handleMouseMove called:', resizeState.edge)
         const deltaX = event.clientX - resizeState.startX
-        const deltaBeats = Math.round(deltaX / project.view.beatWidth)
+        const deltaBeats = project.snapPosition(deltaX / project.view.beatWidth)
 
         const elementUnderMouse = document.elementFromPoint(event.clientX, event.clientY)
         const trackElement = elementUnderMouse?.closest('.track')
@@ -59,7 +59,7 @@ export default function useRegionResize(project) {
                     const newPosition = originalPosition + deltaBeats
                     const newLength = originalLength - deltaBeats
 
-                    if (newLength >= 1 && newPosition >= 0) {
+                    if (newLength >= project.snap && newPosition >= 0) {
                         selectedRegion.setPosition(newPosition)
                         selectedRegion.setLength(newLength)
                     }
@@ -68,7 +68,7 @@ export default function useRegionResize(project) {
                 const newPosition = resizeState.startPosition + deltaBeats
                 const newLength = resizeState.startLength - deltaBeats
 
-                if (newLength >= 1 && newPosition >= 0) {
+                if (newLength >= project.snap && newPosition >= 0) {
                     region.setPosition(newPosition)
                     region.setLength(newLength)
                 }
@@ -81,13 +81,13 @@ export default function useRegionResize(project) {
                     const originalLength = resizeState.startingLengths[index]
                     const newLength = originalLength + deltaBeats
 
-                    if (newLength >= 1) {
+                    if (newLength >= project.snap) {
                         selectedRegion.setLength(newLength)
                     }
                 })
             } else {
                 const newLength = resizeState.startLength + deltaBeats
-                if (newLength >= 1) {
+                if (newLength >= project.snap) {
                     region.setLength(newLength)
                 }
             }

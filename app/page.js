@@ -44,8 +44,8 @@ export default function Home() {
     const relativeX = e.clientX - timeGridRect.left
     if (relativeX >= 0) {
       const beatPosition = relativeX / snap.view.beatWidth
-      const nearestBeatIndex = Math.round(beatPosition)
-      setNearestBeat(nearestBeatIndex)
+      const snappedBeat = project.snapPosition(beatPosition)
+      setNearestBeat(snappedBeat)
     } else {
       setNearestBeat(null)
     }
