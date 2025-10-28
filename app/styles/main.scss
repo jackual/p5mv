@@ -173,7 +173,7 @@ $time-grid-height: 14px;
     position: absolute;
     width: 2px;
     background-color: rgba(200, 0, 255, 0.5);
-    z-index: 20;
+    z-index: 10;
     top: 0;
     bottom: 0;
     left: calc(calc(#{$track-header-width} + var(--playhead-offset, 0px)) - 20px);
@@ -186,8 +186,8 @@ $time-grid-height: 14px;
     font-size: 18px;
     border-radius: 100%;
     background-color: rgb(52, 52, 52);
-    pointer-events: none;
-    cursor: pointer !important;
+    pointer-events: auto;
+    cursor: pointer;
     z-index: 10;
     line-height: 1;
     text-align: center;
@@ -196,5 +196,6 @@ $time-grid-height: 14px;
     &:hover {
         background-color: rgb(1, 211, 1);
         color: black;
+        transform: scale(1.1);
     }
 }

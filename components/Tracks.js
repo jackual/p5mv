@@ -5,8 +5,8 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
         project.newRegion = [];
         project.playhead = nearestBeat + snap.view.start;
         if (event.target.classList.contains('new-region-indicator') && nearestBeat !== null) {
-            console.log("Adding region at", nearestBeat + snap.view.start);
-            const trackIndex = Number(event.target.closest('.trackContainer').getAttribute('data-track-index'))
+            const trackIndex = Number(event.target.parentElement.getAttribute('data-track-index'))
+            console.log("Adding region at", nearestBeat + snap.view.start, "to track index", trackIndex);
             project.tracks[trackIndex].addRegionAt(nearestBeat + snap.view.start);
             return
         }
@@ -44,7 +44,7 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
             }} style={{ position: 'relative' }}>
                 {project.newRegion.length && project.newRegion[0] === index ?
                     <div className="new-region-indicator" style={{
-                        left: project.newRegion[1] * snap.view.beatWidth,
+                        left: (project.newRegion[1] * snap.view.beatWidth) - 12,
                         position: 'absolute'
                     }}>+</div> : ""}
                 <TrackRegions
