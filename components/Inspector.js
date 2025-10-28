@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
+import { beatsToMusicalTimeString } from '@/lib/utils';
 
 export default function Inspector({ project, snapshot }) {
     const {
@@ -164,6 +165,7 @@ export default function Inspector({ project, snapshot }) {
                 <button onClick={() => {
                     console.log(project.selected[0]);
                 }}>console region</button>
+                <p>Length: {beatsToMusicalTimeString(project.selected[0].length)}</p>
             </>),
         'same-track': () => (<h3>{project.selected.length} regions selected</h3>),
         'whole-track': () => (<>

@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs-extra');
 
+//region should export data into this function
+
 async function captureFrames(input = {
   scene: 'blinds',
   frameCount: 20,

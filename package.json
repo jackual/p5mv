@@ -12,7 +12,8 @@
   "dependencies": {
     "current-module-paths": "^1.1.2",
     "fs-extra": "^11.3.2",
-    "keyframes": "^2.3.0",
+    "keytime": "^0.1.1",
+    "midi-parser-js": "^4.0.4",
     "next": "15.1.4",
     "p5": "^2.0.5",
     "puppeteer": "^24.23.0",
@@ -22,6 +23,7 @@
     "sass": "^1.83.1",
     "skia-canvas": "^3.0.8",
     "valtio": "^2.1.8",
+    "vulgar-fractions": "^1.5.0",
     "yup": "^1.7.1"
   }
 }
