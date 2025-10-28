@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
-import { beatsToMusicalTimeString } from '@/lib/utils';
+import { beatsToMusicalTimeString } from '@/lib/beatsToMusicalTimeString';
 
 export default function Inspector({ project, snapshot }) {
     const {

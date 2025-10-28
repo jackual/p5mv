@@ -31,7 +31,7 @@ export default function useRegionResize(project) {
         if (!resizeState) return
         console.log('handleMouseMove called:', resizeState.edge)
         const deltaX = event.clientX - resizeState.startX
-        const deltaBeats = project.snapPosition(deltaX / project.view.beatWidth)
+        const deltaBeats = deltaX / project.view.beatWidth // Don't snap the delta
 
         const elementUnderMouse = document.elementFromPoint(event.clientX, event.clientY)
         const trackElement = elementUnderMouse?.closest('.track')
@@ -56,8 +56,8 @@ export default function useRegionResize(project) {
                 resizeState.selectedRegions.forEach((selectedRegion, index) => {
                     const originalPosition = resizeState.startingPositions[index]
                     const originalLength = resizeState.startingLengths[index]
-                    const newPosition = originalPosition + deltaBeats
-                    const newLength = originalLength - deltaBeats
+                    const newPosition = project.snapPosition(originalPosition + deltaBeats)
+                    const newLength = project.snapPosition(originalLength - deltaBeats)
 
                     if (newLength >= project.snap && newPosition >= 0) {
                         selectedRegion.setPosition(newPosition)
@@ -65,8 +65,8 @@ export default function useRegionResize(project) {
                     }
                 })
             } else {
-                const newPosition = resizeState.startPosition + deltaBeats
-                const newLength = resizeState.startLength - deltaBeats
+                const newPosition = project.snapPosition(resizeState.startPosition + deltaBeats)
+                const newLength = project.snapPosition(resizeState.startLength - deltaBeats)
 
                 if (newLength >= project.snap && newPosition >= 0) {
                     region.setPosition(newPosition)
@@ -79,14 +79,14 @@ export default function useRegionResize(project) {
                 // Resize all selected regions from right edge
                 resizeState.selectedRegions.forEach((selectedRegion, index) => {
                     const originalLength = resizeState.startingLengths[index]
-                    const newLength = originalLength + deltaBeats
+                    const newLength = project.snapPosition(originalLength + deltaBeats)
 
                     if (newLength >= project.snap) {
                         selectedRegion.setLength(newLength)
                     }
                 })
             } else {
-                const newLength = resizeState.startLength + deltaBeats
+                const newLength = project.snapPosition(resizeState.startLength + deltaBeats)
                 if (newLength >= project.snap) {
                     region.setLength(newLength)
                 }
@@ -94,18 +94,18 @@ export default function useRegionResize(project) {
 
         } else if (resizeState.edge === 'drag') {
             // Drag to move - only adjust position, keep length the same
-            const newPosition = resizeState.startPosition + deltaBeats
             if (project.selected.length > 1) {
                 // Move all selected regions
                 resizeState.selectedRegions.forEach((selectedRegion, index) => {
                     const originalPosition = resizeState.startingPositions[index]
-                    const newPosition = originalPosition + deltaBeats
+                    const newPosition = project.snapPosition(originalPosition + deltaBeats)
 
                     if (newPosition >= 0) {
                         selectedRegion.setPosition(newPosition)
                     }
                 })
             } else {
+                const newPosition = project.snapPosition(resizeState.startPosition + deltaBeats)
                 if (newPosition >= 0) {
                     region.setPosition(newPosition)
                 }
