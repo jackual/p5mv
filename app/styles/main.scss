@@ -1,6 +1,10 @@
 $track-header-width: 150px;
 $time-grid-height: 14px;
 
+body {
+    font-family: sans-serif;
+}
+
 .timeline-container {
     display: flex;
 
@@ -160,6 +164,13 @@ $time-grid-height: 14px;
 }
 
 .inspector {
+    padding: 10px;
+    margin: 10px;
+    background: #ffd1d1;
+    color: black;
+
+    width: fit-content;
+
     .error {
         color: red;
     }
