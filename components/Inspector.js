@@ -157,139 +157,157 @@ export default function Inspector({ project, snapshot }) {
         );
     }
 
-    const form = {
-        region: () => {
-            const times = timeReport(
-                project.selected[0].position,
-                project.selected[0].length,
-                project.meta.bpm,
-                project.meta.fps
-            );
-            return (<>
-                <h3>{project.selected[0].name}</h3>
+    const RegionForm = () => {
+        const selectedRegion = project.selected[0];
+        const times = timeReport(selectedRegion.position, selectedRegion.length, project.meta.bpm, project.meta.fps);
+
+        return (
+            <>
+                <h3>{selectedRegion.name}</h3>
                 <p>{times}</p>
                 <BlendMenu />
                 <button onClick={() => {
-                    console.log(project.selected[0]);
+                    console.log(selectedRegion);
                 }}>console region</button>
-            </>)
-        },
-        'same-track': () => (<h3>{project.selected.length} regions selected</h3>),
-        'whole-track': () => (<>
+            </>
+        );
+    };
+
+    const SameTrackForm = () => (
+        <h3>{project.selected.length} regions selected</h3>
+    );
+
+    const WholeTrackForm = () => (
+        <>
             <h3>{project.selected[0].track.name} regions selected</h3>
             <BlendMenu />
-        </>),
-        mixed: () => (<h3>Mixed selection</h3>),
-        none: () => (
+        </>
+    );
+
+    const MixedForm = () => (
+        <h3>Mixed selection</h3>
+    );
+
+    const ProjectSettingsForm = () => (
+        <div>
+            <h3>Project Settings</h3>
             <div>
-                <h3>Project Settings</h3>
-                <div>
-                    <div className="form-group">
-                        <label htmlFor="title">Title</label>
-                        <input
-                            id="title"
-                            type="text"
-                            {...register("title", {
-                                required: "Title is required",
-                                maxLength: {
-                                    value: 100,
-                                    message: "Title must be less than 100 characters"
-                                }
-                            })}
-                            onBlur={() => handleBlur('title')}
-                            onKeyDown={(e) => handleKeyDown(e, 'title')}
-                        />
-                        {errors.title && <span className="error">{errors.title.message}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="bpm">BPM</label>
-                        <input
-                            id="bpm"
-                            type="number"
-                            {...register("bpm", {
-                                required: "BPM is required",
-                                min: { value: 60, message: "BPM must be at least 60" },
-                                max: { value: 200, message: "BPM must be no more than 200" }
-                            })}
-                            onBlur={() => handleBlur('bpm')}
-                            onKeyDown={(e) => handleKeyDown(e, 'bpm')}
-                        />
-                        {errors.bpm && <span className="error">{errors.bpm.message}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="width">Width (px)</label>
-                        <input
-                            id="width"
-                            type="number"
-                            {...register("width", {
-                                required: "Width is required",
-                                min: { value: 100, message: "Width must be at least 100px" },
-                                max: { value: 4000, message: "Width must be no more than 4000px" }
-                            })}
-                            onBlur={() => handleBlur('width')}
-                            onKeyDown={(e) => handleKeyDown(e, 'width')}
-                        />
-                        {errors.width && <span className="error">{errors.width.message}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="height">Height (px)</label>
-                        <input
-                            id="height"
-                            type="number"
-                            {...register("height", {
-                                required: "Height is required",
-                                min: { value: 100, message: "Height must be at least 100px" },
-                                max: { value: 4000, message: "Height must be no more than 4000px" }
-                            })}
-                            onBlur={() => handleBlur('height')}
-                            onKeyDown={(e) => handleKeyDown(e, 'height')}
-                        />
-                        {errors.height && <span className="error">{errors.height.message}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="fps">Frame Rate (FPS)</label>
-                        <input
-                            id="fps"
-                            type="number"
-                            {...register("fps", {
-                                required: "FPS is required",
-                                min: { value: 12, message: "FPS must be at least 12" },
-                                max: { value: 120, message: "FPS must be no more than 120" }
-                            })}
-                            onBlur={() => handleBlur('fps')}
-                            onKeyDown={(e) => handleKeyDown(e, 'fps')}
-                        />
-                        {errors.fps && <span className="error">{errors.fps.message}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="snap">Snap</label>
-                        <select
-                            id="snap"
-                            value={snapshot.snap}
-                            onChange={(e) => {
-                                project.snap = parseFloat(e.target.value);
-                            }}
-                        >
-                            {[4, 1, 0.5, 1 / 3, 0.25, 0.125].map(value => (
-                                <option key={value} value={value}>
-                                    {beatsToMusicalTimeString(value)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
+                <div className="form-group">
+                    <label htmlFor="title">Title</label>
+                    <input
+                        id="title"
+                        type="text"
+                        {...register("title", {
+                            required: "Title is required",
+                            maxLength: {
+                                value: 100,
+                                message: "Title must be less than 100 characters"
+                            }
+                        })}
+                        onBlur={() => handleBlur('title')}
+                        onKeyDown={(e) => handleKeyDown(e, 'title')}
+                    />
+                    {errors.title && <span className="error">{errors.title.message}</span>}
                 </div>
+
+                <div className="form-group">
+                    <label htmlFor="bpm">BPM</label>
+                    <input
+                        id="bpm"
+                        type="number"
+                        {...register("bpm", {
+                            required: "BPM is required",
+                            min: { value: 60, message: "BPM must be at least 60" },
+                            max: { value: 200, message: "BPM must be no more than 200" }
+                        })}
+                        onBlur={() => handleBlur('bpm')}
+                        onKeyDown={(e) => handleKeyDown(e, 'bpm')}
+                    />
+                    {errors.bpm && <span className="error">{errors.bpm.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="width">Width (px)</label>
+                    <input
+                        id="width"
+                        type="number"
+                        {...register("width", {
+                            required: "Width is required",
+                            min: { value: 100, message: "Width must be at least 100px" },
+                            max: { value: 4000, message: "Width must be no more than 4000px" }
+                        })}
+                        onBlur={() => handleBlur('width')}
+                        onKeyDown={(e) => handleKeyDown(e, 'width')}
+                    />
+                    {errors.width && <span className="error">{errors.width.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="height">Height (px)</label>
+                    <input
+                        id="height"
+                        type="number"
+                        {...register("height", {
+                            required: "Height is required",
+                            min: { value: 100, message: "Height must be at least 100px" },
+                            max: { value: 4000, message: "Height must be no more than 4000px" }
+                        })}
+                        onBlur={() => handleBlur('height')}
+                        onKeyDown={(e) => handleKeyDown(e, 'height')}
+                    />
+                    {errors.height && <span className="error">{errors.height.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="fps">Frame Rate (FPS)</label>
+                    <input
+                        id="fps"
+                        type="number"
+                        {...register("fps", {
+                            required: "FPS is required",
+                            min: { value: 12, message: "FPS must be at least 12" },
+                            max: { value: 120, message: "FPS must be no more than 120" }
+                        })}
+                        onBlur={() => handleBlur('fps')}
+                        onKeyDown={(e) => handleKeyDown(e, 'fps')}
+                    />
+                    {errors.fps && <span className="error">{errors.fps.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="snap">Snap</label>
+                    <select
+                        id="snap"
+                        value={snapshot.snap}
+                        onChange={(e) => {
+                            project.snap = parseFloat(e.target.value);
+                        }}
+                    >
+                        {[4, 1, 0.5, 1 / 3, 0.25, 0.125].map(value => (
+                            <option key={value} value={value}>
+                                {beatsToMusicalTimeString(value)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
             </div>
-        )
+        </div>
+    );
+
+    const form = {
+        region: <>
+            <RegionForm />
+            {/* <ProjectSettingsForm /> */}
+        </>,
+        'same-track': <SameTrackForm />,
+        'whole-track': <WholeTrackForm />,
+        mixed: <MixedForm />,
+        none: <ProjectSettingsForm />
     }
     return (
         <div className="inspector">
-            {form[project.selectionMode]()}
+            {form[project.selectionMode]}
         </div>
     )
 }  
