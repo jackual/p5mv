@@ -20,20 +20,20 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
     return tracks.map((track, index) => (
         <div className="trackContainer" key={index} onClick={setPlayheadPosition}>
             <div className="trackHeader" onClick={event => {
-                console.log(event.target)
-                switch (event.target.className) {
-                    case "trackHeader":
-                        project.tracks[index].select()
-                        break
-                    case "add-button":
-                        project.tracks[index].addTrack()
-                        break
-                    case "remove-button":
-                        if (!track.regions.length)
-                            delete project.tracks[index]
-                        if (confirm(`Are you sure you want to delete track "${track.name}"? This action cannot be undone.`))
-                            delete project.tracks[index]
-                        break
+                console.log('Clicked element:', event.target, 'Class:', event.target.className)
+                // Check if clicked element or its parent has the button class
+                const clickedElement = event.target.closest('.add-button, .remove-button') || event.target
+
+                if (clickedElement.classList.contains('add-button') || clickedElement.closest('.add-button')) {
+                    console.log('Adding track')
+                    project.addTrack()
+                } else if (clickedElement.classList.contains('remove-button') || clickedElement.closest('.remove-button')) {
+                    console.log('Removing track')
+                    if (track.regions.length === 0 || confirm(`Are you sure you want to delete track "${track.name}"? This action cannot be undone.`)) {
+                        project.removeTrack(index)
+                    }
+                } else if (event.target.classList.contains('trackHeader')) {
+                    project.tracks[index].select()
                 }
             }}>
                 <p>{track.name} </p>
