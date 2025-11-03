@@ -184,7 +184,9 @@ body {
     }
 
     .truncated-left {
-        border-left-color: red 2px solid !important;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-left: 1px dashed black;
     }
 
     .selected {

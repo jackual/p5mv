@@ -35,11 +35,11 @@ const Ribbon = ({ project }) => {
             <RibbonButton icon={FolderOpenIcon} label="Open" />
             <RibbonButton icon={FloppyDiskIcon} label="Save" />
             <Divider />
-            <RibbonButton icon={MagnifyingGlassPlusIcon} label="Zoom In" />
-            <RibbonButton icon={MagnifyingGlassMinusIcon} label="Zoom Out" />
-            <RibbonButton icon={ArrowLineLeftIcon} label="Left" />
-            <RibbonButton icon={ArrowLeftIcon} label="Left" />
-            <RibbonButton icon={ArrowRightIcon} label="Right" />
+            <RibbonButton icon={MagnifyingGlassPlusIcon} label="Zoom In" onClick={() => project.zoomIn()} />
+            <RibbonButton icon={MagnifyingGlassMinusIcon} label="Zoom Out" onClick={() => project.zoomOut()} />
+            <RibbonButton icon={ArrowLineLeftIcon} label="Move to start" onClick={() => project.moveToStart()} />
+            <RibbonButton icon={ArrowLeftIcon} label="Left" onClick={() => project.moveLeft()} />
+            <RibbonButton icon={ArrowRightIcon} label="Right" onClick={() => project.moveRight()} />
             <Divider />
             <RibbonButton icon={SelectionAllIcon} label="Select All" onClick={() => project.selectAll()} />
             <RibbonButton icon={TrashIcon} label="Delete" />
