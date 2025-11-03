@@ -2,8 +2,8 @@ import "./styles/reset.css"
 import "./styles/main.scss"
 
 export const metadata = {
-  title: "Next App",
-  description: "Next template",
+  title: "p5mv",
+  description: "p5.js music video timeline editor",
 }
 
 export default function RootLayout({ children }) {
