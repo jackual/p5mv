@@ -1,4 +1,6 @@
+import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import TrackRegions from "./TrackRegions"
+import { MinusCircleIcon } from "@phosphor-icons/react";
 
 export default function Tracks({ tracks, project, resizeState, handleResizeStart, snap, nearestBeat }) {
     const setPlayheadPosition = (event) => {
@@ -34,8 +36,8 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
                 }
             }}>
                 <p>{track.name} </p>
-                <a className="add-button">+</a>
-                <a className="remove-button">-</a>
+                <a className="add-button"><PlusCircleIcon /></a>
+                <a className="remove-button"><MinusCircleIcon /></a>
             </div>
             <div className="track" data-track-index={index} onClick={event => {
                 if (event.target.classList.contains('track')) {

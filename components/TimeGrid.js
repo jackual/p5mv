@@ -79,14 +79,8 @@ export default function TimeGrid({ snap, nearestBeat }) {
         >
             {cycle.position !== null && cycle.length && cycle.length > 0 ? (
                 <div className="cycle" style={{
-                    position: 'absolute',
                     left: cycle.position * snap.view.beatWidth,
-                    width: cycle.length * snap.view.beatWidth,
-                    height: '100%',
-                    backgroundColor: 'rgba(0, 255, 0, 0.3)',
-                    border: '1px solid #00ff00',
-                    cursor: 'pointer',
-                    zIndex: 10
+                    width: cycle.length * snap.view.beatWidth
                 }} />
             ) : null}
             {Array.from({ length }, (_, i) => {

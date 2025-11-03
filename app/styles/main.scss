@@ -82,12 +82,16 @@ body {
         position: relative; // Added for cycle positioning
 
         .cycle {
-            border: 1px dashed #00ff00;
+            border: 2px dashed $p5-colour;
             position: absolute;
             top: 0;
             height: 100%;
-            background-color: rgba(0, 255, 0, 0.1);
+            border-radius: 5px;
+            backdrop-filter: blur(1px);
+            background-color: rgba(253, 122, 159, 0.6);
             pointer-events: none;
+            cursor: pointer;
+            z-index: 10;
         }
 
         p {
@@ -118,15 +122,6 @@ body {
             border-left-width: 2px !important;
         }
 
-        .cycle {
-            position: absolute;
-            top: 0;
-            background-color: rgba(0, 255, 0, 0.2);
-            border: 1px solid #00ff00;
-            pointer-events: none;
-            z-index: 10;
-            height: 100%;
-        }
     }
 }
 
@@ -162,6 +157,8 @@ body {
 
         &:hover {
             cursor: pointer;
+            text-decoration: underline;
+            border-color: #f64f7e;
         }
 
         .resize-handle {
@@ -216,24 +213,31 @@ body {
     display: flex;
     align-items: center;
 
-    a,
     p {
         margin-left: 7px;
+        font-weight: 700;
     }
 
-    .add-button:hover {
-        color: greenyellow;
+    a {
+        transition: .2s;
     }
 
+    .add-button {
+        margin-left: 4px;
+    }
+
+    .remove-button {
+        margin-left: 2px;
+    }
+
+    .add-button:hover,
     .remove-button:hover {
-        color: red;
+        transform: scale(1.2);
     }
 
     a {
         cursor: pointer;
-        font-weight: bold;
-
-
+        display: flex;
     }
 }
 
