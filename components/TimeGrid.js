@@ -89,6 +89,7 @@ export default function TimeGrid({ snap, nearestBeat }) {
                 if (i % 4 === 0) className += " bar"
                 if (i % 16 === 0) className += " major-bar"
                 if (i === nearestBeat) className += " nearest"
+                if (snap.view.beatWidth < 8 && className == "notch") className = ""
                 const timecode = beatsToTimecode(i, snap.meta.bpm, snap.meta.fps)
 
                 return <div key={`tg-beat-${i}`} style={{ position: 'relative' }}>

@@ -20,6 +20,7 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
     return tracks.map((track, index) => (
         <div className="trackContainer" key={index} onClick={setPlayheadPosition}>
             <div className="trackHeader" onClick={event => {
+                console.log(event.target)
                 switch (event.target.className) {
                     case "trackHeader":
                         project.tracks[index].select()
