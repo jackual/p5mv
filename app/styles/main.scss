@@ -1,10 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=National+Park:wght@200..800&display=swap');
+
 $track-header-width: 150px;
 $time-grid-height: 14px;
 $p5-colour: #f1678e;
 
+* {
+    font-family: 'National Park', sans-serif;
+}
+
 body {
     font-family: sans-serif;
-    font-family: 'SF Pro', sans-serif;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
@@ -50,6 +55,15 @@ body {
 
         svg {
             color: #475569;
+        }
+    }
+
+    .ribbon-radio {
+        transition: .2s;
+
+        &:hover {
+            color: $p5-colour;
+            cursor: pointer;
         }
     }
 
