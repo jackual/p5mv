@@ -1,4 +1,4 @@
 export default {
-  title: "Rings",
-  thumb: "rings.png"
+    title: "Rings",
+    thumb: "rings.png"
 }

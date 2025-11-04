@@ -1,4 +1,4 @@
 export default {
-  title: "Matrix",
-  thumb: "matrix.jpg"
+    title: "Matrix",
+    thumb: "matrix.jpg"
 }

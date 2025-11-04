@@ -1,4 +1,4 @@
 export default {
-  title: "Vortex",
-  thumb: "vortex.jpg"
+    title: "Vortex",
+    thumb: "vortex.jpg"
 }

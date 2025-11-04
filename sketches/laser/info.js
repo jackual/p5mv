@@ -1,4 +1,4 @@
 export default {
-  title: "Laser",
-  thumb: "laser.jpg"
+    title: "Laser",
+    thumb: "laser.jpg"
 }

@@ -1,4 +1,4 @@
 export default {
-  title: "Spiro",
-  thumb: "spiro.jpg"
+    title: "Spiro",
+    thumb: "spiro.jpg"
 }

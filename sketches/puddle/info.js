@@ -1,4 +1,4 @@
 export default {
-  title: "Puddle",
-  thumb: "puddle.png"
+    title: "Puddle",
+    thumb: "puddle.png"
 }
