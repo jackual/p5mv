@@ -44,3 +44,6 @@ next-env.d.ts
 
 # Ignore generated frames
 output/
+
+# Ignore auto-generated sketches index
+data/sketches.js
