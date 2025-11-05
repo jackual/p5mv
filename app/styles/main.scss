@@ -13,3 +13,12 @@ body {
     font-family: sans-serif;
     background: $background-gradient;
 }
+
+.icon-text {
+    display: flex;
+    align-items: center;
+
+    .icon-text__icon {
+        margin-right: 3px;
+    }
+}

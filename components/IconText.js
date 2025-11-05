@@ -1,15 +1,15 @@
 import React from 'react';
 
-export default function IconText({ 
-  as: Component = 'div', 
-  icon: Icon, 
-  children, 
+export default function IconText({
+  as: Component = 'div',
+  icon: Icon,
+  children,
   className = '',
-  ...props 
+  ...props
 }) {
   return (
-    <Component 
-      className={`icon-text ${className}`} 
+    <Component
+      className={`icon-text ${className}`}
       {...props}
     >
       {Icon && <Icon className="icon-text__icon" />}

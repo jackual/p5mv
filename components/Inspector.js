@@ -4,6 +4,7 @@ import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
 import { beatsToMusicalTimeString, beatsToTimecode, timeReport } from '@/lib/timeUtils';
 import { GearIcon } from '@phosphor-icons/react';
+import IconText from './IconText';
 
 export default function Inspector({ project, snapshot }) {
     const {
@@ -191,7 +192,7 @@ export default function Inspector({ project, snapshot }) {
 
     const ProjectSettingsForm = () => (
         <div>
-            <h3 style={{ display: "flex", alignItems: "center" }}><GearIcon /> Project Settings</h3>
+            <IconText as="h3" icon={GearIcon}>Project Settings</IconText>
             <div>
                 <div className="form-group">
                     <label htmlFor="title">Title</label>
