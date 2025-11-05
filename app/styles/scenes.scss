@@ -1,18 +1,51 @@
+.scenePage {
+    display: flex;
+
+    aside {
+        width: 100rw;
+        background: lightgray;
+        border-left: solid 2px gray;
+    }
+}
+
 .sketch-list {
     list-style: none;
-    padding: 0;
+    padding: 20px 2px;
     margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    max-width: 65vw;
+    width: fit-content;
 
     li {
         display: flex;
         align-items: center;
         margin-bottom: 8px;
+        flex-direction: column;
+        border: solid 2px rgba(0, 0, 0, 0.1);
+
+        .selected {
+            border-color: black;
+        }
     }
 
-    .blob {
-        width: 15px;
-        height: 15px;
-        border: solid 2px rgba(0, 0, 0, 0.2);
-        border-radius: 100%;
+    img {
+        width: 150px;
+        height: 112px;
+        object-fit: fill;
+    }
+
+    .caption {
+        display: flex;
+        align-items: center;
+
+        .blob {
+            margin-right: 8px;
+            width: 15px;
+            height: 15px;
+            border: solid 2px rgba(0, 0, 0, 0.2);
+            border-radius: 100%;
+        }
     }
 }

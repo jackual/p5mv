@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function generateSketchesIndex() {
-    const sketchesDir = path.join(__dirname, '..', 'sketches');
+    const sketchesDir = path.join(__dirname, '..', 'public', 'sketches');
     const outputFile = path.join(__dirname, '..', 'data', 'sketches.js');
 
     try {
@@ -34,7 +34,7 @@ async function generateSketchesIndex() {
             if (fs.existsSync(infoPath)) {
                 const importName = `${dirName}Info`;
                 const color = colorScale[i];
-                imports.push(`import ${importName} from '../sketches/${dirName}/info.js';`);
+                imports.push(`import ${importName} from '../public/sketches/${dirName}/info.js';`);
                 sketches.push(`  { ...${importName}, id: '${dirName}', color: '${color}' }`);
             } else {
                 console.warn(`Warning: No info.js found in ${dirName} directory`);

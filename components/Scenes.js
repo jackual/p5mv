@@ -1,17 +1,30 @@
 import sketches from '../data/sketches'
+import IconText from './IconText'
+import { SquaresFourIcon } from '@phosphor-icons/react'
 
 export default function Scenes() {
     return (
-        <div>
-            <h1>Scenes Page</h1>
-            <ul className='sketch-list'>
-                {sketches.map(sketch => (
-                    <li key={sketch.id}>
-                        <div className='blob' style={{ backgroundColor: sketch.color }}></div>
-                        {sketch.title}
-                    </li>
-                ))}
-            </ul>
+        <div className='scenePage'>
+            <div>
+                <IconText as="h1" icon={SquaresFourIcon}>
+                    Scenes Library
+                </IconText>
+                <ul className='sketch-list'>
+                    {sketches.map(sketch => (
+                        <li key={sketch.id}>
+                            <img src={`/sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
+                            <div className='caption'>
+                                <div className='blob' style={{ backgroundColor: sketch.color }}></div>
+                                <p>{sketch.title}</p>
+                            </div>
+
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <aside>
+                <p>This page showcases various interactive sketches. Click on a sketch to explore it further!</p>
+            </aside>
         </div>
     )
 }
