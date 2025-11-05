@@ -1,0 +1,18 @@
+.sketch-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .blob {
+        width: 15px;
+        height: 15px;
+        border: solid 2px rgba(0, 0, 0, 0.2);
+        border-radius: 100%;
+    }
+}
