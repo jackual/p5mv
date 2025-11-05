@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import chroma from 'chroma-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,17 +20,22 @@ async function generateSketchesIndex() {
 
         console.log(`Found ${sketchDirs.length} sketch directories:`, sketchDirs);
 
+        // Generate a color scale for all sketches
+        const colorScale = chroma.scale(['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#fd79a8', '#fdcb6e', '#6c5ce7', '#a29bfe', '#fd79a8', '#00cec9']).mode('lch').colors(sketchDirs.length);
+
         // Import all info.js files
         const imports = [];
         const sketches = [];
 
-        for (const dirName of sketchDirs) {
+        for (let i = 0; i < sketchDirs.length; i++) {
+            const dirName = sketchDirs[i];
             const infoPath = path.join(sketchesDir, dirName, 'info.js');
 
             if (fs.existsSync(infoPath)) {
                 const importName = `${dirName}Info`;
+                const color = colorScale[i];
                 imports.push(`import ${importName} from '../sketches/${dirName}/info.js';`);
-                sketches.push(`  { ...${importName}, id: '${dirName}' }`);
+                sketches.push(`  { ...${importName}, id: '${dirName}', color: '${color}' }`);
             } else {
                 console.warn(`Warning: No info.js found in ${dirName} directory`);
             }
