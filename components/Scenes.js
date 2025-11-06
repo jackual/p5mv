@@ -23,7 +23,7 @@ export default function Scenes() {
                 </ul>
             </div>
             <aside>
-                <p>This page showcases various interactive sketches. Click on a sketch to explore it further!</p>
+                <p>Select a scene</p>
             </aside>
         </div>
     )

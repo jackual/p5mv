@@ -5,6 +5,7 @@ import Blend from '@/lib/classes/Blend';
 import { beatsToMusicalTimeString, beatsToTimecode, timeReport } from '@/lib/timeUtils';
 import { GearIcon } from '@phosphor-icons/react';
 import IconText from './IconText';
+import sketches from '@/data/sketches';
 
 export default function Inspector({ project, snapshot }) {
     const {
@@ -163,10 +164,32 @@ export default function Inspector({ project, snapshot }) {
         const selectedRegion = project.selected[0];
         const times = timeReport(selectedRegion.position, selectedRegion.length, project.meta.bpm, project.meta.fps);
 
+        const handleSceneChange = (event) => {
+            const sceneId = event.target.value;
+            selectedRegion.sceneId = sceneId || null;
+        };
+
         return (
             <>
                 <h3>{selectedRegion.name}</h3>
                 <p>{times}</p>
+
+                <div className="form-group">
+                    <label htmlFor="scene">Scene</label>
+                    <select
+                        id="scene"
+                        value={selectedRegion.sceneId || ''}
+                        onChange={handleSceneChange}
+                    >
+                        <option value="">Select a scene...</option>
+                        {sketches.map(sketch => (
+                            <option key={sketch.id} value={sketch.id}>
+                                {sketch.title}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
                 <BlendMenu />
                 <button onClick={() => {
                     console.log(selectedRegion);
