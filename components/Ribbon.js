@@ -11,7 +11,7 @@ import {
     ArrowRightIcon,
     ArrowLineLeftIcon,
     SquaresFourIcon,
-    FilmSlateIcon,
+    FilmStripIcon,
     ExportIcon
 } from "@phosphor-icons/react"
 import capitalize from "lodash.capitalize"
@@ -56,7 +56,7 @@ const Ribbon = ({ page, setPage, project }) => {
             <RibbonButton icon={SelectionAllIcon} label="Select All" onClick={() => project.selectAll()} />
             <RibbonButton icon={TrashIcon} label="Delete" />
             <Divider />
-            <RibbonRadio icon={FilmSlateIcon} page="timeline" isSelected={page === "timeline"} onClick={() => setPage("timeline")} />
+            <RibbonRadio icon={FilmStripIcon} page="timeline" isSelected={page === "timeline"} onClick={() => setPage("timeline")} />
             <RibbonRadio icon={SquaresFourIcon} page="scenes" isSelected={page === "scenes"} onClick={() => setPage("scenes")} />
             <RibbonRadio icon={ExportIcon} page="render" isSelected={page === "render"} onClick={() => setPage("render")} />
             <RibbonRadio icon={QuestionIcon} page="help" isSelected={page === "help"} onClick={() => setPage("help")} />

@@ -1,0 +1,35 @@
+.render-page {
+    padding: 15px;
+
+    .status-indicator {
+        margin-bottom: 15px;
+
+        .warn .icon-text__icon {
+            color: orange;
+        }
+
+        &.error .icon-text__icon {
+            color: red;
+        }
+
+        &.done .icon-text__icon {
+            color: rgb(0, 191, 0);
+        }
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    a {
+        color: $p5-colour;
+        text-decoration: underline;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
