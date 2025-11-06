@@ -22,7 +22,8 @@ export default function TrackRegions({ trackRegions, trackIndex, resizeState, ha
       classNames.push("selected")
     }
 
-    if (resizeState) {
+    // Only add "resizing" class to the specific region being dragged
+    if (resizeState && resizeState.trackIndex === trackIndex && resizeState.regionIndex === index) {
       classNames.push("resizing")
     }
 

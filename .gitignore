@@ -47,3 +47,6 @@ output/
 
 # Ignore auto-generated sketches index
 data/sketches.js
+
+# Ignore auto-generated scene colors
+app/styles/_scene-colors.scss

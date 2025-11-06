@@ -70,9 +70,8 @@
     user-select: none;
 
     .region {
-        border: 1px solid #cbd5e1;
+        border: 1px solid var(--scene-color, #cbd5e1);
         border-radius: 12px;
-        color: #f1678e;
         height: 100%;
         overflow: hidden;
         padding: 4px;
@@ -91,7 +90,7 @@
         &:hover {
             cursor: pointer;
             text-decoration: underline;
-            border-color: #f64f7e;
+            // border-color: #f64f7e;
         }
 
         .resize-handle {
@@ -120,9 +119,11 @@
     }
 
     .selected {
-        background: #f1678e;
-        color: white;
+        // background: #f1678e;
+        // color: white;
         text-decoration: underline;
+        font-weight: bold;
+        font-size: 11px;
     }
 
     .resizing:hover {
