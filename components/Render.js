@@ -15,6 +15,8 @@ import {
 import IconText from "./IconText";
 import { FolderIcon } from "@phosphor-icons/react/dist/ssr";
 import { beatsToFrameDuration } from "@/lib/timeUtils";
+import { render } from "sass";
+import arrayEqual from "array-equal";
 
 async function renderEachRegion(project) {
     project.render.renderRegions = [0, project.render.queue.length]
@@ -84,21 +86,33 @@ const renderChain = async (project) => {
 
         console.log("All regions rendered successfully");
 
-        // Step 2: Encode video (placeholder for now)
+        // Step 2: Encode video
         project.render.encode = [0, 1];
         console.log("Starting video encoding...");
 
-        // Simulate encoding progress
-        await new Promise(resolve => {
-            setTimeout(() => {
-                project.render.encode[0] = 1;
-                console.log("Video encoding complete");
-                resolve();
-            }, 1000);
+        // Call API endpoint to encode video
+        const encodeResponse = await fetch('/api/render/encode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                fps: project.meta.fps,
+                outputFilename: 'output.mp4'
+            })
         });
+
+        if (!encodeResponse.ok) {
+            const errorData = await encodeResponse.json().catch(() => ({ error: 'Unknown error' }));
+            throw new Error(`Failed to encode video: ${errorData.error || encodeResponse.statusText}`);
+        }
+
+        const encodeResult = await encodeResponse.json();
+        console.log("Video encoding complete:", encodeResult.videoPath);
 
         // All steps completed successfully
         project.render.status = "done";
+        project.render.finishedQueue = project.render.queue
         console.log("Render chain completed successfully!");
 
     } catch (error) {
@@ -123,6 +137,12 @@ export default function Render({ project, snap }) {
     // Don't override status here - let it be managed by the render chain
     let statusIndicator, canStart = false
 
+    if (snap.render.status == "done") {
+        if (!arrayEqual(project.render.finishedQueue, project.render.queue)) {
+            project.render.status = "idle"
+        }
+    }
+
     // Setup Server-Sent Events for progress updates
     const setupProgressListener = () => {
         if (typeof window !== 'undefined' && !window.renderProgressSource) {
@@ -143,6 +163,20 @@ export default function Render({ project, snap }) {
                         break;
                     case 'region_complete':
                         console.log('Region completed:', data.regionName);
+                        break;
+                    case 'encoding_start':
+                        console.log('Encoding started:', data.message);
+                        project.render.encode = [0, 1];
+                        break;
+                    case 'encoding_progress':
+                        // Update encoding progress
+                        const encodeProgress = Math.floor(data.progress);
+                        project.render.encode = [data.currentFrame, data.totalFrames];
+                        console.log(`Encoding: ${encodeProgress}% (${data.currentFrame}/${data.totalFrames})`);
+                        break;
+                    case 'encoding_complete':
+                        console.log('Encoding completed:', data.message);
+                        project.render.encode[0] = project.render.encode[1];
                         break;
                     case 'error':
                         console.error('Render error:', data.message);
@@ -203,6 +237,9 @@ export default function Render({ project, snap }) {
             <p>Encode</p>
             <progress value={snap.render.encode[0]} max={snap.render.encode[1]} />
             <IconText id="start-button" as="button" disabled={!canStart} icon={PlayIcon} onClick={() => renderChain(project)}><h3>Render</h3></IconText>
+            {snap.render.status === "done" &&
+                <video src="/output.mp4" controls />
+            }
         </div>
     )
 }
