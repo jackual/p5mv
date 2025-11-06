@@ -28,7 +28,7 @@ subscribe(project, () => {
 })
 
 export default function Home() {
-  const [page, setPage] = useState("scenes")
+  const [page, setPage] = useState("timeline")
   const snap = useSnapshot(project),
     pages = {
       "timeline": <Timeline project={project} snap={snap} />,
