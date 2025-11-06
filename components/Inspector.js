@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
 import { beatsToMusicalTimeString, beatsToTimecode, timeReport } from '@/lib/timeUtils';
-import { GearIcon } from '@phosphor-icons/react';
+import { GearIcon, ShareIcon, TerminalIcon } from '@phosphor-icons/react';
 import IconText from './IconText';
 import sketches from '@/data/sketches';
 
@@ -191,9 +191,13 @@ export default function Inspector({ project, snapshot }) {
                 </div>
 
                 <BlendMenu />
-                <button onClick={() => {
-                    console.log(selectedRegion);
-                }}>console region</button>
+                <IconText as='button' icon={TerminalIcon} onClick={() => {
+                    console.log(snapshot.selected[0]);
+                }}>Console Object</IconText>
+                <IconText as='button' icon={ShareIcon} onClick={() => {
+                    project.render.queue = [selectedRegion]
+                    document.querySelector('#render-radio').click()
+                }}>Send to renderer</IconText>
             </>
         );
     };

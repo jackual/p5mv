@@ -16,6 +16,7 @@
     "current-module-paths": "^1.1.2",
     "fs-extra": "^11.3.2",
     "keytime": "^0.1.1",
+    "lodash.capitalize": "^4.2.1",
     "midi-parser-js": "^4.0.4",
     "next": "15.1.4",
     "p5": "^2.0.5",

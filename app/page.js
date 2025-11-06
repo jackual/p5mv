@@ -28,11 +28,11 @@ subscribe(project, () => {
 })
 
 export default function Home() {
-  const [page, setPage] = useState("timeline")
+  const [page, setPage] = useState("render")
   const snap = useSnapshot(project),
     pages = {
       "timeline": <Timeline project={project} snap={snap} />,
-      "render": <Render snap={snap} />,
+      "render": <Render project={project} snap={snap} />,
       "help": <Help />,
       "scenes": <Scenes />
     }

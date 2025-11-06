@@ -14,6 +14,7 @@ import {
     FilmSlateIcon,
     ExportIcon
 } from "@phosphor-icons/react"
+import capitalize from "lodash.capitalize"
 
 const RibbonButton = ({ icon: Icon, label, onClick = () => { } }) => {
     return (
@@ -25,7 +26,7 @@ const RibbonButton = ({ icon: Icon, label, onClick = () => { } }) => {
 
 const RibbonRadio = ({ icon: Icon, page, isSelected, onClick }) => {
     return (
-        <div className={`ribbon-radio ${isSelected ? 'ribbon-selected' : ''}`} onClick={onClick}>
+        <div className={`ribbon-radio ${isSelected ? 'ribbon-selected' : ''}`} onClick={onClick} id={page + "-radio"} title={capitalize(page)}>
             <Icon size={24} weight={isSelected ? "regular" : "light"} />
         </div>
     )

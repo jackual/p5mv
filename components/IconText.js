@@ -6,6 +6,7 @@ export default function IconText({
   iconProps = {},
   children,
   className = '',
+  spin,
   ...props
 }) {
   return (
@@ -13,7 +14,7 @@ export default function IconText({
       className={`icon-text ${className}`}
       {...props}
     >
-      {Icon && <Icon className="icon-text__icon" {...iconProps} />}
+      {Icon && <Icon className={`icon-text__icon ${spin ? 'spinning' : ''}`} {...iconProps} />}
       <span className="icon-text__content">{children}</span>
     </Component>
   );
