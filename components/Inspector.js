@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
 import { beatsToMusicalTimeString, beatsToTimecode, timeReport } from '@/lib/timeUtils';
-import { GearIcon, ShareIcon, TerminalIcon } from '@phosphor-icons/react';
+import { GearIcon, ShareIcon, TerminalIcon, TrashSimpleIcon } from '@phosphor-icons/react';
 import IconText from './IconText';
 import sketches from '@/data/sketches';
 
@@ -189,8 +189,11 @@ export default function Inspector({ project, snapshot }) {
                         ))}
                     </select>
                 </div>
-
+                <p>ID: {selectedRegion.code}</p>
                 <BlendMenu />
+                <IconText as='button' icon={TrashSimpleIcon} onClick={() => {
+                    selectedRegion.del()
+                }}>Delete region</IconText>
                 <IconText as='button' icon={TerminalIcon} onClick={() => {
                     console.log(snapshot.selected[0]);
                 }}>Console Object</IconText>
