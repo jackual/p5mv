@@ -64,13 +64,13 @@ export default function TrackRegions({ trackRegions, trackIndex, resizeState, ha
           onMouseDown={event => handleResizeStart(event, trackIndex, index, 'left')}
         />
         <div>
-          {region.sceneId ? (
+          {/* {region.sceneId ? (
             region.scene.title
           ) : (
             <IconText icon={WarningCircleIcon} as="span" iconProps={{ weight: "fill" }}>
               {regionWidth >= minWidthForNoSceneText && "No scene"}
             </IconText>
-          )}
+          )} */ region.code}
         </div>
         <div
           className="resize-handle right"

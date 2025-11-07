@@ -114,6 +114,10 @@ export default function useRegionResize(project) {
     }
 
     function handleMouseUp() {
+        // Trigger reindexing when drag/resize operation completes
+        if (resizeState) {
+            project.reindexAll()
+        }
         setResizeState(null)
     }
 
