@@ -15,7 +15,6 @@ import {
 import IconText from "./IconText";
 import { FolderIcon } from "@phosphor-icons/react/dist/ssr";
 import { beatsToFrameDuration } from "@/lib/timeUtils";
-import { render } from "sass";
 import arrayEqual from "array-equal";
 
 async function renderEachRegion(project) {

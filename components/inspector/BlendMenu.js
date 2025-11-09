@@ -1,5 +1,8 @@
 import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
+import IconText from '../IconText';
+import InspectorSection from './InspectorSection';
+import { CircleHalfTiltIcon } from '@phosphor-icons/react';
 
 export default function BlendMenu({ project, snapshot }) {
     // Get current values from snapshot
@@ -47,7 +50,7 @@ export default function BlendMenu({ project, snapshot }) {
     };
 
     return (
-        <div>
+        <InspectorSection icon={CircleHalfTiltIcon} title="Composite" open={false}>
             <div className="form-group">
                 <label htmlFor="opacity">Opacity (%)</label>
                 <input
@@ -84,6 +87,6 @@ export default function BlendMenu({ project, snapshot }) {
                     </small>
                 )}
             </div>
-        </div>
+        </InspectorSection>
     );
 }
