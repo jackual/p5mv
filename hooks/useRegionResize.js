@@ -36,14 +36,35 @@ export default function useRegionResize(project) {
         const elementUnderMouse = document.elementFromPoint(event.clientX, event.clientY)
         const trackElement = elementUnderMouse?.closest('.track')
 
-        if (trackElement) {
-            // Get track index from data attribute or find it in the DOM
-            const trackContainer = trackElement.closest('.trackContainer')
-            const allTracks = document.querySelectorAll('.trackContainer')
-            const hoveredTrackIndex = Array.from(allTracks).indexOf(trackContainer)
+        if (trackElement && resizeState.edge === 'drag') {
+            // Get track index from data attribute
+            const hoveredTrackIndex = Number(trackElement.getAttribute('data-track-index'))
 
             if (hoveredTrackIndex !== -1 && hoveredTrackIndex !== resizeState.trackIndex) {
-                // Move region to the new track logic
+                // Move region to the new track
+                const region = project.tracks[resizeState.trackIndex].regions[resizeState.regionIndex]
+                const oldTrack = project.tracks[resizeState.trackIndex]
+                const newTrack = project.tracks[hoveredTrackIndex]
+
+                // Remove from old track
+                oldTrack.regions.splice(resizeState.regionIndex, 1)
+
+                // Update region's track reference
+                region.track = newTrack
+
+                // Add to new track
+                newTrack.regions.push(region)
+
+                // Update resize state to new track
+                setResizeState(prev => ({
+                    ...prev,
+                    trackIndex: hoveredTrackIndex,
+                    regionIndex: newTrack.regions.length - 1
+                }))
+
+                // Reindex everything
+                project.reindexAll()
+                return // Don't do position updates
             }
         }
 
