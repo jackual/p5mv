@@ -27,6 +27,30 @@ export default function useRegionResize(project) {
         })
     }
 
+    // Check if a region would overlap with other regions on the same track
+    function checkCollision(trackIndex, regionToCheck, newPosition, newLength) {
+        const track = project.tracks[trackIndex]
+        if (!track) return true // Invalid track, consider as collision
+
+        const regionStart = newPosition
+        const regionEnd = newPosition + newLength
+
+        // Check against all other regions on the same track
+        for (let region of track.regions) {
+            if (!region || region === regionToCheck) continue // Skip null and self
+
+            const otherStart = region.position
+            const otherEnd = region.position + region.length
+
+            // Check if regions overlap
+            if (regionStart < otherEnd && regionEnd > otherStart) {
+                return true // Collision detected
+            }
+        }
+
+        return false // No collision
+    }
+
     function handleMouseMove(event) {
         if (!resizeState) return
         console.log('handleMouseMove called:', resizeState.edge)
@@ -41,29 +65,52 @@ export default function useRegionResize(project) {
             const hoveredTrackIndex = Number(trackElement.getAttribute('data-track-index'))
 
             if (hoveredTrackIndex !== -1 && hoveredTrackIndex !== resizeState.trackIndex) {
-                // Move region to the new track
-                const region = project.tracks[resizeState.trackIndex].regions[resizeState.regionIndex]
-                const oldTrack = project.tracks[resizeState.trackIndex]
                 const newTrack = project.tracks[hoveredTrackIndex]
+                
+                // Check if all selected regions can fit on the new track
+                let canMoveAll = true
+                for (let selectedRegion of resizeState.selectedRegions) {
+                    if (checkCollision(hoveredTrackIndex, selectedRegion, selectedRegion.position, selectedRegion.length)) {
+                        canMoveAll = false
+                        break
+                    }
+                }
+                
+                if (canMoveAll) {
+                    // No collisions - safe to move all selected regions
+                    resizeState.selectedRegions.forEach((selectedRegion) => {
+                        const oldTrack = selectedRegion.track
+                        
+                        // Remove from old track
+                        const oldIndex = oldTrack.regions.indexOf(selectedRegion)
+                        if (oldIndex !== -1) {
+                            oldTrack.regions.splice(oldIndex, 1)
+                        }
 
-                // Remove from old track
-                oldTrack.regions.splice(resizeState.regionIndex, 1)
+                        // Update region's track reference
+                        selectedRegion.track = newTrack
 
-                // Update region's track reference
-                region.track = newTrack
+                        // Add to new track
+                        newTrack.regions.push(selectedRegion)
+                    })
 
-                // Add to new track
-                newTrack.regions.push(region)
+                    // Update resize state to new track (using the main region being dragged)
+                    const mainRegion = resizeState.selectedRegions[0]
+                    const newRegionIndex = newTrack.regions.indexOf(mainRegion)
+                    
+                    setResizeState(prev => ({
+                        ...prev,
+                        trackIndex: hoveredTrackIndex,
+                        regionIndex: newRegionIndex !== -1 ? newRegionIndex : newTrack.regions.length - 1
+                    }))
 
-                // Update resize state to new track
-                setResizeState(prev => ({
-                    ...prev,
-                    trackIndex: hoveredTrackIndex,
-                    regionIndex: newTrack.regions.length - 1
-                }))
-
-                // Reindex everything
-                project.reindexAll()
+                    // Reindex everything
+                    project.reindexAll()
+                    document.body.style.cursor = 'move'
+                } else {
+                    // At least one collision detected - show not-allowed cursor
+                    document.body.style.cursor = 'not-allowed'
+                }
                 return // Don't do position updates
             }
         }
@@ -81,8 +128,15 @@ export default function useRegionResize(project) {
                     const newLength = project.snapPosition(originalLength - deltaBeats)
 
                     if (newLength >= project.snap && newPosition >= 0) {
-                        selectedRegion.setPosition(newPosition)
-                        selectedRegion.setLength(newLength)
+                        // Check for collision
+                        const trackIndex = selectedRegion.track.trackIndex
+                        if (!checkCollision(trackIndex, selectedRegion, newPosition, newLength)) {
+                            selectedRegion.position = newPosition
+                            selectedRegion.length = newLength
+                            document.body.style.cursor = 'ew-resize'
+                        } else {
+                            document.body.style.cursor = 'not-allowed !important'
+                        }
                     }
                 })
             } else {
@@ -90,8 +144,14 @@ export default function useRegionResize(project) {
                 const newLength = project.snapPosition(resizeState.startLength - deltaBeats)
 
                 if (newLength >= project.snap && newPosition >= 0) {
-                    region.setPosition(newPosition)
-                    region.setLength(newLength)
+                    // Check for collision
+                    if (!checkCollision(resizeState.trackIndex, region, newPosition, newLength)) {
+                        region.position = newPosition
+                        region.length = newLength
+                        document.body.style.cursor = 'ew-resize'
+                    } else {
+                        document.body.style.cursor = 'not-allowed !important'
+                    }
                 }
             }
         } else if (resizeState.edge === 'right') {
@@ -103,13 +163,26 @@ export default function useRegionResize(project) {
                     const newLength = project.snapPosition(originalLength + deltaBeats)
 
                     if (newLength >= project.snap) {
-                        selectedRegion.setLength(newLength)
+                        // Check for collision (position stays same, only length changes)
+                        const trackIndex = selectedRegion.track.trackIndex
+                        if (!checkCollision(trackIndex, selectedRegion, selectedRegion.position, newLength)) {
+                            selectedRegion.length = newLength
+                            document.body.style.cursor = 'ew-resize'
+                        } else {
+                            document.body.style.cursor = 'not-allowed !important'
+                        }
                     }
                 })
             } else {
                 const newLength = project.snapPosition(resizeState.startLength + deltaBeats)
                 if (newLength >= project.snap) {
-                    region.setLength(newLength)
+                    // Check for collision (position stays same, only length changes)
+                    if (!checkCollision(resizeState.trackIndex, region, region.position, newLength)) {
+                        region.length = newLength
+                        document.body.style.cursor = 'ew-resize'
+                    } else {
+                        document.body.style.cursor = 'not-allowed !important'
+                    }
                 }
             }
 
@@ -122,13 +195,26 @@ export default function useRegionResize(project) {
                     const newPosition = project.snapPosition(originalPosition + deltaBeats)
 
                     if (newPosition >= 0) {
-                        selectedRegion.setPosition(newPosition)
+                        // Check for collision (length stays same, only position changes)
+                        const trackIndex = selectedRegion.track.trackIndex
+                        if (!checkCollision(trackIndex, selectedRegion, newPosition, selectedRegion.length)) {
+                            selectedRegion.position = newPosition
+                            document.body.style.cursor = 'move'
+                        } else {
+                            document.body.style.cursor = 'not-allowed !important'
+                        }
                     }
                 })
             } else {
                 const newPosition = project.snapPosition(resizeState.startPosition + deltaBeats)
                 if (newPosition >= 0) {
-                    region.setPosition(newPosition)
+                    // Check for collision (length stays same, only position changes)
+                    if (!checkCollision(resizeState.trackIndex, region, newPosition, region.length)) {
+                        region.position = newPosition
+                        document.body.style.cursor = 'move'
+                    } else {
+                        document.body.style.cursor = 'not-allowed !important'
+                    }
                 }
             }
         }
@@ -139,6 +225,10 @@ export default function useRegionResize(project) {
         if (resizeState) {
             project.reindexAll()
         }
+
+        // Reset cursor to default
+        document.body.style.cursor = 'default'
+
         setResizeState(null)
     }
 
