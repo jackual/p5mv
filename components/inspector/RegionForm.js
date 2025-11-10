@@ -5,7 +5,7 @@ import sketches from '@/data/sketches';
 import BlendMenu from './BlendMenu';
 import InspectorSection from './InspectorSection';
 import { ImageIcon } from '@phosphor-icons/react/dist/ssr';
-import SceneInput from '../SceneInput';
+import SceneInput from './SceneInput';
 
 export default function RegionForm({ project, snapshot }) {
     const selectedRegion = project.selected[0];
@@ -54,6 +54,7 @@ export default function RegionForm({ project, snapshot }) {
             </InspectorSection>
             <InspectorSection icon={BugIcon} title="Debug">
                 <p>Renderer ID {selectedRegion.code}</p>
+                <p>Δbeats (playhead): {selectedRegion.playheadDelta}</p>
                 <IconText as='button' icon={TerminalIcon} onClick={() => {
                     console.log(snapshot.selected[0]);
                 }}>Console Object</IconText>

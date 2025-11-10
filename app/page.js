@@ -40,7 +40,17 @@ export default function Home() {
   // Set up keyboard event handler
   React.useEffect(() => {
     const handleKeyDown = (e) => {
-      if (page == "timeline")
+      // Check if focus is on an input field
+      const activeElement = document.activeElement
+      const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.tagName === 'SELECT' ||
+        activeElement.contentEditable === 'true'
+      )
+
+      // Only handle shortcuts when not focused on input fields
+      if (page == "timeline" && !isInputFocused) {
         switch (e.key) {
           case "Delete":
           case "Backspace":
@@ -56,6 +66,7 @@ export default function Home() {
             }
             break
         }
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
