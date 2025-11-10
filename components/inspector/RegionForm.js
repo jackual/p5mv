@@ -14,6 +14,8 @@ export default function RegionForm({ project, snapshot }) {
     const handleSceneChange = (event) => {
         const sceneId = event.target.value;
         selectedRegion.sceneId = sceneId || null;
+        // Reinitialize inputs when scene changes to avoid errors
+        selectedRegion.inputs = selectedRegion.initializeInputsFromScene();
     };
 
     return (
@@ -36,7 +38,7 @@ export default function RegionForm({ project, snapshot }) {
                     </select>
                 </div>
                 {
-                    Object.entries(selectedRegion.scene.inputs || {}).map(([key, input]) => (
+                    selectedRegion.sceneId && Object.entries(selectedRegion.scene.inputs || {}).map(([key, input]) => (
                         <SceneInput
                             input={input}
                             id={key}

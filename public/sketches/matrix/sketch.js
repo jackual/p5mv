@@ -24,10 +24,10 @@ function setup() {
 
 function draw() {
   blendMode(SCREEN)
-  background(captureInput.region.inputs.backgroundColour || 100); // Use backgroundColour input with default
+  background(captureInput.region.inputs.backgroundColour.value || 100); // Use backgroundColour input with default
   blendMode(EXCLUSION)
   stroke(255);   // white lines
-  strokeWeight(captureInput.region.inputs.strokeWeight || 1);
+  strokeWeight(captureInput.region.inputs.strokeWeight.value || 1);
 
   // --- Diagonal oscillating lines ---
   let t = (sin(frameCount * TWO_PI / 120) + 1) / 2; // cycle

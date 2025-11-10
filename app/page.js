@@ -59,6 +59,14 @@ export default function Home() {
           case "Escape":
             project.deselectAll()
             break
+          case "ArrowLeft":
+            project.playhead = Math.max(0, project.playhead - project.snap)
+            e.preventDefault()
+            break
+          case "ArrowRight":
+            project.playhead = project.playhead + project.snap
+            e.preventDefault()
+            break
           case "a":
             if (e.metaKey || e.ctrlKey) {
               project.selectAll()
