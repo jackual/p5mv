@@ -3,7 +3,7 @@ import IconText from "../IconText";
 
 export default function InspectorSection({ icon, title, children, open = false }) {
     return (
-        <details open={open}>
+        <details key={title} open={open}>
             <summary>
                 <IconText iconProps={{ weight: "bold" }} icon={icon} as='p'>{title}</IconText>
                 <span className="caret">

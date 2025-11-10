@@ -5,6 +5,7 @@ import sketches from '@/data/sketches';
 import BlendMenu from './BlendMenu';
 import InspectorSection from './InspectorSection';
 import { ImageIcon } from '@phosphor-icons/react/dist/ssr';
+import SceneInput from '../SceneInput';
 
 export default function RegionForm({ project, snapshot }) {
     const selectedRegion = project.selected[0];
@@ -34,6 +35,17 @@ export default function RegionForm({ project, snapshot }) {
                         ))}
                     </select>
                 </div>
+                {
+                    Object.entries(selectedRegion.scene.inputs || {}).map(([key, input]) => (
+                        <SceneInput
+                            input={input}
+                            id={key}
+                            project={project}
+                            region={selectedRegion}
+                            snapshot={snapshot}
+                        />
+                    ))
+                }
             </InspectorSection>
             <BlendMenu project={project} snapshot={snapshot} />
             <InspectorSection icon={ClockIcon} title="Time">
