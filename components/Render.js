@@ -37,7 +37,8 @@ async function renderEachRegion(project) {
                         sceneId: region.sceneId,
                         length: region.length,
                         position: region.position,
-                        name: region.name
+                        name: region.name,
+                        inputs: region.inputs
                     },
                     project: {
                         meta: project.meta,

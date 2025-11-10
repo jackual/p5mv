@@ -10,7 +10,7 @@ export default {
         backgroundColour: {
             type: "colour",
             label: "Background Colour",
-            default: "#646464ff"
+            default: "#646464"
         }
     }
 }

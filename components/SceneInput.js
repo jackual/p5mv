@@ -17,7 +17,7 @@ export default function SceneInput({ input, project, region, snapshot, id }) {
             break
     }
     return (
-        <div key={input.id + region.scene.title}>
+        <div>
             <div className="form-group">
                 <label htmlFor={id}>{input.label}</label>
                 <input

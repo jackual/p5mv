@@ -40,6 +40,7 @@ export default function RegionForm({ project, snapshot }) {
                         <SceneInput
                             input={input}
                             id={key}
+                            key={key + selectedRegion.scene.title}
                             project={project}
                             region={selectedRegion}
                             snapshot={snapshot}
