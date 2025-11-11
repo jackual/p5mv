@@ -153,23 +153,6 @@ export default function ProjectSettingsForm({ project, snapshot }) {
                     />
                     {errors.fps && <span className="error">{errors.fps.message}</span>}
                 </div>
-
-                <div className="form-group">
-                    <label htmlFor="snap">Snap</label>
-                    <select
-                        id="snap"
-                        value={snapshot.snap}
-                        onChange={(e) => {
-                            project.snap = parseFloat(e.target.value);
-                        }}
-                    >
-                        {[4, 1, 0.5, 1 / 3, 0.25, 0.125].map(value => (
-                            <option key={value} value={value}>
-                                {beatsToMusicalTimeString(value)}
-                            </option>
-                        ))}
-                    </select>
-                </div>
             </div>
         </div>
     );

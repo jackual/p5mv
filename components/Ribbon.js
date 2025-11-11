@@ -15,6 +15,7 @@ import {
     ExportIcon
 } from "@phosphor-icons/react"
 import capitalize from "lodash.capitalize"
+import { beatsToMusicalTimeString } from '@/lib/timeUtils'
 
 const RibbonButton = ({ icon: Icon, label, onClick = () => { } }) => {
     return (
@@ -52,6 +53,23 @@ const Ribbon = ({ page, setPage, project }) => {
             <RibbonButton icon={ArrowLineLeftIcon} label="Move to start" onClick={() => project.moveToStart()} />
             <RibbonButton icon={ArrowLeftIcon} label="Left" onClick={() => project.moveLeft()} />
             <RibbonButton icon={ArrowRightIcon} label="Right" onClick={() => project.moveRight()} />
+            <Divider />
+            <div className="ribbon-snap-control">
+                <label htmlFor="ribbon-snap">Snap:</label>
+                <select
+                    id="ribbon-snap"
+                    value={project.snap}
+                    onChange={(e) => {
+                        project.snap = parseFloat(e.target.value);
+                    }}
+                >
+                    {[4, 1, 0.5, 1 / 3, 0.25, 0.125].map(value => (
+                        <option key={value} value={value}>
+                            {beatsToMusicalTimeString(value)}
+                        </option>
+                    ))}
+                </select>
+            </div>
             <Divider />
             <RibbonButton icon={SelectionAllIcon} label="Select All" onClick={() => project.selectAll()} />
             <RibbonButton icon={TrashIcon} label="Delete" />
