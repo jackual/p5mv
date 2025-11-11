@@ -1,16 +1,18 @@
 export default {
     title: "Matrix",
     thumb: "matrix.jpg",
-    inputs: {
-        strokeWeight: {
+    inputs: [
+        {
+            id: "strokeWeight",
             type: "number",
             label: "Stroke Weight",
             default: 1
         },
-        backgroundColour: {
+        {
+            id: "backgroundColour",
             type: "colour",
             label: "Background Colour",
             default: "#646464"
         }
-    }
+    ]
 }
