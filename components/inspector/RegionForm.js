@@ -38,11 +38,11 @@ export default function RegionForm({ project, snapshot }) {
                     </select>
                 </div>
                 {
-                    selectedRegion.sceneId && Object.entries(selectedRegion.scene.inputs || {}).map(([key, input]) => (
+                    selectedRegion.sceneId && (selectedRegion.inputs || []).map((input, index) => (
                         <SceneInput
                             input={input}
-                            id={key}
-                            key={key + selectedRegion.scene.title}
+                            index={index}
+                            key={input.id + selectedRegion.scene.title}
                             project={project}
                             region={selectedRegion}
                             snapshot={snapshot}

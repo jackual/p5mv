@@ -3,74 +3,56 @@ import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr"
 import { object } from "yup"
 import IconText from "../IconText"
 
-export default function SceneInput({ input, project, region, snapshot, id }) {
-    // const setting = region.inputs[id]
-    // let type = input.type, placeholder, value, activeKeyframe = false
+export default function SceneInput({ project, region, snapshot, index, input }) {
+    const delta = region.playheadDelta
 
-    // switch (setting.mode) {
-    //     case 'static':
-    //         value = setting.value
-    //         break
-    //     case 'dynamic':
-    //         if (setting.value
-    //             .some(item => item.position === region.playheadDelta)) {
-    //             activeKeyframe = true
-    //         }
-    //         break
-    //     case 'unset':
-    //     default:
-    //         value = ""
-    //         placeholder = input.default
-    //         break
-    // }
+    const getFormValue = () => {
+        return document.getElementById(input.id).value
+    }
 
-    // switch (type) {
-    //     case 'number':
-    //         type = 'number'
-    //         break
-    //     case 'colour':
-    //     case 'color':
-    //         type = 'color'
-    //         value = region.inputs[id].value || input.default
-    //         break
-    //     case 'text':
-    //     default:
-    //         type = 'text'
-    //         break
-    // }
+    const makeValueUnset = () => {
+        input.makeUnset()
+    }
 
-    // const makeValueUnset = () => {
-    //     region.inputs[id] = { mode: 'unset', value: null }
-    // }
+    const updateField = () => {
+        const value = getFormValue()
+        if (value !== '')
+            input.setValue(value, delta)
+        else
+            input.removeValue(delta)
+    }
 
-    // const updateField = () => {
-    //     const value = document.getElementById(id).value
-    //     if (value === "") makeValueUnset()
-    //     else
-    //         region.inputs[id] = { mode: 'static', value } // this could become object with static prop for keyframes
-    //     console.log(region.inputs[id])
-    // }
+    const removeKeyframe = () => {
+        input.removeValue(delta)
+    }
 
-    // const addKeyframe = () => {
+    const addKeyframe = () => {
+        let value = getFormValue()
+        if (value === '')
+            value = input.default
+        input.setKeyframeValue(delta, value)
+    }
 
-    // }
+    const form = input.getForm(delta)
 
-    // return (
-    //     <div>
-    //         <div className="form-group sceneInput">
-    //             <label htmlFor={id}>{input.label}</label>
-    //             <input
-    //                 id={id}
-    //                 type={type}
-    //                 placeholder={placeholder}
-    //                 value={value}
-    //                 onChange={updateField}
-    //             ></input>
-    //             <IconText icon={PlusCircleIcon} as="button" onClick={addKeyframe} />
-    //             <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
-    //             <p>{setting.mode[0].toUpperCase()}</p>
-    //         </div>
-    //     </div>
-    // )
-    return (<pre>{JSON.stringify(snapshot.selected[0].inputs, null, 2)}</pre>)
+    return (
+        <div>
+            <div className="form-group sceneInput">
+                <label htmlFor={input.id}>{input.label}</label>
+                <input
+                    id={input.id}
+                    type={form.type}
+                    placeholder={form.placeholder}
+                    value={form.value}
+                    onChange={updateField}
+                ></input>
+                {!form.activeKeyframe ?
+                    <IconText icon={PlusCircleIcon} as="button" onClick={addKeyframe} /> :
+                    <IconText icon={MinusCircleIcon} as="button" onClick={removeKeyframe} />
+                }
+                <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
+                <p>{input.settings.mode[0].toUpperCase()}</p>
+            </div>
+        </div>
+    )
 }
