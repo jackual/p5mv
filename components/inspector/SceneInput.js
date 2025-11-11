@@ -1,4 +1,4 @@
-import { EraserIcon, MinusCircleIcon } from "@phosphor-icons/react"
+import { EraserIcon, MinusCircleIcon, TerminalIcon } from "@phosphor-icons/react"
 import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr"
 import { object } from "yup"
 import IconText from "../IconText"
@@ -51,6 +51,9 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                     <IconText icon={MinusCircleIcon} as="button" onClick={removeKeyframe} />
                 }
                 <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
+                <IconText icon={TerminalIcon} as="button" onClick={() => {
+                    console.log(input);
+                }} />
                 <p>{input.settings.mode[0].toUpperCase()}</p>
             </div>
         </div>
