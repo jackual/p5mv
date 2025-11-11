@@ -5,14 +5,17 @@ import IconText from "../IconText"
 
 export default function SceneInput({ input, project, region, snapshot, id }) {
     const setting = region.inputs[id]
-    let type = input.type, placeholder, value
+    let type = input.type, placeholder, value, activeKeyframe = false
 
     switch (setting.mode) {
         case 'static':
             value = setting.value
             break
         case 'dynamic':
-            //"Dynamic Value"
+            if (setting.value
+                .some(item => item.position === region.playheadDelta)) {
+                activeKeyframe = true
+            }
             break
         case 'unset':
         default:
@@ -48,9 +51,13 @@ export default function SceneInput({ input, project, region, snapshot, id }) {
         console.log(region.inputs[id])
     }
 
+    const addKeyframe = () => {
+
+    }
+
     return (
         <div>
-            <div className="form-group">
+            <div className="form-group sceneInput">
                 <label htmlFor={id}>{input.label}</label>
                 <input
                     id={id}
@@ -59,8 +66,7 @@ export default function SceneInput({ input, project, region, snapshot, id }) {
                     value={value}
                     onChange={updateField}
                 ></input>
-                {/* <PlusCircleIcon />
-                <MinusCircleIcon weight="fill" /> */}
+                <IconText icon={PlusCircleIcon} as="button" onClick={addKeyframe} />
                 <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
                 <p>{setting.mode[0].toUpperCase()}</p>
             </div>
