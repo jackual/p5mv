@@ -1,5 +1,4 @@
-import { EraserIcon, MinusCircleIcon, TerminalIcon } from "@phosphor-icons/react"
-import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr"
+import { EraserIcon, MinusCircleIcon, TerminalIcon, PlusCircleIcon, CaretCircleDoubleLeftIcon, CaretCircleDoubleRightIcon } from "@phosphor-icons/react"
 import { object } from "yup"
 import IconText from "../IconText"
 
@@ -33,7 +32,21 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
         input.setKeyframeValue(delta, value)
     }
 
-    const form = input.getForm(delta)
+    const form = input.getForm(delta),
+        previousKeyframe = input.previousKeyframe(delta),
+        nextKeyframe = input.nextKeyframe(delta)
+
+    const goToPreviousKeyframe = () => {
+        if (previousKeyframe) {
+            project.playhead = region.position + previousKeyframe.position
+        }
+    }
+
+    const goToNextKeyframe = () => {
+        if (nextKeyframe) {
+            project.playhead = region.position + nextKeyframe.position
+        }
+    }
 
     return (
         <div>
@@ -48,9 +61,15 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                 ></input>
                 {!form.activeKeyframe ?
                     <IconText icon={PlusCircleIcon} as="button" onClick={addKeyframe} /> :
-                    <IconText icon={MinusCircleIcon} as="button" onClick={removeKeyframe} />
+                    <IconText icon={MinusCircleIcon} iconProps={{ weight: "fill" }} as="button" onClick={removeKeyframe} />
                 }
                 <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
+                <IconText
+                    icon={CaretCircleDoubleLeftIcon}
+                    as="button"
+                    disabled={!previousKeyframe}
+                    onClick={goToPreviousKeyframe} />
+                <IconText icon={CaretCircleDoubleRightIcon} as="button" disabled={!nextKeyframe} onClick={goToNextKeyframe} />
                 <IconText icon={TerminalIcon} as="button" onClick={() => {
                     console.log(input);
                 }} />
