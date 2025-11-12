@@ -15,13 +15,15 @@ export default {
         description: 'String value for text input',
         formType: 'text',
         set: (value) => value,
-        get: (value) => value
+        get: (value) => value,
+        disableTween: true
     },
 
     int: {
         name: 'Integer',
         description: 'Whole number value',
         formType: 'number',
+        step: 1,
         set: (value) => parseInt(value),
         get: (value) => parseInt(value).toString()
     },
@@ -38,6 +40,8 @@ export default {
         name: 'Percentage',
         description: 'Percentage value (0-100)',
         formType: 'number',
+        min: 0,
+        max: 100,
         set: (value) => parseFloat(value),
         get: (value) => truncateWithEllipsis(parseFloat(value))
     },

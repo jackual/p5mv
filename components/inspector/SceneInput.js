@@ -1,5 +1,4 @@
 import { EraserIcon, MinusCircleIcon, TerminalIcon, PlusCircleIcon, CaretCircleDoubleLeftIcon, CaretCircleDoubleRightIcon } from "@phosphor-icons/react"
-import { object } from "yup"
 import IconText from "../IconText"
 
 export default function SceneInput({ project, region, snapshot, index, input }) {
@@ -56,6 +55,9 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                     id={input.id}
                     type={form.type}
                     placeholder={form.placeholder}
+                    step={form.step}
+                    min={form.min}
+                    max={form.max}
                     value={form.value}
                     onChange={updateField}
                 ></input>
