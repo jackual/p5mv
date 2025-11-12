@@ -13,7 +13,7 @@ export default {
             id: "prop2",
             type: "colour",
             label: "Colour",
-            default: "#ffffff"
+            default: [330, 1, 0.6]
         }
     ]
 }
