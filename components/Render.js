@@ -38,7 +38,7 @@ async function renderEachRegion(project) {
                         length: region.length,
                         position: region.position,
                         name: region.name,
-                        inputs: region.inputs
+                        inputs: region.inputs.map(input => input.exportForRender(project))
                     },
                     project: {
                         meta: project.meta,
