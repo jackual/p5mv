@@ -9,7 +9,11 @@ import SceneInput from './SceneInput';
 
 export default function RegionForm({ project, snapshot }) {
     const selectedRegion = project.selected[0];
-    const times = timeReport(selectedRegion.position, selectedRegion.length, project.meta.bpm, project.meta.fps);
+    const times = timeReport(
+        selectedRegion.position,
+        selectedRegion.length,
+        project.meta.bpm,
+        project.meta.fps);
 
     const handleSceneChange = (event) => {
         const sceneId = event.target.value;
