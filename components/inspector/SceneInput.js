@@ -1,11 +1,21 @@
 import { EraserIcon, MinusCircleIcon, TerminalIcon, PlusCircleIcon, CaretCircleDoubleLeftIcon, CaretCircleDoubleRightIcon } from "@phosphor-icons/react"
 import IconText from "../IconText"
+import EaseMenu from "./EaseMenu"
 
 export default function SceneInput({ project, region, snapshot, index, input }) {
     const delta = region.playheadDelta
 
     const getFormValue = () => {
         return document.getElementById(input.id).value
+    }
+
+    const getEaseValue = () => {
+        if (document.querySelector(`#${input.id}-ease select`)) {
+            let value = document.querySelector(`#${input.id}-ease select`).value
+            if (value !== 'false')
+                return value
+        }
+        return false
     }
 
     const makeValueUnset = () => {
@@ -15,7 +25,7 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
     const updateField = () => {
         const value = getFormValue()
         if (value !== '')
-            input.setValue(value, delta)
+            input.setValue(value, delta, getEaseValue())
         else
             input.removeValue(delta)
     }
@@ -28,7 +38,7 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
         let value = getFormValue()
         if (value === '')
             value = input.default
-        input.setKeyframeValue(delta, value)
+        input.setKeyframeValue(delta, value, getEaseValue())
     }
 
     const form = input.getForm(delta),
@@ -76,10 +86,14 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                         <IconText icon={CaretCircleDoubleRightIcon} as="button" disabled={!nextKeyframe} onClick={goToNextKeyframe} />
                     </>
                 }
-                {/* <IconText icon={TerminalIcon} as="button" onClick={() => {
+                {
+                    form.easeMenu &&
+                    <EaseMenu value={form.easeMenuValue} id={input.id + "-ease"} onChange={updateField} />
+                }
+                <IconText icon={TerminalIcon} as="button" onClick={() => {
                     console.log(input);
                 }} />
-                <p>{input.settings.mode[0].toUpperCase()}</p> */}
+                <p>{input.settings.mode[0].toUpperCase()}</p>
             </div>
         </div>
     )
