@@ -65,17 +65,21 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                     <IconText icon={PlusCircleIcon} as="button" onClick={addKeyframe} /> :
                     <IconText icon={MinusCircleIcon} iconProps={{ weight: "fill" }} as="button" onClick={removeKeyframe} />
                 }
-                <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
-                <IconText
-                    icon={CaretCircleDoubleLeftIcon}
-                    as="button"
-                    disabled={!previousKeyframe}
-                    onClick={goToPreviousKeyframe} />
-                <IconText icon={CaretCircleDoubleRightIcon} as="button" disabled={!nextKeyframe} onClick={goToNextKeyframe} />
-                <IconText icon={TerminalIcon} as="button" onClick={() => {
+                {input.settings.mode === 'dynamic' &&
+                    <>
+                        <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
+                        <IconText
+                            icon={CaretCircleDoubleLeftIcon}
+                            as="button"
+                            disabled={!previousKeyframe}
+                            onClick={goToPreviousKeyframe} />
+                        <IconText icon={CaretCircleDoubleRightIcon} as="button" disabled={!nextKeyframe} onClick={goToNextKeyframe} />
+                    </>
+                }
+                {/* <IconText icon={TerminalIcon} as="button" onClick={() => {
                     console.log(input);
                 }} />
-                <p>{input.settings.mode[0].toUpperCase()}</p>
+                <p>{input.settings.mode[0].toUpperCase()}</p> */}
             </div>
         </div>
     )
