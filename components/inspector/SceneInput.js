@@ -34,16 +34,17 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
         input.removeValue(delta)
     }
 
-    const addKeyframe = () => {
-        let value = getFormValue()
-        if (value === '')
-            value = input.default
-        input.setKeyframeValue(delta, value, getEaseValue())
-    }
-
     const form = input.getForm(delta),
         previousKeyframe = input.previousKeyframe(delta),
         nextKeyframe = input.nextKeyframe(delta)
+
+
+    const addKeyframe = () => {
+        let value = getFormValue()
+        if (value === '')
+            value = form.placeholder
+        input.setKeyframeValue(delta, value, getEaseValue())
+    }
 
     const goToPreviousKeyframe = () => {
         if (previousKeyframe) {
