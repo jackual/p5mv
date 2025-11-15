@@ -1,4 +1,5 @@
 export default {
     title: "Reef",
-    thumb: "reef.jpg"
+    thumb: "reef.jpg",
+    brush: true
 }
