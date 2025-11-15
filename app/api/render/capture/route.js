@@ -13,7 +13,6 @@ export async function POST(request) {
             onProgress: (frameIndex, totalFrames) => {
                 broadcastProgress({
                     type: 'region_progress',
-                    regionName: region.name,
                     currentFrame: frameIndex,
                     totalFrames: totalFrames,
                     progress: (frameIndex / totalFrames) * 100
@@ -24,7 +23,6 @@ export async function POST(request) {
         // Send region start notification
         broadcastProgress({
             type: 'region_start',
-            regionName: region.name,
             message: `Starting render of region: ${region.name}`
         });
 
@@ -34,7 +32,6 @@ export async function POST(request) {
         // Send region complete notification
         broadcastProgress({
             type: 'region_complete',
-            regionName: region.name,
             message: `Completed render of region: ${region.name}`
         });
 
@@ -46,14 +43,15 @@ export async function POST(request) {
     } catch (error) {
         console.error('Capture error:', error);
 
-        // Send error notification
+        // Send error notification with stack for more context
         broadcastProgress({
             type: 'error',
-            message: `Error rendering region: ${error.message}`
+            message: `Error rendering region: ${error.message}`,
+            stack: error?.stack
         });
 
         return Response.json(
-            { success: false, error: error.message },
+            { success: false, error: error.message, stack: error?.stack },
             { status: 500 }
         );
     }

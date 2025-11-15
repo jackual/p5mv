@@ -17,6 +17,13 @@ import { FolderIcon } from "@phosphor-icons/react/dist/ssr";
 import { beatsToFrameDuration } from "@/lib/timeUtils";
 import arrayEqual from "array-equal";
 
+// Simple helper to write messages into the #render-progress element
+function updateRenderProgress(message) {
+    if (typeof document === 'undefined') return;
+    const el = document.getElementById('render-progress');
+    if (el) el.textContent = String(message ?? '');
+}
+
 async function renderEachRegion(project) {
     project.render.renderRegions = [0, project.render.queue.length]
 
@@ -51,7 +58,8 @@ async function renderEachRegion(project) {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                throw new Error(`Failed to render region "${region.name}": ${errorData.error || response.statusText}`);
+                const detail = [errorData.error || response.statusText, errorData.stack].filter(Boolean).join('\n');
+                throw new Error(`Failed to render region: ${detail}`);
             }
 
             const result = await response.json();
@@ -62,10 +70,10 @@ async function renderEachRegion(project) {
             // Increment completed regions counter
             project.render.renderRegions[0] += 1;
 
-            console.log(`Successfully rendered region: ${region.name}`);
+            updateRenderProgress(`Region rendered: ${region.name}`);
 
         } catch (error) {
-            console.error(`Error rendering region "${region.name}":`, error);
+            console.error(`Error rendering region":`, error);
             throw error; // Re-throw to be caught by renderChain
         }
     }
@@ -79,16 +87,16 @@ const renderChain = async (project) => {
     project.render.encode = [0, 0];
 
     try {
-        console.log(`Starting render of ${project.render.queue.length} regions...`);
+        updateRenderProgress(`Starting render of ${project.render.queue.length} region(s)...`);
 
         // Step 1: Render all regions
         await renderEachRegion(project);
 
-        console.log("All regions rendered successfully");
+        updateRenderProgress("All regions rendered successfully");
 
         // Step 2: Encode video
         project.render.encode = [0, 1];
-        console.log("Starting video encoding...");
+        updateRenderProgress("Starting video encoding...");
 
         // Call API endpoint to encode video
         const encodeResponse = await fetch('/api/render/encode', {
@@ -104,31 +112,33 @@ const renderChain = async (project) => {
 
         if (!encodeResponse.ok) {
             const errorData = await encodeResponse.json().catch(() => ({ error: 'Unknown error' }));
-            throw new Error(`Failed to encode video: ${errorData.error || encodeResponse.statusText}`);
+            const detail = [errorData.error || encodeResponse.statusText, errorData.stack].filter(Boolean).join('\n');
+            throw new Error(`Failed to encode video: ${detail}`);
         }
 
         const encodeResult = await encodeResponse.json();
-        console.log("Video encoding complete:", encodeResult.videoPath);
+        updateRenderProgress(`Video encoding complete: ${encodeResult.videoPath}`);
 
         // All steps completed successfully
         project.render.status = "done";
         project.render.finishedQueue = project.render.queue
-        console.log("Render chain completed successfully!");
+        updateRenderProgress("Render chain completed successfully!");
 
     } catch (error) {
         project.render.status = "error";
-        console.error("Render chain failed:", error);
+        const detail = [error.message, error?.stack].filter(Boolean).join('\n');
+        updateRenderProgress(`Render chain failed:\n${detail}`);
 
         // Reset progress on error
         project.render.currentRegion = [0, 0];
 
         // Optionally show user-friendly error message
         if (error.message.includes('Failed to render region')) {
-            console.error("Region rendering failed. Check scene files and project settings.");
+            updateRenderProgress("Region rendering failed. Check scene files and project settings.");
         } else if (error.message.includes('HTTP error')) {
-            console.error("Network error during rendering. Please try again.");
+            updateRenderProgress("Network error during rendering. Please try again.");
         } else {
-            console.error("An unexpected error occurred during rendering.");
+            updateRenderProgress("An unexpected error occurred during rendering.");
         }
     }
 }
@@ -153,40 +163,40 @@ export default function Render({ project, snap }) {
 
                 switch (data.type) {
                     case 'region_start':
-                        console.log('Region started:', data.regionName);
+                        updateRenderProgress(`Region started: ${data.regionName || ''}`);
                         break;
                     case 'region_progress':
                         // Update current region progress
                         const progressValue = Math.floor((data.currentFrame / data.totalFrames) * 100);
                         project.render.currentRegion = [data.currentFrame, data.totalFrames];
-                        console.log(`${data.regionName}: ${progressValue}% (${data.currentFrame}/${data.totalFrames})`);
+                        updateRenderProgress(`${data.regionName || 'Region'}: ${progressValue}% (${data.currentFrame}/${data.totalFrames})`);
                         break;
                     case 'region_complete':
-                        console.log('Region completed:', data.regionName);
+                        updateRenderProgress(`Region completed: ${data.regionName || ''}`);
                         break;
                     case 'encoding_start':
-                        console.log('Encoding started:', data.message);
+                        updateRenderProgress(data.message || 'Encoding started');
                         project.render.encode = [0, 1];
                         break;
                     case 'encoding_progress':
                         // Update encoding progress
                         const encodeProgress = Math.floor(data.progress);
                         project.render.encode = [data.currentFrame, data.totalFrames];
-                        console.log(`Encoding: ${encodeProgress}% (${data.currentFrame}/${data.totalFrames})`);
+                        updateRenderProgress(`Encoding: ${encodeProgress}% (${data.currentFrame}/${data.totalFrames})`);
                         break;
                     case 'encoding_complete':
-                        console.log('Encoding completed:', data.message);
+                        updateRenderProgress(data.message || 'Encoding completed');
                         project.render.encode[0] = project.render.encode[1];
                         break;
                     case 'error':
-                        console.error('Render error:', data.message);
+                        updateRenderProgress(`Render error: ${data.message}${data.stack ? `\n${data.stack}` : ''}`);
                         // Don't set status here - let renderChain handle it
                         break;
                 }
             };
 
             window.renderProgressSource.onerror = (error) => {
-                console.error('Progress stream error:', error);
+                updateRenderProgress(`Progress stream error: ${error?.message || error}`);
             };
         }
     };
@@ -230,6 +240,7 @@ export default function Render({ project, snap }) {
                 }}>Clear tasks</IconText>
             </div>
             <h4>Progress</h4>
+            <p id="render-progress"></p>
             <p>Regions</p>
             <progress value={snap.render.renderRegions[0]} max={snap.render.renderRegions[1]} />
             <p>Current Region</p>

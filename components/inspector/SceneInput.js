@@ -91,10 +91,10 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                     form.easeMenu &&
                     <EaseMenu value={form.easeMenuValue} id={input.id + "-ease"} onChange={updateField} />
                 }
-                <IconText icon={TerminalIcon} as="button" onClick={() => {
+                {/* <IconText icon={TerminalIcon} as="button" onClick={() => {
                     console.log(input);
                 }} />
-                <p>{input.settings.mode[0].toUpperCase()}</p>
+                <p>{input.settings.mode[0].toUpperCase()}</p> */}
             </div>
         </div>
     )

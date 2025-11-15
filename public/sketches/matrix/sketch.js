@@ -3,9 +3,7 @@ let numLines = 30;
 let linePositions = [];
 
 function setup() {
-  createCanvas(...captureInput.dims)
-  pixelDensity(1)
-  noLoop()
+  p5mv.setup()
   background(220); // negative effect background
 
   // Store 30 random Y positions for diagonal motion
@@ -24,10 +22,10 @@ function setup() {
 
 function draw() {
   blendMode(SCREEN)
-  background(captureInput.region.inputs.backgroundColour.value || 100); // Use backgroundColour input with default
+  background(p5mv.backgroundColour); // Use backgroundColour input with default
   blendMode(EXCLUSION)
   stroke(255);   // white lines
-  strokeWeight(captureInput.region.inputs.strokeWeight.value || 1);
+  strokeWeight(p5mv.strokeWeight);
 
   // --- Diagonal oscillating lines ---
   let t = (sin(frameCount * TWO_PI / 120) + 1) / 2; // cycle
@@ -83,7 +81,3 @@ function draw() {
     line(x1, y1, x2, y2);
   }
 }
-
-window.renderFrame = (i) => {
-  redraw();
-};

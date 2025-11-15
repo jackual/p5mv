@@ -53,14 +53,15 @@ export async function POST(request) {
     } catch (error) {
         console.error('Encoding error:', error);
 
-        // Send error notification
+        // Send error notification with stack
         broadcastProgress({
             type: 'error',
-            message: `Error encoding video: ${error.message}`
+            message: `Error encoding video: ${error.message}`,
+            stack: error?.stack
         });
 
         return Response.json(
-            { success: false, error: error.message },
+            { success: false, error: error.message, stack: error?.stack },
             { status: 500 }
         );
     }
