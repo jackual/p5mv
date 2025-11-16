@@ -5,4 +5,46 @@ $page-padding: 15px;
 
 $p5-colour: #f1678e;
 
+// Color variables
+$border-color: #cbd5e1;
+$border-color-hover: #94a3b8;
+$selected-border-color: #3b82f6;
+$text-color: #475569;
+
+// Background gradients
 $background-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+$card-gradient: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+$card-gradient-hover: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+$selected-gradient: linear-gradient(135deg, #e2ecfa 0%, #d1e6ff 100%);
+
+// Border radius
+$border-radius-sm: 6px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// Shadows
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.12);
+$shadow-focus: 0 0 0 2px rgba(241, 103, 142, 0.1);
+
+// Transitions
+$transition-fast: 0.2s ease-in-out;
+
+// Mixins
+@mixin card-style {
+    border: 1px solid $border-color;
+    background: $card-gradient;
+    box-shadow: $shadow-sm;
+    transition: all $transition-fast;
+    cursor: pointer;
+}
+
+@mixin hover-lift {
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: $shadow-hover;
+        border-color: $border-color-hover;
+        background: $card-gradient-hover;
+    }
+}

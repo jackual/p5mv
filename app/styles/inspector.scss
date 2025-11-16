@@ -2,12 +2,11 @@
     line-height: 1.4;
     padding: 15px;
     margin: 10px;
-    background: #ffd1d1;
     color: black;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
+    background: $card-gradient;
+    box-shadow: $shadow-sm;
 
     width: 400px;
 

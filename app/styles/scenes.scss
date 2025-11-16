@@ -7,8 +7,9 @@
 
     aside {
         flex: 1;
-        background: lightgray;
-        border-left: solid 2px gray;
+        background: $background-gradient;
+        border-left: 1px solid $border-color;
+        padding: $page-padding;
     }
 }
 
@@ -23,31 +24,22 @@
     width: fit-content;
 
     li {
+        @include card-style;
         display: flex;
         align-items: center;
         margin-bottom: 8px;
         flex-direction: column;
-        border: 1px solid #cbd5e1;
         font-size: 13px;
-        border-radius: 0 0 8px 8px;
-        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 0 0 $border-radius-md $border-radius-md;
         padding-bottom: 4px;
-        cursor: pointer;
         user-select: none;
 
-        &:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-            border-color: #94a3b8;
-            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
-        }
+        @include hover-lift;
 
         &.selected {
-            border-color: #3b82f6;
-            background: linear-gradient(135deg, #e2ecfa 0%, #d1e6ff 100%);
+            border-color: $selected-border-color;
+            background: $selected-gradient;
             font-weight: bold;
-            //box-shadow: 0 4px 8px rgba(59, 130, 246, 0.1);
         }
     }
 
