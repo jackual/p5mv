@@ -247,7 +247,10 @@ export default function Render({ project, snap }) {
             <progress value={snap.render.currentRegion[0]} max={snap.render.currentRegion[1]} />
             <p>Encode</p>
             <progress value={snap.render.encode[0]} max={snap.render.encode[1]} />
-            <IconText id="start-button" as="button" disabled={!canStart} icon={PlayIcon} onClick={() => renderChain(project)}><h3>Render</h3></IconText>
+            <IconText type="button" id="start-button" as="button" disabled={!canStart} icon={PlayIcon} onClick={e => {
+                e.preventDefault()
+                renderChain(project)
+            }}><h3>Render</h3></IconText>
             {snap.render.status === "done" &&
                 <video src="/output.mp4" controls />
             }
