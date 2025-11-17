@@ -54,35 +54,6 @@
         display: flex;
         align-items: center;
         gap: 4px;
-
-        label {
-            font-size: 12px;
-            font-weight: 600;
-            color: $text-color;
-            white-space: nowrap;
-        }
-
-        select {
-            border: 1px solid $border-color;
-            border-radius: $border-radius-sm;
-            padding: 4px 8px;
-            font-size: 12px;
-            background: $card-gradient;
-            color: $text-color;
-            cursor: pointer;
-            transition: all $transition-fast;
-            min-width: 80px;
-
-            &:hover {
-                border-color: $border-color-hover;
-                background: $card-gradient-hover;
-            }
-
-            &:focus {
-                outline: none;
-                border-color: $p5-colour;
-                box-shadow: $shadow-focus;
-            }
-        }
     }
+
 }

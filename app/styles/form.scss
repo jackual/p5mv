@@ -1,0 +1,59 @@
+label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $text-color;
+    white-space: nowrap;
+}
+
+input {
+    border: 1px solid $border-color;
+    border-radius: $border-radius-sm;
+    padding: 3px 5px;
+    margin: 2px 1px;
+    font-size: 12px;
+    background: white;
+    cursor: text;
+    transition: all $transition-fast;
+    //min-width: 80px;
+
+    &[type="color"] {
+        padding: 0;
+        height: 24px;
+        width: 24px;
+        border: none;
+        cursor: pointer;
+        background: none;
+    }
+
+    &:hover {
+        border-color: $border-color-hover;
+        background: $card-gradient-hover;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $p5-colour;
+        box-shadow: $shadow-focus;
+    }
+}
+
+select {
+    border: 1px solid $border-color;
+    border-radius: $border-radius-sm;
+    padding: 4px 5px;
+    font-size: 12px;
+    background: $card-gradient;
+    cursor: pointer;
+    transition: all $transition-fast;
+    min-width: 80px;
+
+    &:hover {
+        border-color: $border-color-hover;
+        background: $card-gradient-hover;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $selected-border-color;
+    }
+}
