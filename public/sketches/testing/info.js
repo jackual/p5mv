@@ -1,6 +1,7 @@
 export default {
     title: "TESTING",
     thumb: "",
+    noIndex: true,
     inputs: [
         {
             id: "number_test",

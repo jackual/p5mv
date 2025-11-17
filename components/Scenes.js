@@ -24,19 +24,22 @@ export default function Scenes() {
                     Scenes Library
                 </IconText>
                 <ul className='sketch-list' onClick={handleClick}>
-                    {sketches.map(sketch => (
-                        <li
-                            key={sketch.id}
-                            data-sketchid={sketch.id}
-                            className={selectedSketch === sketch.id ? 'selected' : ''}
-                        >
-                            <img src={`/sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
-                            <div className='caption'>
-                                <div className='blob' style={{ backgroundColor: sketch.color }}></div>
-                                <p>{sketch.title}</p>
-                            </div>
-                        </li>
-                    ))}
+                    {sketches.map(sketch => {
+                        if (sketch.noIndex) return null
+                        return (
+                            <li
+                                key={sketch.id}
+                                data-sketchid={sketch.id}
+                                className={selectedSketch === sketch.id ? 'selected' : ''}
+                            >
+                                <img src={`/sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
+                                <div className='caption'>
+                                    <div className='blob' style={{ backgroundColor: sketch.color }}></div>
+                                    <p>{sketch.title}</p>
+                                </div>
+                            </li>
+                        )
+                    })}
                 </ul>
             </div>
             <aside>
