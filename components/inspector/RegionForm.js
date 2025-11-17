@@ -3,7 +3,7 @@ import { BugIcon, ClockIcon, PencilIcon, ScissorsIcon, ShareIcon, TerminalIcon, 
 import IconText from '../IconText';
 import sketches from '@/data/sketches';
 import BlendMenu from './BlendMenu';
-import InspectorSection from './InspectorSection';
+import Details from '../Details';
 import { ImageIcon } from '@phosphor-icons/react/dist/ssr';
 import SceneInput from './SceneInput';
 
@@ -25,7 +25,7 @@ export default function RegionForm({ project, snapshot }) {
     return (
         <>
             <IconText icon={PencilIcon} as="h3">Region Editor</IconText>
-            <InspectorSection icon={ImageIcon} title="Scene" open={true}>
+            <Details icon={ImageIcon} title="Scene" open={true}>
                 <div className="form-group">
                     <label htmlFor="scene">Select</label>
                     <select
@@ -53,19 +53,19 @@ export default function RegionForm({ project, snapshot }) {
                         />
                     ))
                 }
-            </InspectorSection>
+            </Details>
             <BlendMenu project={project} snapshot={snapshot} />
-            <InspectorSection icon={ClockIcon} title="Time">
+            <Details icon={ClockIcon} title="Time">
                 <pre>{times.replace(" / ", "\n")}</pre>
-            </InspectorSection>
-            <InspectorSection icon={BugIcon} title="Debug">
+            </Details>
+            <Details icon={BugIcon} title="Debug">
                 <p>Renderer ID {selectedRegion.code}</p>
                 <p>Δbeats (playhead): {selectedRegion.playheadDelta}</p>
                 <IconText as='button' icon={TerminalIcon} onClick={() => {
                     console.log(snapshot.selected[0]);
                 }}>Console Object</IconText>
-            </InspectorSection>
-            <InspectorSection icon={ScissorsIcon} title="Actions">
+            </Details>
+            <Details icon={ScissorsIcon} title="Actions">
                 <IconText as='button' icon={TrashSimpleIcon} onClick={() => {
                     selectedRegion.del()
                 }}>Delete region</IconText>
@@ -73,7 +73,7 @@ export default function RegionForm({ project, snapshot }) {
                     project.render.queue = [selectedRegion]
                     document.querySelector('#render-radio').click()
                 }}>Send to renderer</IconText>
-            </InspectorSection>
+            </Details>
         </>
     );
 }

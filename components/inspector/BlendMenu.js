@@ -1,7 +1,7 @@
 import blendModes from '@/data/blendModes';
 import Blend from '@/lib/classes/Blend';
 import IconText from '../IconText';
-import InspectorSection from './InspectorSection';
+import InspectorSection from '../Details';
 import { CircleHalfTiltIcon } from '@phosphor-icons/react';
 
 export default function BlendMenu({ project, snapshot }) {
