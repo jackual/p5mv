@@ -1,6 +1,10 @@
 import sketches from '../data/sketches'
 import IconText from './IconText'
-import { SquaresFourIcon } from '@phosphor-icons/react'
+import {
+    SquaresFourIcon,
+    ImageIcon,
+    SlidersHorizontalIcon
+} from '@phosphor-icons/react'
 import { useState } from 'react'
 
 export default function Scenes() {
@@ -15,6 +19,24 @@ export default function Scenes() {
             }
         }
         setSelectedSketch(null)
+    }
+
+    const noScene = () => {
+        return (
+            <aside className='no-scene'>
+                <div className='big-icon'><ImageIcon /></div>
+                <h2>No scene selected</h2>
+            </aside>
+        )
+    }
+
+    const sceneAside = scene => {
+        return (
+            <aside>
+                <IconText as="h2" icon={ImageIcon}>{scene.title}</IconText>
+                <img src={`/sketches/${scene.id}/${scene.thumb}`} alt={scene.title} />
+            </aside>
+        )
     }
 
     return (

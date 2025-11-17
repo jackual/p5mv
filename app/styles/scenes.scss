@@ -1,5 +1,6 @@
 .scenePage {
     display: flex;
+    max-height: 100vh;
 
     #scene-main {
         padding: $page-padding;
@@ -10,6 +11,31 @@
         background: $background-gradient;
         border-left: 1px solid $border-color;
         padding: $page-padding;
+
+        &.no-scene {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .big-icon {
+                font-size: 80px;
+                color: rgba(71, 85, 105, 0.5);
+            }
+
+            h2 {
+                color: $text-color;
+            }
+        }
+
+        img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: $border-radius-md;
+            box-shadow: $shadow-sm;
+            margin-top: $page-padding;
+        }
     }
 }
 
