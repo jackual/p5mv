@@ -6,6 +6,7 @@ import {
     SlidersHorizontalIcon
 } from '@phosphor-icons/react'
 import { useState } from 'react'
+import Details from './Details'
 
 export default function Scenes() {
     const [selectedSketch, setSelectedSketch] = useState(null)
@@ -35,6 +36,13 @@ export default function Scenes() {
             <aside>
                 <IconText as="h2" icon={ImageIcon}>{scene.title}</IconText>
                 <img src={`/sketches/${scene.id}/${scene.thumb}`} alt={scene.title} />
+                <Details title="Inputs" icon={SlidersHorizontalIcon}>
+                    {scene.inputs ? scene.inputs.map(input => (
+                        <div key={input.id} className="input-detail">
+                            <p>{input.label}</p> ({input.type})
+                        </div>
+                    )) : <p>No inputs for this scene.</p>}
+                </Details>
             </aside>
         )
     }
@@ -64,11 +72,9 @@ export default function Scenes() {
                     })}
                 </ul>
             </div>
-            <aside>
-                {selectedSketch
-                    ? <p>Selected scene: {sketches.find(s => s.id === selectedSketch)?.title}</p>
-                    : <p>Select a scene</p>}
-            </aside>
+            {selectedSketch
+                ? sceneAside(sketches.find(s => s.id === selectedSketch))
+                : noScene()}
         </div>
     )
 }
