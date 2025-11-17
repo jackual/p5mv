@@ -6,11 +6,12 @@ function setup() {
     p5mv.setup(true)
     colorMode(HSB, 360, 100, 100, 100);
     noFill();
-    strokeWeight(p5mv.strokeWeight);
+    //strokeWeight(p5mv.strokeWeight);
 }
 
 function draw() {
     background(0);
+    strokeWeight(p5mv.strokeWeight);
     rotateX(PI / 2.8);
     rotateZ(t * 0.02);
 
