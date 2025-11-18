@@ -23,7 +23,7 @@ export async function POST(request) {
         // Send region start notification
         broadcastProgress({
             type: 'region_start',
-            message: `Starting render of region: ${region.name}`
+            message: `Starting render of region: ${region.code}`
         });
 
         // Call the capture function
@@ -32,12 +32,12 @@ export async function POST(request) {
         // Send region complete notification
         broadcastProgress({
             type: 'region_complete',
-            message: `Completed render of region: ${region.name}`
+            message: `Completed render of region: ${region.code}`
         });
 
         return Response.json({
             success: true,
-            message: `Successfully rendered region: ${region.name}`
+            message: `Successfully rendered region: ${region.code}`
         });
 
     } catch (error) {

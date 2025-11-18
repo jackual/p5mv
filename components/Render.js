@@ -45,8 +45,9 @@ async function renderEachRegion(project) {
                         sceneId: region.sceneId,
                         length: region.length,
                         position: region.position,
-                        name: region.name,
-                        inputs: region.inputs.map(input => input.exportForRender(project))
+                        code: project.render.queue.length === 1 ? 'frames' : region.code,
+                        inputs: region.inputs.map(input => input.exportForRender(project)),
+                        progressIndex: project.render.renderRegions[0]
                     },
                     project: {
                         meta: project.meta,
@@ -168,7 +169,7 @@ export default function Render({ project, snap }) {
                 switch (data.type) {
                     case 'connected':
                         setSseReady(true);
-                        updateRenderProgress('Ready');
+                        updateRenderProgress('Renderer online');
                         break;
                     case 'capture_stage':
                         // High-level stages from capture.js (cleanup, browser setup, canvas ready, etc.)
@@ -247,7 +248,8 @@ export default function Render({ project, snap }) {
             <div className="actions">
                 <IconText as="button" disabled icon={RepeatIcon} onClick={() => {
                 }}>Set task to cycle region</IconText>
-                <IconText as="button" disabled icon={FilmStripIcon} onClick={() => {
+                <IconText as="button" icon={FilmStripIcon} onClick={() => {
+                    project.render.queue = project.tracks.map(i => i.regions).flat()
                 }}>Set task to whole project</IconText>
                 <IconText as="button" disabled={!snap.render.queue.length} icon={XIcon} onClick={() => {
                     project.render.queue = []
