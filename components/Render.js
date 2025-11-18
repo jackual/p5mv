@@ -14,6 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import IconText from "./IconText";
 import { FolderIcon } from "@phosphor-icons/react/dist/ssr";
+import { useEffect, useState } from "react";
 import { beatsToFrameDuration } from "@/lib/timeUtils";
 import arrayEqual from "array-equal";
 
@@ -144,6 +145,9 @@ const renderChain = async (project) => {
 }
 
 export default function Render({ project, snap }) {
+    // Track whether the SSE progress stream is connected
+    const [sseReady, setSseReady] = useState(false);
+
     // Don't override status here - let it be managed by the render chain
     let statusIndicator, canStart = false
 
@@ -162,17 +166,25 @@ export default function Render({ project, snap }) {
                 const data = JSON.parse(event.data);
 
                 switch (data.type) {
+                    case 'connected':
+                        setSseReady(true);
+                        updateRenderProgress('Ready');
+                        break;
+                    case 'capture_stage':
+                        // High-level stages from capture.js (cleanup, browser setup, canvas ready, etc.)
+                        updateRenderProgress(data.message || data.stage || 'Working…');
+                        break;
                     case 'region_start':
-                        updateRenderProgress(`Region started: ${data.regionName || ''}`);
+                        updateRenderProgress(`Region started: ${data.message || data.regionName || ''}`);
                         break;
                     case 'region_progress':
                         // Update current region progress
                         const progressValue = Math.floor((data.currentFrame / data.totalFrames) * 100);
                         project.render.currentRegion = [data.currentFrame, data.totalFrames];
-                        updateRenderProgress(`${data.regionName || 'Region'}: ${progressValue}% (${data.currentFrame}/${data.totalFrames})`);
+                        updateRenderProgress(`Region: ${progressValue}% (${data.currentFrame}/${data.totalFrames})`);
                         break;
                     case 'region_complete':
-                        updateRenderProgress(`Region completed: ${data.regionName || ''}`);
+                        updateRenderProgress('Region completed');
                         break;
                     case 'encoding_start':
                         updateRenderProgress(data.message || 'Encoding started');
@@ -202,9 +214,11 @@ export default function Render({ project, snap }) {
     };
 
     // Setup progress listener when component mounts
-    if (typeof window !== 'undefined') {
-        setupProgressListener();
-    }
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setupProgressListener();
+        }
+    }, []);
     switch (snap.render.status) {
         case "idle":
             if (snap.render.queue.length === 0) {
@@ -247,10 +261,23 @@ export default function Render({ project, snap }) {
             <progress value={snap.render.currentRegion[0]} max={snap.render.currentRegion[1]} />
             <p>Encode</p>
             <progress value={snap.render.encode[0]} max={snap.render.encode[1]} />
-            <IconText type="button" id="start-button" as="button" disabled={!canStart} icon={PlayIcon} onClick={e => {
-                e.preventDefault()
-                renderChain(project)
-            }}><h3>Render</h3></IconText>
+            <IconText
+                type="button"
+                id="start-button"
+                as="button"
+                disabled={!canStart || !sseReady}
+                icon={PlayIcon}
+                onClick={e => {
+                    e.preventDefault();
+                    if (!sseReady) {
+                        updateRenderProgress('Waiting for progress stream to connect…');
+                        return;
+                    }
+                    renderChain(project);
+                }}
+            >
+                <h3>Render</h3>
+            </IconText>
             {snap.render.status === "done" &&
                 <video src="/output.mp4" controls />
             }
