@@ -51,19 +51,46 @@ const saveData = JSON.stringify({
 
 const project = proxy(new Project(saveData))
 
+const projectFileMethods = {
+  newFile: () => {
+    const newProject = new Project('{}')
+
+    // Clear all existing properties
+    Object.keys(project).forEach(key => {
+      delete project[key]
+    })
+
+    // Add all new project properties
+    Object.assign(project, newProject)
+  }, saveFile: () => {
+    const saveData = JSON.stringify(project.export())
+    function downloadObjectAsJson(exportObj, exportName) {
+      // https://stackoverflow.com/questions/19721439/download-json-object-as-a-file-from-browser
+      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+      var downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", exportName);
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    }
+    downloadObjectAsJson(project.export(), project.meta.title + ".pvm5Project")
+  }
+}
+
 // Auto-save project data whenever it changes
-subscribe(project, () => {
-  // const saveData = JSON.stringify({
-  //   tracks: project.tracks.map(track => track.export()),
-  //   meta: project.meta
-  // })
+// subscribe(project, () => {
+//   // const saveData = JSON.stringify({
+//   //   tracks: project.tracks.map(track => track.export()),
+//   //   meta: project.meta
+//   // })
 
-  // Save to localStorage
-  // localStorage.setItem('project-save-data', saveData)
+//   // Save to localStorage
+//   // localStorage.setItem('project-save-data', saveData)
 
-  // Optional: Also log the save data to console for debugging
-  // console.log('Project auto-saved:', saveData)
-})
+//   // Optional: Also log the save data to console for debugging
+//   // console.log('Project auto-saved:', saveData)
+// })
 
 export default function Home() {
   const [page, setPage] = useState("timeline")
@@ -133,7 +160,7 @@ export default function Home() {
 
   return (
     <div>
-      <Ribbon page={page} setPage={setPage} project={project} />
+      <Ribbon page={page} setPage={setPage} project={project} projectFileMethods={projectFileMethods} />
       {pages[page]}
     </div>
   )

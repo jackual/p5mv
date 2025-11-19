@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react"
 import capitalize from "lodash.capitalize"
 import { beatsToMusicalTimeString } from '@/lib/timeUtils'
+import Project from "@/lib/classes/Project"
 
 const RibbonButton = ({ icon: Icon, label, onClick = () => { } }) => {
     return (
@@ -41,14 +42,16 @@ const Divider = () => {
     )
 }
 
-const Ribbon = ({ page, setPage, project }) => {
+const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
     return (
         <div className="ribbon">
             <img src="/logo.svg" className="ribbon-logo" />
             <Divider />
-            <RibbonButton icon={FilePlusIcon} label="New" />
+            <RibbonButton icon={FilePlusIcon} label="New" onClick={() => {
+                confirm("Are you sure you want to create a new project? Unsaved changes will be lost.") && projectFileMethods.newFile()
+            }} />
             <RibbonButton icon={FolderOpenIcon} label="Open" />
-            <RibbonButton icon={FloppyDiskIcon} label="Save" />
+            <RibbonButton icon={FloppyDiskIcon} label="Save" onClick={() => projectFileMethods.saveFile()} />
             <Divider />
             <RibbonButton icon={MagnifyingGlassPlusIcon} label="Zoom In" onClick={() => project.zoomIn()} />
             <RibbonButton icon={MagnifyingGlassMinusIcon} label="Zoom Out" onClick={() => project.zoomOut()} />
