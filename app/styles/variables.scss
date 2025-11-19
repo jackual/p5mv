@@ -48,3 +48,11 @@ $transition-fast: 0.2s ease-in-out;
         background: $card-gradient-hover;
     }
 }
+
+@mixin minor-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: $text-color;
+    user-select: none;
+    white-space: nowrap;
+}

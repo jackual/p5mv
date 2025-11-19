@@ -3,6 +3,7 @@ import Blend from '@/lib/classes/Blend';
 import IconText from '../IconText';
 import InspectorSection from '../Details';
 import { CircleHalfTiltIcon } from '@phosphor-icons/react';
+import { InfoIcon } from '@phosphor-icons/react/dist/ssr';
 
 export default function BlendMenu({ project, snapshot }) {
     // Get current values from snapshot
@@ -82,9 +83,9 @@ export default function BlendMenu({ project, snapshot }) {
                 </select>
                 <br />
                 {getSelectedModeDescription() && (
-                    <small className="blend-mode-description">
+                    <IconText as='small' iconProps={{ weight: "bold" }} icon={InfoIcon} className="blend-mode-description">
                         {getSelectedModeDescription()}
-                    </small>
+                    </IconText>
                 )}
             </div>
         </InspectorSection>

@@ -1,10 +1,11 @@
 import { timeReport } from '@/lib/timeUtils';
-import { BugIcon, ClockIcon, LineSegmentsIcon, ImageIcon, PencilIcon, ScissorsIcon, ShareIcon, TerminalIcon, TrashSimpleIcon, TimerIcon, HourglassHighIcon } from '@phosphor-icons/react';
+import { BugIcon, ClockIcon, LineSegmentsIcon, ImageIcon, PencilIcon, ScissorsIcon, ShareIcon, TerminalIcon, TrashSimpleIcon, TimerIcon, HourglassHighIcon, CopyIcon, SquaresFourIcon } from '@phosphor-icons/react';
 import IconText from '../IconText';
 import sketches from '@/data/sketches';
 import BlendMenu from './BlendMenu';
 import Details from '../Details';
 import SceneInput from './SceneInput';
+import { ButtonStrip, ButtonStripButton } from '../ButtonStrip';
 
 export default function RegionForm({ project, snapshot }) {
     const selectedRegion = project.selected[0];
@@ -65,14 +66,38 @@ export default function RegionForm({ project, snapshot }) {
                     console.log(snapshot.selected[0]);
                 }}>Console Object</IconText>
             </Details>
-            <Details icon={ScissorsIcon} open title="Actions">
-                <IconText as='button' icon={TrashSimpleIcon} onClick={() => {
-                    selectedRegion.del()
-                }}>Delete region</IconText>
-                <IconText as='button' icon={ShareIcon} onClick={() => {
-                    project.render.queue = [selectedRegion]
-                    document.querySelector('#render-radio').click()
-                }}>Send to renderer</IconText>
+            <Details open icon={ScissorsIcon} open title="Actions">
+                <ButtonStrip>
+                    <ButtonStripButton
+                        icon={TrashSimpleIcon}
+                        onClick={() => {
+                            selectedRegion.del()
+                        }}>
+                        Delete
+                    </ButtonStripButton>
+                    <ButtonStripButton
+                        icon={ShareIcon}
+                        onClick={() => {
+                            project.render.queue = [selectedRegion]
+                            document.querySelector('#render-radio').click()
+                        }}>
+                        Render
+                    </ButtonStripButton>
+                    <ButtonStripButton
+                        icon={CopyIcon}
+                        onClick={() => {
+                            project.copy()
+                        }}>
+                        Copy
+                    </ButtonStripButton>
+                    <ButtonStripButton
+                        icon={SquaresFourIcon}
+                        onClick={() => {
+
+                        }}>
+                        Library
+                    </ButtonStripButton>
+                </ButtonStrip>
             </Details>
         </>
     );
