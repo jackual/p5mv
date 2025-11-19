@@ -1,4 +1,5 @@
 export default {
     title: "Laser",
-    thumb: "laser.jpg"
+    thumb: "laser.jpg",
+    skip: true
 }

@@ -33,6 +33,15 @@ async function generateSketchesIndex() {
             const infoPath = path.join(sketchesDir, dirName, 'info.js');
 
             if (fs.existsSync(infoPath)) {
+                // Dynamically import to check for skip flag
+                const infoModule = await import(`../public/sketches/${dirName}/info.js`);
+                const info = infoModule.default;
+                
+                if (info.skip) {
+                    console.log(`Skipping ${dirName} (skip: true)`);
+                    continue;
+                }
+                
                 const importName = `${dirName}Info`;
                 const color = colorScale[i];
                 imports.push(`import ${importName} from '../public/sketches/${dirName}/info.js';`);
