@@ -111,6 +111,18 @@ export default function Home() {
               e.preventDefault()
             }
             break
+          case "c":
+            if (e.metaKey || e.ctrlKey) {
+              project.copy()
+              e.preventDefault()
+            }
+            break
+          case "v":
+            if (e.metaKey || e.ctrlKey) {
+              project.paste()
+              e.preventDefault()
+            }
+            break
         }
       }
     }

@@ -93,7 +93,10 @@ export default function RegionForm({ project, snapshot }) {
                     <ButtonStripButton
                         icon={SquaresFourIcon}
                         onClick={() => {
-
+                            document.querySelector('#scenes-radio').click()
+                            setTimeout(() => {
+                                document.querySelector(`.sketch-list li[data-sketchid='${selectedRegion.sceneId}']`)?.click()
+                            }, 100)
                         }}>
                         Library
                     </ButtonStripButton>
