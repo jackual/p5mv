@@ -5,7 +5,7 @@ export default function Details({ icon, title, children, open = false, fill = fa
     return (
         <details key={title} open={open}>
             <summary>
-                <IconText iconProps={{ weight: fill ? "fill" : "bold" }} icon={icon} as='b'>{title}</IconText>
+                <IconText iconProps={{ weight: fill ? "fill" : "bold" }} icon={icon} as='p'>{title}</IconText>
                 <span className="caret">
                     <CaretRightIcon />
                     <CaretDownIcon />

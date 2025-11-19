@@ -1,3 +1,5 @@
+$indent: 10px;
+
 .inspector {
     line-height: 1.4;
     padding: 15px;
@@ -22,6 +24,22 @@
         margin-bottom: 8px;
     }
 
+    small {
+        padding-left: $indent;
+        color: $text-color;
+        font-size: 11px;
+    }
+
+    select {
+        padding: 1px !important;
+    }
+
+}
+
+#scene-select {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
 }
 
 .sceneInput {
@@ -29,4 +47,29 @@
     flex-wrap: wrap;
     gap: 3px;
     align-items: center;
+
+    a {
+        cursor: pointer;
+        transition: .05s transform ease-in-out;
+
+        &.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+
+            &:hover {
+                transform: none;
+            }
+        }
+
+        &:hover {
+            transform: scale(1.1);
+        }
+    }
+
+    .ease-menu {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        padding-left: $indent;
+    }
 }

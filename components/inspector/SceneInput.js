@@ -73,18 +73,19 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                     onChange={updateField}
                 ></input>
                 {!form.activeKeyframe ?
-                    <IconText icon={PlusCircleIcon} as="button" onClick={addKeyframe} /> :
-                    <IconText icon={MinusCircleIcon} iconProps={{ weight: "fill" }} as="button" onClick={removeKeyframe} />
+                    <IconText icon={PlusCircleIcon} as="a" onClick={addKeyframe} title="Add keyframe" /> :
+                    <IconText icon={MinusCircleIcon} iconProps={{ weight: "fill" }} as="a" onClick={removeKeyframe} title="Remove keyframe" />
                 }
                 {input.settings.mode === 'dynamic' &&
                     <>
-                        <IconText icon={EraserIcon} as="button" onClick={makeValueUnset} />
+                        <IconText icon={EraserIcon} as="a" onClick={makeValueUnset} title="Clear value" />
                         <IconText
                             icon={CaretCircleDoubleLeftIcon}
-                            as="button"
-                            disabled={!previousKeyframe}
-                            onClick={goToPreviousKeyframe} />
-                        <IconText icon={CaretCircleDoubleRightIcon} as="button" disabled={!nextKeyframe} onClick={goToNextKeyframe} />
+                            as="a"
+                            className={!previousKeyframe && "disabled"}
+                            onClick={goToPreviousKeyframe}
+                            title="Go to previous keyframe" />
+                        <IconText icon={CaretCircleDoubleRightIcon} as="a" className={!nextKeyframe && "disabled"} onClick={goToNextKeyframe} title="Go to next keyframe" />
                     </>
                 }
                 {

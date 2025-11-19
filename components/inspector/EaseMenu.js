@@ -1,3 +1,6 @@
+import IconText from "../IconText";
+import { BezierCurveIcon } from "@phosphor-icons/react";
+
 export default function EaseMenu({ id, value, onChange }) {
     const easeOptionGroups = [
         {
@@ -95,7 +98,8 @@ export default function EaseMenu({ id, value, onChange }) {
 
     return (
         <div id={id} className="ease-menu">
-            <select className="easeSelect" value={value} onChange={handleEaseChange}>
+            <IconText as="label" htmlFor={id + "-select"} icon={BezierCurveIcon}>Easing algorithm</IconText>
+            <select id={id + "-select"} className="easeSelect" value={value} onChange={handleEaseChange}>
                 {easeOptionGroups.map((group) => (
                     <optgroup key={group.label} label={group.label}>
                         {group.options.map((option) => (

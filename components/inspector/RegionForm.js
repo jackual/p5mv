@@ -1,10 +1,9 @@
 import { timeReport } from '@/lib/timeUtils';
-import { BugIcon, ClockIcon, PencilIcon, ScissorsIcon, ShareIcon, TerminalIcon, TrashSimpleIcon } from '@phosphor-icons/react';
+import { BugIcon, ClockIcon, LineSegmentsIcon, ImageIcon, PencilIcon, ScissorsIcon, ShareIcon, TerminalIcon, TrashSimpleIcon, TimerIcon, HourglassHighIcon } from '@phosphor-icons/react';
 import IconText from '../IconText';
 import sketches from '@/data/sketches';
 import BlendMenu from './BlendMenu';
 import Details from '../Details';
-import { ImageIcon } from '@phosphor-icons/react/dist/ssr';
 import SceneInput from './SceneInput';
 
 export default function RegionForm({ project, snapshot }) {
@@ -13,7 +12,7 @@ export default function RegionForm({ project, snapshot }) {
         selectedRegion.position,
         selectedRegion.length,
         project.meta.bpm,
-        project.meta.fps);
+        project.meta.fps).split(" / ")
 
     const handleSceneChange = (event) => {
         const sceneId = event.target.value;
@@ -25,24 +24,24 @@ export default function RegionForm({ project, snapshot }) {
     return (
         <>
             <IconText icon={PencilIcon} as="h3">Region Editor</IconText>
-            <Details icon={ImageIcon} title="Scene" open={true}>
-                <div className="form-group">
-                    <label htmlFor="scene">Select</label>
-                    <select
-                        id="scene"
-                        value={selectedRegion.sceneId || ''}
-                        onChange={handleSceneChange}
-                    >
-                        <option value="">Select a scene...</option>
-                        {sketches.map(sketch => (
-                            <option key={sketch.id} value={sketch.id}>
-                                {sketch.title}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+            <div id='scene-select' className="form-group">
+                <IconText as='p' icon={ImageIcon} >Scene Select: </IconText>
+                <select
+                    id="scene"
+                    value={selectedRegion.sceneId || ''}
+                    onChange={handleSceneChange}
+                >
+                    <option value="">Select a scene...</option>
+                    {sketches.map(sketch => (
+                        <option key={sketch.id} value={sketch.id}>
+                            {sketch.title}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            {selectedRegion.inputs.length > 0 && <Details icon={LineSegmentsIcon} title="Parameters" open={true}>
                 {
-                    selectedRegion.sceneId && (selectedRegion.inputs || []).map((input, index) => (
+                    (selectedRegion.inputs || []).map((input, index) => (
                         <SceneInput
                             input={input}
                             index={index}
@@ -53,10 +52,11 @@ export default function RegionForm({ project, snapshot }) {
                         />
                     ))
                 }
-            </Details>
+            </Details>}
             <BlendMenu project={project} snapshot={snapshot} />
             <Details icon={ClockIcon} title="Time">
-                <pre>{times.replace(" / ", "\n")}</pre>
+                <IconText icon={HourglassHighIcon} as='p'>{times[0]}</IconText>
+                <IconText icon={TimerIcon} as='p'>{times[1]}</IconText>
             </Details>
             <Details icon={BugIcon} title="Debug">
                 <p>Renderer ID {selectedRegion.code}</p>
@@ -65,7 +65,7 @@ export default function RegionForm({ project, snapshot }) {
                     console.log(snapshot.selected[0]);
                 }}>Console Object</IconText>
             </Details>
-            <Details icon={ScissorsIcon} title="Actions">
+            <Details icon={ScissorsIcon} open title="Actions">
                 <IconText as='button' icon={TrashSimpleIcon} onClick={() => {
                     selectedRegion.del()
                 }}>Delete region</IconText>

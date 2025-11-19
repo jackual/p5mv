@@ -4,12 +4,13 @@
 @import 'variables';
 @import 'ribbon';
 @import 'timeline';
-@import 'inspector';
 @import 'scenes';
 @import 'scene-colors';
 @import 'render';
 @import 'details';
 @import 'form';
+@import 'inspector';
+
 
 // Spinning animation for loading indicators
 @keyframes spin {
@@ -40,6 +41,6 @@ body {
     align-items: center;
 
     .icon-text__icon {
-        margin-right: 3px;
+        margin-right: 4px;
     }
 }
