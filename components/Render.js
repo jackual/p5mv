@@ -86,6 +86,7 @@ const renderChain = async (project) => {
     project.render.status = "rendering";
     project.render.renderRegions = [0, 0];
     project.render.currentRegion = [0, 0];
+    project.render.composite = [0, 0];
     project.render.encode = [0, 0];
 
     try {
@@ -96,7 +97,44 @@ const renderChain = async (project) => {
 
         updateRenderProgress("All regions rendered successfully");
 
-        // Step 2: Encode video
+        // Step 2: Composite frames (only if multiple regions)
+        if (project.render.queue.length > 1) {
+            project.render.composite = [0, 1];
+            updateRenderProgress("Starting frame composition...");
+
+            // Calculate total frames for the project
+            const projectDuration = Math.max(...project.render.queue.map(region =>
+                region.position + region.length
+            ));
+            const totalFrames = beatsToFrameDuration(projectDuration, project.meta.bpm, project.meta.fps);
+
+            // Call API endpoint to composite frames
+            const compositeResponse = await fetch('/api/render/composer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    data: project.exportForComposer(),
+                    width: project.meta.width,
+                    height: project.meta.height,
+                    totalFrames: totalFrames
+                })
+            });
+
+            if (!compositeResponse.ok) {
+                const errorData = await compositeResponse.json().catch(() => ({ error: 'Unknown error' }));
+                const detail = [errorData.error || compositeResponse.statusText, errorData.stack].filter(Boolean).join('\n');
+                throw new Error(`Failed to composite frames: ${detail}`);
+            }
+
+            const compositeResult = await compositeResponse.json();
+            updateRenderProgress(`Frame composition complete: ${compositeResult.processedFrames} frames`);
+        } else {
+            updateRenderProgress("Skipping composition (single region)");
+        }
+
+        // Step 3: Encode video
         project.render.encode = [0, 1];
         updateRenderProgress("Starting video encoding...");
 
@@ -187,6 +225,20 @@ export default function Render({ project, snap }) {
                     case 'region_complete':
                         updateRenderProgress('Region completed');
                         break;
+                    case 'composition_start':
+                        updateRenderProgress(data.message || 'Composition started');
+                        project.render.composite = [0, data.totalFrames || 1];
+                        break;
+                    case 'composition_progress':
+                        // Update composition progress
+                        const compositeProgress = Math.floor(data.progress);
+                        project.render.composite = [data.currentFrame, data.totalFrames];
+                        updateRenderProgress(`Compositing: ${compositeProgress}% (${data.currentFrame}/${data.totalFrames})`);
+                        break;
+                    case 'composition_complete':
+                        updateRenderProgress(data.message || 'Composition completed');
+                        project.render.composite[0] = project.render.composite[1];
+                        break;
                     case 'encoding_start':
                         updateRenderProgress(data.message || 'Encoding started');
                         project.render.encode = [0, 1];
@@ -261,6 +313,8 @@ export default function Render({ project, snap }) {
             <progress value={snap.render.renderRegions[0]} max={snap.render.renderRegions[1]} />
             <p>Current Region</p>
             <progress value={snap.render.currentRegion[0]} max={snap.render.currentRegion[1]} />
+            <p>Composition</p>
+            <progress value={snap.render.composite[0]} max={snap.render.composite[1]} />
             <p>Encode</p>
             <progress value={snap.render.encode[0]} max={snap.render.encode[1]} />
             <IconText
