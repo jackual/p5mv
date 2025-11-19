@@ -12,7 +12,9 @@ import {
     ArrowLineLeftIcon,
     SquaresFourIcon,
     FilmStripIcon,
-    ExportIcon
+    ExportIcon,
+    ClipboardTextIcon,
+    CopyIcon
 } from "@phosphor-icons/react"
 import capitalize from "lodash.capitalize"
 import { beatsToMusicalTimeString } from '@/lib/timeUtils'
@@ -71,6 +73,8 @@ const Ribbon = ({ page, setPage, project }) => {
                 </select>
             </div>
             <Divider />
+            <RibbonButton icon={CopyIcon} label="Copy" onClick={() => project.copy()} />
+            <RibbonButton icon={ClipboardTextIcon} label="Paste" onClick={() => project.paste()} />
             <RibbonButton icon={SelectionAllIcon} label="Select All" onClick={() => project.selectAll()} />
             <RibbonButton icon={TrashIcon} label="Delete" />
             <Divider />
