@@ -10,11 +10,13 @@ import {
     CircleNotchIcon,
     CircleWavyCheckIcon,
     ListIcon,
-    WarningIcon
+    WarningIcon,
+    ArrowsClockwiseIcon,
+    Queue
 } from "@phosphor-icons/react";
 import IconText from "./IconText";
 import { FolderIcon } from "@phosphor-icons/react/dist/ssr";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { beatsToFrameDuration } from "@/lib/timeUtils";
 import arrayEqual from "array-equal";
 
@@ -186,101 +188,138 @@ const renderChain = async (project) => {
 export default function Render({ project, snap }) {
     // Track whether the SSE progress stream is connected
     const [sseReady, setSseReady] = useState(false);
+    const progressSourceRef = useRef(null);
+    const reconnectTimeoutRef = useRef(null);
 
     // Don't override status here - let it be managed by the render chain
     let statusIndicator, canStart = false
 
-    if (snap.render.status == "done") {
-        if (!arrayEqual(project.render.finishedQueue, project.render.queue)) {
-            project.render.status = "idle"
-        }
-    }
+    // if (snap.render.status == "done") {
+    //     if (!arrayEqual(project.render.finishedQueue, project.render.queue)) {
+    //         project.render.status = "idle"
+    //     }
+    // }
 
-    // Setup Server-Sent Events for progress updates
-    const setupProgressListener = () => {
-        if (typeof window !== 'undefined' && !window.renderProgressSource) {
-            window.renderProgressSource = new EventSource('/api/render/progress');
-
-            window.renderProgressSource.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                switch (data.type) {
-                    case 'connected':
-                        setSseReady(true);
-                        updateRenderProgress('Renderer online');
-                        break;
-                    case 'capture_stage':
-                        // High-level stages from capture.js (cleanup, browser setup, canvas ready, etc.)
-                        updateRenderProgress(data.message || data.stage || 'Working…');
-                        break;
-                    case 'region_start':
-                        updateRenderProgress(`Region started: ${data.message || data.regionName || ''}`);
-                        break;
-                    case 'region_progress':
-                        // Update current region progress
-                        const progressValue = Math.floor((data.currentFrame / data.totalFrames) * 100);
-                        project.render.currentRegion = [data.currentFrame, data.totalFrames];
-                        updateRenderProgress(`Region: ${progressValue}% (${data.currentFrame}/${data.totalFrames})`);
-                        break;
-                    case 'region_complete':
-                        updateRenderProgress('Region completed');
-                        break;
-                    case 'composition_start':
-                        updateRenderProgress(data.message || 'Composition started');
-                        project.render.composite = [0, data.totalFrames || 1];
-                        break;
-                    case 'composition_progress':
-                        // Update composition progress
-                        const compositeProgress = Math.floor(data.progress);
-                        project.render.composite = [data.currentFrame, data.totalFrames];
-                        updateRenderProgress(`Compositing: ${compositeProgress}% (${data.currentFrame}/${data.totalFrames})`);
-                        break;
-                    case 'composition_complete':
-                        updateRenderProgress(data.message || 'Composition completed');
-                        project.render.composite[0] = project.render.composite[1];
-                        break;
-                    case 'encoding_start':
-                        updateRenderProgress(data.message || 'Encoding started');
-                        project.render.encode = [0, 1];
-                        break;
-                    case 'encoding_progress':
-                        // Update encoding progress
-                        const encodeProgress = Math.floor(data.progress);
-                        project.render.encode = [data.currentFrame, data.totalFrames];
-                        updateRenderProgress(`Encoding: ${encodeProgress}% (${data.currentFrame}/${data.totalFrames})`);
-                        break;
-                    case 'encoding_complete':
-                        updateRenderProgress(data.message || 'Encoding completed');
-                        project.render.encode[0] = project.render.encode[1];
-                        break;
-                    case 'error':
-                        updateRenderProgress(`Render error: ${data.message}${data.stack ? `\n${data.stack}` : ''}`);
-                        // Don't set status here - let renderChain handle it
-                        break;
-                }
-            };
-
-            window.renderProgressSource.onerror = (error) => {
-                updateRenderProgress(`Progress stream error: ${error?.message || error}`);
-            };
+    const handleProgressEvent = (data) => {
+        switch (data.type) {
+            case 'connected':
+                setSseReady(true);
+                updateRenderProgress('Renderer online');
+                break;
+            case 'capture_stage':
+                updateRenderProgress(data.message || data.stage || 'Working…');
+                break;
+            case 'region_start':
+                updateRenderProgress(`Region started: ${data.message || data.regionName || ''}`);
+                break;
+            case 'region_progress': {
+                const progressValue = Math.floor((data.currentFrame / data.totalFrames) * 100);
+                project.render.currentRegion = [data.currentFrame, data.totalFrames];
+                updateRenderProgress(`Region: ${progressValue}% (${data.currentFrame}/${data.totalFrames})`);
+                break;
+            }
+            case 'region_complete':
+                updateRenderProgress('Region completed');
+                break;
+            case 'composition_start':
+                updateRenderProgress(data.message || 'Composition started');
+                project.render.composite = [0, data.totalFrames || 1];
+                break;
+            case 'composition_progress': {
+                const compositeProgress = Math.floor(data.progress);
+                project.render.composite = [data.currentFrame, data.totalFrames];
+                updateRenderProgress(`Compositing: ${compositeProgress}% (${data.currentFrame}/${data.totalFrames})`);
+                break;
+            }
+            case 'composition_complete':
+                updateRenderProgress(data.message || 'Composition completed');
+                project.render.composite[0] = project.render.composite[1];
+                break;
+            case 'encoding_start':
+                updateRenderProgress(data.message || 'Encoding started');
+                project.render.encode = [0, 1];
+                break;
+            case 'encoding_progress': {
+                const encodeProgress = Math.floor(data.progress);
+                project.render.encode = [data.currentFrame, data.totalFrames];
+                updateRenderProgress(`Encoding: ${encodeProgress}% (${data.currentFrame}/${data.totalFrames})`);
+                break;
+            }
+            case 'encoding_complete':
+                updateRenderProgress(data.message || 'Encoding completed');
+                project.render.encode[0] = project.render.encode[1];
+                break;
+            case 'error':
+                updateRenderProgress(`Render error: ${data.message}${data.stack ? `\n${data.stack}` : ''}`);
+                break;
         }
     };
 
     // Setup progress listener when component mounts
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setupProgressListener();
-        }
+        if (typeof window === 'undefined') return;
+
+        const connect = () => {
+            if (progressSourceRef.current) {
+                progressSourceRef.current.close();
+                progressSourceRef.current = null;
+            }
+
+            const source = new EventSource('/api/render/progress');
+            progressSourceRef.current = source;
+
+            source.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleProgressEvent(data);
+                } catch (err) {
+                    console.error('Progress message parse error', err);
+                }
+            };
+
+            source.onerror = (error) => {
+                setSseReady(false);
+                updateRenderProgress(`Progress stream error: ${error?.message || 'connection lost'}`);
+                source.close();
+                progressSourceRef.current = null;
+
+                if (!reconnectTimeoutRef.current) {
+                    reconnectTimeoutRef.current = setTimeout(() => {
+                        reconnectTimeoutRef.current = null;
+                        connect();
+                    }, 2000);
+                }
+            };
+        };
+
+        connect();
+
+        return () => {
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+                reconnectTimeoutRef.current = null;
+            }
+            if (progressSourceRef.current) {
+                progressSourceRef.current.close();
+                progressSourceRef.current = null;
+            }
+        };
     }, []);
-    if (!project.render.queue.length)
+
+    const queueProject = () => {
         project.render.queue = project.tracks.map(i => i.regions).flat()
+    }
+
+    if (!project.render.queue.length)
+        queueProject()
+
     switch (snap.render.status) {
         case "idle":
             if (snap.render.queue.length === 0) {
                 statusIndicator = <IconText as="div" icon={WarningIcon}>Idle: Render queue is empty</IconText>
             }
             else {
-                statusIndicator = <IconText as="h3" icon={ListIcon}>{snap.render.queue.length} tasks in queue</IconText>
+                statusIndicator = <IconText as="h3" icon={ListIcon}>{snap.render.queue.length} regions in queue</IconText>
                 canStart = true
             }
             break
@@ -299,47 +338,57 @@ export default function Render({ project, snap }) {
         <div className="render-page">
             <IconText as="h1" icon={ExportIcon}>Render to video</IconText>
             <span className={`status-indicator ${snap.render.status}`}>{statusIndicator}</span>
-            <div className="actions">
-                {/* <IconText as="button" disabled icon={RepeatIcon} onClick={() => {
-                }}>Set task to cycle region</IconText>
-                <IconText as="button" icon={FilmStripIcon} onClick={() => {
-                    project.render.queue = project.tracks.map(i => i.regions).flat()
-                }}>Set task to whole project</IconText>
-                <IconText as="button" disabled={!snap.render.queue.length} icon={XIcon} onClick={() => {
-                    project.render.queue = []
-                }}>Clear tasks</IconText> */}
-            </div>
-            <h4>Progress</h4>
-            {!sseReady && <p>Renderer offline</p>}
-            <p id="render-progress"></p>
-            <p>Regions</p>
-            <progress value={snap.render.renderRegions[0]} max={snap.render.renderRegions[1]} />
-            <p>Current Region</p>
-            <progress value={snap.render.currentRegion[0]} max={snap.render.currentRegion[1]} />
-            <p>Composition</p>
-            <progress value={snap.render.composite[0]} max={snap.render.composite[1]} />
-            <p>Encode</p>
-            <progress value={snap.render.encode[0]} max={snap.render.encode[1]} />
-            <IconText
-                type="button"
-                id="start-button"
-                as="button"
-                disabled={!canStart || !sseReady}
-                icon={PlayIcon}
-                onClick={e => {
-                    e.preventDefault();
-                    if (!sseReady) {
-                        updateRenderProgress('Waiting for progress stream to connect…');
-                        return;
-                    }
-                    renderChain(project);
-                }}
-            >
-                <h3>Render</h3>
-            </IconText>
-            {snap.render.status === "done" &&
-                <video src="/output.mp4" controls />
-            }
+            {snap.render.status !== "done" ? (
+                <>
+                    <div className="actions">
+                        {/* <IconText as="button" disabled icon={RepeatIcon} onClick={() => {
+                        }}>Set task to cycle region</IconText> */}
+                        {snap.render.queue.length === 1 &&
+                            <IconText as="button" icon={FilmStripIcon} onClick={queueProject}>Set task to whole project</IconText>}
+                        {/* <IconText as="button" disabled={!snap.render.queue.length} icon={XIcon} onClick={() => {
+                            project.render.queue = []
+                        }}>Clear tasks</IconText> */}
+                    </div>
+                    <h4>Progress</h4>
+                    {!sseReady && <p>Renderer offline</p>}
+                    <p id="render-progress"></p>
+                    <p>Regions</p>
+                    <progress value={snap.render.renderRegions[0]} max={snap.render.renderRegions[1]} />
+                    <p>Current Region</p>
+                    <progress value={snap.render.currentRegion[0]} max={snap.render.currentRegion[1]} />
+                    <p>Compositing</p>
+                    <progress value={snap.render.composite[0]} max={snap.render.composite[1]} />
+                    <p>Encoding</p>
+                    <progress value={snap.render.encode[0]} max={snap.render.encode[1]} />
+                    <IconText
+                        type="button"
+                        id="start-button"
+                        as="button"
+                        disabled={!canStart || !sseReady}
+                        icon={PlayIcon}
+                        onClick={e => {
+                            e.preventDefault();
+                            if (!sseReady) {
+                                updateRenderProgress('Waiting for progress stream to connect…');
+                                return;
+                            }
+                            renderChain(project);
+                        }}
+                    >
+                        <h3>Render</h3>
+                    </IconText>
+                </>
+            ) : (
+                <>
+                    <IconText as="button" icon={ArrowsClockwiseIcon} onClick={() => {
+                        queueProject()
+                        project.render.status = "idle"
+                    }}>
+                        <h3>Set queue to project</h3>
+                    </IconText>
+                    <video src="/output.mp4" controls />
+                </>
+            )}
         </div>
     )
 }
