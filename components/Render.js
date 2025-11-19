@@ -272,6 +272,8 @@ export default function Render({ project, snap }) {
             setupProgressListener();
         }
     }, []);
+    if (!project.render.queue.length)
+        project.render.queue = project.tracks.map(i => i.regions).flat()
     switch (snap.render.status) {
         case "idle":
             if (snap.render.queue.length === 0) {
@@ -298,16 +300,17 @@ export default function Render({ project, snap }) {
             <IconText as="h1" icon={ExportIcon}>Render to video</IconText>
             <span className={`status-indicator ${snap.render.status}`}>{statusIndicator}</span>
             <div className="actions">
-                <IconText as="button" disabled icon={RepeatIcon} onClick={() => {
+                {/* <IconText as="button" disabled icon={RepeatIcon} onClick={() => {
                 }}>Set task to cycle region</IconText>
                 <IconText as="button" icon={FilmStripIcon} onClick={() => {
                     project.render.queue = project.tracks.map(i => i.regions).flat()
                 }}>Set task to whole project</IconText>
                 <IconText as="button" disabled={!snap.render.queue.length} icon={XIcon} onClick={() => {
                     project.render.queue = []
-                }}>Clear tasks</IconText>
+                }}>Clear tasks</IconText> */}
             </div>
             <h4>Progress</h4>
+            {!sseReady && <p>Renderer offline</p>}
             <p id="render-progress"></p>
             <p>Regions</p>
             <progress value={snap.render.renderRegions[0]} max={snap.render.renderRegions[1]} />
