@@ -1,4 +1,5 @@
 export default {
     title: "Blobs",
-    thumb: "blobs.png"
+    thumb: "blobs.png",
+    brush: true
 }
