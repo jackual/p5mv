@@ -41,6 +41,10 @@ export async function POST(request) {
 
         const getFrameFromExport = (data, frame) => {
             return data.flat().filter(region => {
+                // Skip null or undefined regions
+                if (!region || !Array.isArray(region)) {
+                    return false;
+                }
                 return frame >= region[1] && frame < region[1] + region[2]
             }).reverse()
         }

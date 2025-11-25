@@ -14,39 +14,273 @@ import Ribbon from '@/components/Ribbon'
 
 // Minimal overlapping example: one region using `testing`, one using `matrix` on a different track.
 const saveData = JSON.stringify({
-  tracks: [
+  "tracks": [
     {
-      name: "Track 1",
-      regions: [
+      "name": "Track 1",
+      "regions": [
         {
-          name: "Testing Region",
-          length: 8,
-          position: 0,
-          blendConstructor: ["source-over", 1],
-          sceneId: "testing",
+          "length": 8,
+          "position": 0,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
         },
-      ],
+        {
+          "length": 8,
+          "position": 8,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 8,
+          "position": 16,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 8,
+          "position": 24,
+          "sceneId": "matrix",
+          "blendConstructor": [
+            "difference",
+            1
+          ],
+          "inputData": {
+            "strokeWeight": {
+              "mode": "dynamic",
+              "value": [
+                {
+                  "position": 0,
+                  "value": 0,
+                  "ease": "sineInOut"
+                },
+                {
+                  "position": 8,
+                  "value": 9,
+                  "ease": "sineIn"
+                }
+              ]
+            },
+            "backgroundColour": {
+              "mode": "static",
+              "value": [
+                137.8082191780822,
+                1,
+                0.5705882352941176
+              ]
+            }
+          }
+        },
+        {
+          "length": 8,
+          "position": 32,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 8,
+          "position": 40,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 8,
+          "position": 48,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 8,
+          "position": 56,
+          "sceneId": "matrix",
+          "blendConstructor": [
+            "exclusion",
+            1
+          ],
+          "inputData": {
+            "strokeWeight": {
+              "mode": "dynamic",
+              "value": [
+                {
+                  "position": 0,
+                  "value": 0,
+                  "ease": "sineInOut"
+                },
+                {
+                  "position": 8,
+                  "value": 9,
+                  "ease": "sineIn"
+                }
+              ]
+            },
+            "backgroundColour": {
+              "mode": "static",
+              "value": [
+                220,
+                1,
+                0.5705882352941176
+              ]
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Track 2",
-      regions: [
+      "name": "Track 2",
+      "regions": [
         {
-          name: "Matrix Region",
-          length: 8,
-          position: 4, // overlaps with Track 1 region between beats 4–8
-          blendConstructor: ["source-over", 1],
-          sceneId: "matrix",
+          "length": 4,
+          "position": 24,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
         },
-      ],
-    },
+        {
+          "length": 1,
+          "position": 28,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 1,
+          "position": 29,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 1,
+          "position": 30,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 0.5,
+          "position": 31,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 0.5,
+          "position": 31.5,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 4,
+          "position": 56,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 1,
+          "position": 60,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 1,
+          "position": 61,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 1,
+          "position": 62,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 0.5,
+          "position": 63,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        },
+        {
+          "length": 0.5,
+          "position": 63.5,
+          "sceneId": "reef",
+          "blendConstructor": [
+            "source-over",
+            1
+          ],
+          "inputData": {}
+        }
+      ]
+    }
   ],
-  meta: {
-    bpm: 120,
-    title: "Overlap Test",
-    width: 800,
-    height: 600,
-    fps: 24,
-  },
+  "meta": {
+    "bpm": 160,
+    "title": "Overlap Test",
+    "width": 800,
+    "height": 600,
+    "fps": 24
+  }
 })
 
 const project = proxy(new Project(saveData))

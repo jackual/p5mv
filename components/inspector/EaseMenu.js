@@ -98,7 +98,7 @@ export default function EaseMenu({ id, value, onChange }) {
 
     return (
         <div id={id} className="ease-menu">
-            <IconText as="label" htmlFor={id + "-select"} icon={BezierCurveIcon}>Easing algorithm</IconText>
+            <IconText as="label" htmlFor={id + "-select"} icon={BezierCurveIcon}>Keyframe easing</IconText>
             <select id={id + "-select"} className="easeSelect" value={value} onChange={handleEaseChange}>
                 {easeOptionGroups.map((group) => (
                     <optgroup key={group.label} label={group.label}>
