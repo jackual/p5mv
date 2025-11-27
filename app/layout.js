@@ -1,5 +1,3 @@
-import "./styles/main.scss"
-
 export const metadata = {
   title: "p5mv",
   description: "p5.js music video timeline editor",

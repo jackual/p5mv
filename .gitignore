@@ -52,3 +52,10 @@ data/sketches.js
 app/styles/_scene-colors.scss
 
 public/output.mp4
+
+# Vite build output
+dist/
+
+# Electron build artifacts
+*.log
+*.tmp

@@ -1,6 +1,8 @@
 'use client'
+import "./styles/main.scss"
 
 import React, { useState } from 'react'
+import { createRoot } from "react-dom/client"
 import { proxy, useSnapshot, subscribe } from 'valtio'
 import Project from '@/lib/classes/Project'
 import Timeline from '@/components/Timeline'
@@ -399,3 +401,7 @@ export default function Home() {
     </div>
   )
 }
+
+const container = document.getElementById("root");
+const root = createRoot(container);
+root.render(<Home />);
