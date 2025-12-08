@@ -37,7 +37,16 @@ ipcMain.handle('render-capture', async (event, { region, project }) => {
     // Merge project data into region as expected by captureFrames
     const regionWithProject = {
       ...region,
-      project: project
+      project: project,
+      // Add progress callback to transmit region progress to UI
+      onProgress: (currentFrame, totalFrames) => {
+        broadcastProgress({
+          type: 'region_progress',
+          currentFrame: currentFrame,
+          totalFrames: totalFrames,
+          progress: (currentFrame / totalFrames) * 100
+        });
+      }
     };
     const result = await captureFrames(regionWithProject, broadcastProgress);
     return { success: true, result };
