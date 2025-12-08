@@ -17,7 +17,7 @@ import {
 import IconText from "./IconText";
 import { FolderIcon } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useRef, useState } from "react";
-import { beatsToFrameDuration } from "@/lib/timeUtils";
+import { beatsToFrameDuration } from "../lib/timeUtils";
 import arrayEqual from "array-equal";
 
 // Simple helper to write messages into the #render-progress element
@@ -36,37 +36,45 @@ async function renderEachRegion(project) {
             const totalFrames = beatsToFrameDuration(region.length, project.meta.bpm, project.meta.fps);
             project.render.currentRegion = [0, totalFrames];
 
-            // Call API endpoint to render region
-            const response = await fetch('/api/render/capture', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            // Call IPC for capture instead of API
+            const { ipcRenderer } = window.require('electron');
+
+            // Serialize inputs data safely
+            const serializedInputs = region.inputs.map(input => {
+                try {
+                    return input.exportForRender(project);
+                } catch (error) {
+                    console.warn('Failed to export input for render:', error);
+                    return null;
+                }
+            }).filter(Boolean);
+
+            const result = await ipcRenderer.invoke('render-capture', {
+                region: {
+                    sceneId: region.sceneId,
+                    length: region.length,
+                    position: region.position,
+                    code: project.render.queue.length === 1 ? 'frames' : region.code,
+                    inputs: serializedInputs,
+                    progressIndex: project.render.renderRegions[0]
                 },
-                body: JSON.stringify({
-                    region: {
-                        sceneId: region.sceneId,
-                        length: region.length,
-                        position: region.position,
-                        code: project.render.queue.length === 1 ? 'frames' : region.code,
-                        inputs: region.inputs.map(input => input.exportForRender(project)),
-                        progressIndex: project.render.renderRegions[0]
+                project: {
+                    meta: {
+                        width: project.meta.width,
+                        height: project.meta.height,
+                        bpm: project.meta.bpm,
+                        fps: project.meta.fps
                     },
-                    project: {
-                        meta: project.meta,
-                        render: {
-                            outputFolder: project.render.outputFolder
-                        }
+                    render: {
+                        outputFolder: project.render.outputFolder
                     }
-                })
+                }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                const detail = [errorData.error || response.statusText, errorData.stack].filter(Boolean).join('\n');
+            if (!result.success) {
+                const detail = [result.error, result.stack].filter(Boolean).join('\n');
                 throw new Error(`Failed to render region: ${detail}`);
             }
-
-            const result = await response.json();
 
             // Mark current region as complete
             project.render.currentRegion[0] = project.render.currentRegion[1];
@@ -110,27 +118,33 @@ const renderChain = async (project) => {
             ));
             const totalFrames = beatsToFrameDuration(projectDuration, project.meta.bpm, project.meta.fps);
 
-            // Call API endpoint to composite frames
-            const compositeResponse = await fetch('/api/render/composer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    data: project.exportForComposer(),
-                    width: project.meta.width,
-                    height: project.meta.height,
-                    totalFrames: totalFrames
-                })
-            });
+            // Call IPC for composer
+            const { ipcRenderer } = window.require('electron');
 
-            if (!compositeResponse.ok) {
-                const errorData = await compositeResponse.json().catch(() => ({ error: 'Unknown error' }));
-                const detail = [errorData.error || compositeResponse.statusText, errorData.stack].filter(Boolean).join('\n');
-                throw new Error(`Failed to composite frames: ${detail}`);
+            // Serialize composer data safely
+            let composerData;
+            try {
+                composerData = project.exportForComposer();
+            } catch (error) {
+                console.warn('Failed to export for composer:', error);
+                composerData = [];
             }
 
-            const compositeResult = await compositeResponse.json();
+            const compositeResult = await ipcRenderer.invoke('render-composer', {
+                regions: composerData,
+                project: {
+                    meta: {
+                        width: project.meta.width,
+                        height: project.meta.height,
+                        totalFrames: totalFrames
+                    }
+                }
+            });
+
+            if (!compositeResult.success) {
+                const detail = [compositeResult.error, compositeResult.stack].filter(Boolean).join('\n');
+                throw new Error(`Failed to composite frames: ${detail}`);
+            }
             updateRenderProgress(`Frame composition complete: ${compositeResult.processedFrames} frames`);
         } else {
             updateRenderProgress("Skipping composition (single region)");
@@ -140,25 +154,22 @@ const renderChain = async (project) => {
         project.render.encode = [0, 1];
         updateRenderProgress("Starting video encoding...");
 
-        // Call API endpoint to encode video
-        const encodeResponse = await fetch('/api/render/encode', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                fps: project.meta.fps,
-                outputFilename: 'output.mp4'
-            })
+        // Call IPC for encoder
+        const { ipcRenderer } = window.require('electron');
+        const encodeResult = await ipcRenderer.invoke('render-encoder', {
+            inputPattern: `${project.render.outputFolder}/composite_%06d.png`,
+            outputPath: `${project.render.outputFolder}/output.mp4`,
+            project: {
+                meta: {
+                    fps: project.meta.fps
+                }
+            }
         });
 
-        if (!encodeResponse.ok) {
-            const errorData = await encodeResponse.json().catch(() => ({ error: 'Unknown error' }));
-            const detail = [errorData.error || encodeResponse.statusText, errorData.stack].filter(Boolean).join('\n');
+        if (!encodeResult.success) {
+            const detail = [encodeResult.error, encodeResult.stack].filter(Boolean).join('\n');
             throw new Error(`Failed to encode video: ${detail}`);
         }
-
-        const encodeResult = await encodeResponse.json();
         updateRenderProgress(`Video encoding complete: ${encodeResult.videoPath}`);
 
         // All steps completed successfully
@@ -257,52 +268,26 @@ export default function Render({ project, snap }) {
 
     // Setup progress listener when component mounts
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        if (typeof window === 'undefined' || !window.require) return;
 
-        const connect = () => {
-            if (progressSourceRef.current) {
-                progressSourceRef.current.close();
-                progressSourceRef.current = null;
-            }
+        const { ipcRenderer } = window.require('electron');
 
-            const source = new EventSource('/api/render/progress');
-            progressSourceRef.current = source;
-
-            source.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    handleProgressEvent(data);
-                } catch (err) {
-                    console.error('Progress message parse error', err);
-                }
-            };
-
-            source.onerror = (error) => {
-                setSseReady(false);
-                updateRenderProgress(`Progress stream error: ${error?.message || 'connection lost'}`);
-                source.close();
-                progressSourceRef.current = null;
-
-                if (!reconnectTimeoutRef.current) {
-                    reconnectTimeoutRef.current = setTimeout(() => {
-                        reconnectTimeoutRef.current = null;
-                        connect();
-                    }, 2000);
-                }
-            };
+        // Set up IPC listener for progress events
+        const progressHandler = (event, data) => {
+            handleProgressEvent(data);
         };
 
-        connect();
+        // Listen for progress events from main process
+        ipcRenderer.on('render-progress', progressHandler);
+
+        // Send initial connection message to main process
+        ipcRenderer.send('progress-connect');
+        setSseReady(true);
+        updateRenderProgress('Renderer online');
 
         return () => {
-            if (reconnectTimeoutRef.current) {
-                clearTimeout(reconnectTimeoutRef.current);
-                reconnectTimeoutRef.current = null;
-            }
-            if (progressSourceRef.current) {
-                progressSourceRef.current.close();
-                progressSourceRef.current = null;
-            }
+            // Clean up listener
+            ipcRenderer.removeListener('render-progress', progressHandler);
         };
     }, []);
 

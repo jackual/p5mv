@@ -1,12 +1,17 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { captureFrames } from './lib/render/capture.js';
+import { compositeFromData } from './lib/composer/composer.js';
+import { encodeFramesToVideo } from './lib/render/encoder.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+let mainWindow;
+
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
@@ -16,8 +21,74 @@ function createWindow() {
   });
 
   // Load the built Vite app from the dist folder
-  win.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
 }
+
+// Progress broadcasting function
+function broadcastProgress(data) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('render-progress', data);
+  }
+}
+
+// IPC Handlers
+ipcMain.handle('render-capture', async (event, { region, project }) => {
+  try {
+    // Merge project data into region as expected by captureFrames
+    const regionWithProject = {
+      ...region,
+      project: project
+    };
+    const result = await captureFrames(regionWithProject, broadcastProgress);
+    return { success: true, result };
+  } catch (error) {
+    console.error('Capture error:', error);
+    return { success: false, error: error.message, stack: error.stack };
+  }
+});
+
+ipcMain.handle('render-composer', async (event, { regions, project }) => {
+  try {
+    const result = await compositeFromData(
+      regions,
+      project.meta.width,
+      project.meta.height,
+      project.meta.totalFrames
+    );
+    return { success: true, result };
+  } catch (error) {
+    console.error('Composer error:', error);
+    return { success: false, error: error.message, stack: error.stack };
+  }
+});
+
+ipcMain.handle('render-encoder', async (event, { inputPattern, outputPath, project }) => {
+  try {
+    const result = await encodeFramesToVideo({
+      frameDir: path.dirname(inputPattern),
+      outputVideoPath: outputPath,
+      fps: project.meta.fps,
+      onProgress: (current, total, message) => {
+        broadcastProgress({
+          type: 'encoding_progress',
+          currentFrame: current,
+          totalFrames: total,
+          progress: (current / total) * 100,
+          message
+        });
+      }
+    });
+    return { success: true, result };
+  } catch (error) {
+    console.error('Encoder error:', error);
+    return { success: false, error: error.message, stack: error.stack };
+  }
+});
+
+// Send initial connection status
+ipcMain.on('progress-connect', (event) => {
+  broadcastProgress({ type: 'connected' });
+});
 
 app.whenReady().then(createWindow);
 
