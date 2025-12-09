@@ -65,7 +65,7 @@ ipcMain.handle('render-composer', async (event, { regions, project }) => {
       totalFrames: project.meta.totalFrames,
       regionsData: regions
     });
-    
+
     const result = await compositeFromData(
       regions,
       project.meta.width,

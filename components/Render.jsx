@@ -136,7 +136,7 @@ const renderChain = async (project) => {
                                 const length = Number(region.length ? beatsToFrameDuration(region.length, project.meta.bpm, project.meta.fps) : 0);
                                 const opacity = Number(region.blend?.opacity ?? 1);
                                 const mode = String(region.blend?.mode ?? 'source-over');
-                                
+
                                 const result = [code, position, length, opacity, mode];
                                 console.log(`Track ${trackIndex}, Region ${regionIndex}:`, result);
                                 return result;
