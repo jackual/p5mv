@@ -58,6 +58,14 @@ ipcMain.handle('render-capture', async (event, { region, project }) => {
 
 ipcMain.handle('render-composer', async (event, { regions, project }) => {
   try {
+    console.log('Composer called with:', {
+      regionsCount: regions?.length,
+      width: project.meta.width,
+      height: project.meta.height,
+      totalFrames: project.meta.totalFrames,
+      regionsData: regions
+    });
+    
     const result = await compositeFromData(
       regions,
       project.meta.width,
@@ -67,6 +75,12 @@ ipcMain.handle('render-composer', async (event, { regions, project }) => {
     return { success: true, result };
   } catch (error) {
     console.error('Composer error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      regionsCount: regions?.length,
+      totalFrames: project.meta.totalFrames
+    });
     return { success: false, error: error.message, stack: error.stack };
   }
 });

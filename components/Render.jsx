@@ -124,7 +124,29 @@ const renderChain = async (project) => {
             // Serialize composer data safely
             let composerData;
             try {
-                composerData = project.exportForComposer();
+                // Create a serializable version of the composer data
+                composerData = project.tracks.map((track, trackIndex) => {
+                    console.log(`Processing track ${trackIndex} with ${track.regions.length} regions`);
+                    return track.regions
+                        .filter(region => region != null)
+                        .map((region, regionIndex) => {
+                            try {
+                                const code = String(region.code || 'unknown');
+                                const position = Number(region.position ? beatsToFrameDuration(region.position, project.meta.bpm, project.meta.fps) : 0);
+                                const length = Number(region.length ? beatsToFrameDuration(region.length, project.meta.bpm, project.meta.fps) : 0);
+                                const opacity = Number(region.blend?.opacity ?? 1);
+                                const mode = String(region.blend?.mode ?? 'source-over');
+                                
+                                const result = [code, position, length, opacity, mode];
+                                console.log(`Track ${trackIndex}, Region ${regionIndex}:`, result);
+                                return result;
+                            } catch (regionError) {
+                                console.error(`Error processing region ${regionIndex} in track ${trackIndex}:`, regionError);
+                                return ['unknown', 0, 0, 1, 'source-over'];
+                            }
+                        });
+                });
+                console.log('Final composer data:', composerData);
             } catch (error) {
                 console.warn('Failed to export for composer:', error);
                 composerData = [];
