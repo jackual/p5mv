@@ -6,9 +6,12 @@
   "main": "main.js",
   "scripts": {
     "generate-sketches": "node scripts/generate-sketches.js",
-    "dev": "vite",
+    "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && NODE_ENV=development electron .",
     "build": "node scripts/generate-sketches.js && vite build",
-    "start": "electron .",
+    "start": "NODE_ENV=production electron .",
+    "preview": "vite preview",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -32,5 +35,9 @@
     "valtio": "^2.1.8",
     "vite": "^7.2.4",
     "vulgar-fractions": "^1.5.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "wait-on": "^8.0.1"
   }
 }

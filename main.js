@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { captureFrames } from './lib/render/capture.js';
@@ -20,8 +20,13 @@ function createWindow() {
     },
   });
 
-  // Load the built Vite app from the dist folder
-  mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  // Point Electron at Vite's dev server when developing, otherwise load the built bundle
+  const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+  if (isDev) {
+    mainWindow.loadURL('http://localhost:5173');
+  } else {
+    mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  }
 }
 
 // Progress broadcasting function
@@ -87,9 +92,11 @@ ipcMain.handle('render-composer', async (event, { regions, project }) => {
 
 ipcMain.handle('render-encoder', async (event, { inputPattern, outputPath, project }) => {
   try {
+    const videosDir = app.getPath('videos');
     const result = await encodeFramesToVideo({
       frameDir: path.dirname(inputPattern),
       outputVideoPath: outputPath,
+      videosDir: videosDir,
       fps: project.meta.fps,
       onProgress: (current, total, message) => {
         broadcastProgress({
@@ -113,7 +120,23 @@ ipcMain.on('progress-connect', (event) => {
   broadcastProgress({ type: 'connected' });
 });
 
-app.whenReady().then(createWindow);
+// Get video file path
+ipcMain.handle('get-video-path', async () => {
+  // Return custom protocol URL instead of file path
+  return 'p5mv://output.mp4';
+});
+
+app.whenReady().then(() => {
+  // Register custom protocol for local videos
+  protocol.registerFileProtocol('p5mv', (request, callback) => {
+    const url = request.url.substr(7); // Remove 'p5mv://'
+    const videosDir = app.getPath('videos');
+    const filePath = path.join(videosDir, 'p5mv Videos', url);
+    callback({ path: filePath });
+  });
+
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

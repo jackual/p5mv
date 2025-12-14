@@ -221,8 +221,24 @@ const renderChain = async (project) => {
 export default function Render({ project, snap }) {
     // Track whether the SSE progress stream is connected
     const [sseReady, setSseReady] = useState(false);
+    const [videoPath, setVideoPath] = useState('');
     const progressSourceRef = useRef(null);
     const reconnectTimeoutRef = useRef(null);
+
+    // Get video path from main process
+    useEffect(() => {
+        const getVideoPath = async () => {
+            try {
+                const { ipcRenderer } = window.require('electron');
+                const path = await ipcRenderer.invoke('get-video-path');
+                console.log('Received video path from IPC:', path);
+                setVideoPath(path); // Use path directly, no need for file:// prefix
+            } catch (error) {
+                console.warn('Could not get video path:', error);
+            }
+        };
+        getVideoPath();
+    }, []);
 
     // Don't override status here - let it be managed by the render chain
     let statusIndicator, canStart = false
@@ -393,7 +409,7 @@ export default function Render({ project, snap }) {
                     }}>
                         <h3>Set queue to project</h3>
                     </IconText>
-                    <video src="/output.mp4" controls />
+                    {videoPath && <video src={videoPath} controls />}
                 </>
             )}
         </div>
