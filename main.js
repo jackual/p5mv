@@ -36,6 +36,14 @@ function broadcastProgress(data) {
   }
 }
 app.whenReady().then(() => {
+  // Ensure common Homebrew paths are available when launched from Finder
+  if (process.platform === 'darwin' && app.isPackaged) {
+    const extraPaths = ['/usr/local/bin'];
+    const current = (process.env.PATH || '').split(path.delimiter);
+    const merged = Array.from(new Set([...current, ...extraPaths]));
+    process.env.PATH = merged.join(path.delimiter);
+  }
+
   setupMenu();
   registerProtocols();
   registerIpcHandlers(broadcastProgress);
