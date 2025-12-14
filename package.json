@@ -1,6 +1,7 @@
 {
-  "name": "music-tl",
-  "version": "0.1.0",
+  "name": "p5mv",
+  "productName": "p5mv",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "main": "main.js",
@@ -10,6 +11,8 @@
     "dev:vite": "vite",
     "dev:electron": "wait-on http://localhost:5173 && NODE_ENV=development electron .",
     "build": "node scripts/generate-sketches.js && vite build",
+    "package": "npm run build && electron-forge package",
+    "make": "npm run build && electron-forge make --platform=darwin",
     "start": "NODE_ENV=production electron .",
     "preview": "vite preview",
     "lint": "eslint ."
@@ -21,7 +24,6 @@
     "chroma-js": "^3.1.2",
     "current-module-paths": "^1.1.2",
     "eases": "^1.0.8",
-    "electron": "^39.2.4",
     "fs-extra": "^11.3.2",
     "lodash.capitalize": "^4.2.1",
     "midi-parser-js": "^4.0.4",
@@ -37,6 +39,9 @@
     "vulgar-fractions": "^1.5.0"
   },
   "devDependencies": {
+    "electron": "^39.2.4",
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
     "concurrently": "^9.1.0",
     "wait-on": "^8.0.1"
   }
