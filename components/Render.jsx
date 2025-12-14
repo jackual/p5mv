@@ -42,7 +42,7 @@ async function renderEachRegion(project) {
             // Serialize inputs data safely
             const serializedInputs = region.inputs.map(input => {
                 try {
-                    return input.exportForRender(project);
+                    return JSON.parse(JSON.stringify(input.exportForRender(project))); //colour variable serialisation fix
                 } catch (error) {
                     console.warn('Failed to export input for render:', error);
                     return null;
@@ -177,7 +177,7 @@ const renderChain = async (project) => {
         const { ipcRenderer } = window.require('electron');
         const hasComposite = project.render.queue.length > 1;
         const singleRegionCode = hasComposite ? null : (project.render.queue.length === 1 ? 'frames' : project.render.queue[0].code);
-        
+
         const encodeResult = await ipcRenderer.invoke('render-encoder', {
             hasComposite: hasComposite,
             singleRegionCode: singleRegionCode,
