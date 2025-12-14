@@ -45,7 +45,7 @@ const Divider = () => {
 const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
     return (
         <div className="ribbon">
-            <img src="/logo.svg" className="ribbon-logo" />
+            <img src="./logo.svg" className="ribbon-logo" />
             <Divider />
             <RibbonButton icon={FilePlusIcon} label="New" onClick={() => {
                 confirm("Are you sure you want to create a new project?") && projectFileMethods.newFile()
