@@ -72,30 +72,6 @@ export default function SceneInput({ project, region, snapshot, index, input }) 
                     value={form.value}
                     onChange={updateField}
                 ></input>
-                {!form.activeKeyframe ?
-                    <IconText icon={PlusCircleIcon} as="a" onClick={addKeyframe} title="Add keyframe" /> :
-                    <IconText icon={MinusCircleIcon} iconProps={{ weight: "fill" }} as="a" onClick={removeKeyframe} title="Remove keyframe" />
-                }
-                {input.settings.mode === 'dynamic' &&
-                    <>
-                        <IconText icon={EraserIcon} as="a" onClick={makeValueUnset} title="Clear value" />
-                        <IconText
-                            icon={CaretCircleDoubleLeftIcon}
-                            as="a"
-                            className={!previousKeyframe && "disabled"}
-                            onClick={goToPreviousKeyframe}
-                            title="Go to previous keyframe" />
-                        <IconText icon={CaretCircleDoubleRightIcon} as="a" className={!nextKeyframe && "disabled"} onClick={goToNextKeyframe} title="Go to next keyframe" />
-                    </>
-                }
-                {
-                    form.easeMenu &&
-                    <EaseMenu value={form.easeMenuValue} id={input.id + "-ease"} onChange={updateField} />
-                }
-                {/* <IconText icon={TerminalIcon} as="button" onClick={() => {
-                    console.log(input);
-                }} />
-                <p>{input.settings.mode[0].toUpperCase()}</p> */}
             </div>
         </div>
     )

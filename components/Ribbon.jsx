@@ -48,10 +48,8 @@ const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
             <img src="/logo.svg" className="ribbon-logo" />
             <Divider />
             <RibbonButton icon={FilePlusIcon} label="New" onClick={() => {
-                confirm("Are you sure you want to create a new project? Unsaved changes will be lost.") && projectFileMethods.newFile()
+                confirm("Are you sure you want to create a new project?") && projectFileMethods.newFile()
             }} />
-            <RibbonButton icon={FolderOpenIcon} label="Open" />
-            <RibbonButton icon={FloppyDiskIcon} label="Save" onClick={() => projectFileMethods.saveFile()} />
             <Divider />
             <RibbonButton icon={MagnifyingGlassPlusIcon} label="Zoom In" onClick={() => project.zoomIn()} />
             <RibbonButton icon={MagnifyingGlassMinusIcon} label="Zoom Out" onClick={() => project.zoomOut()} />
@@ -84,7 +82,6 @@ const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
             <RibbonRadio icon={FilmStripIcon} page="timeline" isSelected={page === "timeline"} onClick={() => setPage("timeline")} />
             <RibbonRadio icon={SquaresFourIcon} page="scenes" isSelected={page === "scenes"} onClick={() => setPage("scenes")} />
             <RibbonRadio icon={ExportIcon} page="render" isSelected={page === "render"} onClick={() => setPage("render")} />
-            <RibbonRadio icon={QuestionIcon} page="help" isSelected={page === "help"} onClick={() => setPage("help")} />
         </div>
     )
 }
