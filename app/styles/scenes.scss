@@ -1,6 +1,7 @@
 .scenePage {
     display: flex;
-    max-height: 100vh;
+    flex: 1;
+    min-height: 0;
 
     #scene-main {
         padding: $page-padding;

@@ -34,6 +34,24 @@
 body {
     font-family: sans-serif;
     background: $background-gradient;
+    min-height: 100vh;
+}
+
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+.page-content > * {
+    flex: 1;
+    min-height: 0;
 }
 
 .icon-text {

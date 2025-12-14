@@ -395,9 +395,11 @@ export default function Home() {
   }, [page])
 
   return (
-    <div>
+    <div className="app-shell">
       <Ribbon page={page} setPage={setPage} project={project} projectFileMethods={projectFileMethods} />
-      {pages[page]}
+      <div className="page-content">
+        {pages[page]}
+      </div>
     </div>
   )
 }
