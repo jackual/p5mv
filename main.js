@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, protocol } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol, shell } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { captureFrames } from './lib/render/capture.js';
@@ -119,13 +119,55 @@ ipcMain.handle('render-encoder', async (event, { project, hasComposite, singleRe
       }
     });
 
+    // Automatically open the rendered video in the default OS player
+    try {
+      const openResult = await shell.openPath(result);
+      if (openResult) {
+        console.warn('shell.openPath reported an issue:', openResult);
+        broadcastProgress({
+          type: 'error',
+          message: `Failed to auto-open rendered video: ${openResult}`
+        });
+      } else {
+        broadcastProgress({
+          type: 'encoding_complete',
+          message: 'Rendered video opened in default player',
+          videoPath: result
+        });
+      }
+    } catch (openError) {
+      console.warn('Failed to open rendered video automatically:', openError);
+      broadcastProgress({
+        type: 'error',
+        message: 'Failed to auto-open rendered video',
+        stack: openError?.stack || String(openError)
+      });
+    }
+
     // Cleanup temp directory after successful encoding
     await cleanupTempDirectory();
 
-    return { success: true, ...result };
+    return { success: true, videoPath: result };
   } catch (error) {
     console.error('Encoder error:', error);
     return { success: false, error: error.message, stack: error.stack };
+  }
+});
+
+// Manually open the last rendered video from the renderer process
+ipcMain.handle('open-latest-video', async () => {
+  try {
+    const videosDir = app.getPath('videos');
+    const filePath = path.join(videosDir, 'p5mv Videos', 'output.mp4');
+    const openResult = await shell.openPath(filePath);
+    if (openResult) {
+      console.warn('shell.openPath reported an issue (manual open):', openResult);
+      return { success: false, error: openResult };
+    }
+    return { success: true, videoPath: filePath };
+  } catch (error) {
+    console.error('Error opening latest video manually:', error);
+    return { success: false, error: error.message };
   }
 });
 
