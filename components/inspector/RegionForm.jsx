@@ -59,13 +59,15 @@ export default function RegionForm({ project, snapshot }) {
                 <IconText icon={HourglassHighIcon} as='p'>{times[0]}</IconText>
                 <IconText icon={TimerIcon} as='p'>{times[1]}</IconText>
             </Details>
-            <Details icon={BugIcon} title="Debug">
-                <p>Renderer ID {selectedRegion.code}</p>
-                <p>Δbeats (playhead): {selectedRegion.playheadDelta}</p>
-                <IconText as='button' icon={TerminalIcon} onClick={() => {
-                    console.log(snapshot.selected[0]);
-                }}>Console Object</IconText>
-            </Details>
+            {import.meta.env.DEV && (
+                <Details icon={BugIcon} title="Debug">
+                    <p>Renderer ID {selectedRegion.code}</p>
+                    <p>Δbeats (playhead): {selectedRegion.playheadDelta}</p>
+                    <IconText as='button' icon={TerminalIcon} onClick={() => {
+                        console.log(snapshot.selected[0]);
+                    }}>Console Object</IconText>
+                </Details>
+            )}
             <Details open icon={ScissorsIcon} open title="Actions">
                 <ButtonStrip>
                     <ButtonStripButton
