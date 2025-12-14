@@ -2,13 +2,13 @@ import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { captureFrames } from './lib/render/capture.js';
-import { compositeFromData } from './lib/composer/composer.js';
+import { compositeFromData, cleanupTempDirectory } from './lib/composer/composer.js';
 import { encodeFramesToVideo } from './lib/render/encoder.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let mainWindow;
+let mainWindow
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -77,7 +77,7 @@ ipcMain.handle('render-composer', async (event, { regions, project }) => {
       project.meta.height,
       project.meta.totalFrames
     );
-    return { success: true, result };
+    return { success: true, ...result };
   } catch (error) {
     console.error('Composer error:', error);
     console.error('Error details:', {
@@ -90,12 +90,22 @@ ipcMain.handle('render-composer', async (event, { regions, project }) => {
   }
 });
 
-ipcMain.handle('render-encoder', async (event, { inputPattern, outputPath, project }) => {
+ipcMain.handle('render-encoder', async (event, { project, hasComposite, singleRegionCode }) => {
   try {
     const videosDir = app.getPath('videos');
+    const tempRoot = path.join(app.getPath('temp'), 'p5mv-render');
+    
+    // Use composite frames if they exist, otherwise use single region frames
+    let compositePath;
+    if (hasComposite) {
+      compositePath = path.join(tempRoot, 'composite');
+    } else {
+      compositePath = path.join(tempRoot, singleRegionCode);
+    }
+
     const result = await encodeFramesToVideo({
-      frameDir: path.dirname(inputPattern),
-      outputVideoPath: outputPath,
+      compositePath: compositePath,
+      outputVideoPath: path.join(tempRoot, 'output.mp4'),
       videosDir: videosDir,
       fps: project.meta.fps,
       onProgress: (current, total, message) => {
@@ -108,7 +118,11 @@ ipcMain.handle('render-encoder', async (event, { inputPattern, outputPath, proje
         });
       }
     });
-    return { success: true, result };
+
+    // Cleanup temp directory after successful encoding
+    await cleanupTempDirectory();
+
+    return { success: true, ...result };
   } catch (error) {
     console.error('Encoder error:', error);
     return { success: false, error: error.message, stack: error.stack };

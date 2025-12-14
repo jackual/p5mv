@@ -64,9 +64,6 @@ async function renderEachRegion(project) {
                         height: project.meta.height,
                         bpm: project.meta.bpm,
                         fps: project.meta.fps
-                    },
-                    render: {
-                        outputFolder: project.render.outputFolder
                     }
                 }
             });
@@ -178,9 +175,12 @@ const renderChain = async (project) => {
 
         // Call IPC for encoder
         const { ipcRenderer } = window.require('electron');
+        const hasComposite = project.render.queue.length > 1;
+        const singleRegionCode = hasComposite ? null : (project.render.queue.length === 1 ? 'frames' : project.render.queue[0].code);
+        
         const encodeResult = await ipcRenderer.invoke('render-encoder', {
-            inputPattern: `${project.render.outputFolder}/composite_%06d.png`,
-            outputPath: `${project.render.outputFolder}/output.mp4`,
+            hasComposite: hasComposite,
+            singleRegionCode: singleRegionCode,
             project: {
                 meta: {
                     fps: project.meta.fps
