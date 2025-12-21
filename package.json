@@ -1,7 +1,7 @@
 {
   "name": "p5mv",
   "productName": "p5mv",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "type": "module",
   "main": "main.js",
