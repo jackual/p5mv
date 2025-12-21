@@ -3,7 +3,10 @@ import IconText from "../IconText"
 import EaseMenu from "./EaseMenu"
 
 export default function SceneInput({ project, region, snapshot, index, input }) {
-    const delta = region.playheadDelta
+    // Use the reactive snapshot playhead so this recomputes
+    // whenever the playhead changes.
+    const rawDelta = Math.max(0, snapshot.playhead - region.position)
+    const delta = project.snapPosition(rawDelta)
 
     const getFormValue = () => {
         return document.getElementById(input.id).value
