@@ -12,15 +12,11 @@ p5mv is a desktop tool for creating videos using p5.js sketches. It gives you a 
 
 ## Installation
 
-### Prerequisites
-
-- FFMpeg must be installed
-
 ### Downloads
 
 Download macOS binaries from releases.
 
-Consult this guide on running non code-signed apps: https://support.apple.com/en-gb/guide/mac-help/mh40616/mac
+If you are having trouble opening the app read this guide on running non code-signed apps: https://support.apple.com/en-gb/guide/mac-help/mh40616/mac
 
 ### Building from source
 

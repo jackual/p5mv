@@ -19,6 +19,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@phosphor-icons/react": "^2.1.10",
     "@vitejs/plugin-react": "^5.1.1",
     "array-equal": "^2.0.0",
@@ -40,10 +41,10 @@
     "vulgar-fractions": "^1.5.0"
   },
   "devDependencies": {
-    "electron": "^39.2.4",
     "@electron-forge/cli": "^7.10.2",
     "@electron-forge/maker-zip": "^7.10.2",
     "concurrently": "^9.1.0",
+    "electron": "^39.2.4",
     "vitest": "^4.0.16",
     "wait-on": "^8.0.1"
   }
