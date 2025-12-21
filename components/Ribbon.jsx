@@ -50,6 +50,8 @@ const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
             <RibbonButton icon={FilePlusIcon} label="New" onClick={() => {
                 confirm("Are you sure you want to create a new project?") && projectFileMethods.newFile()
             }} />
+            <RibbonButton icon={FolderOpenIcon} label="Open" onClick={() => projectFileMethods.openFile()} />
+            <RibbonButton icon={FloppyDiskIcon} label="Save" onClick={() => projectFileMethods.saveFile()} />
             <Divider />
             <RibbonButton icon={MagnifyingGlassPlusIcon} label="Zoom In" onClick={() => project.zoomIn()} />
             <RibbonButton icon={MagnifyingGlassMinusIcon} label="Zoom Out" onClick={() => project.zoomOut()} />
