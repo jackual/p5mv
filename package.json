@@ -12,7 +12,8 @@
     "build": "node scripts/generate-sketches.js && vite build",
     "start": "NODE_ENV=production electron .",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
+    "vitest": "^4.0.16",
     "wait-on": "^8.0.1"
   }
 }
