@@ -8,10 +8,6 @@ export default {
     makers: [
         {
             name: '@electron-forge/maker-zip',
-            platforms: ['darwin', 'linux', 'win32'],
-        },
-        {
-            name: '@electron-forge/maker-dmg',
             platforms: ['darwin'],
         },
     ],
