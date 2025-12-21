@@ -1,5 +1,7 @@
 # p5mv
 
+[![Tests](https://github.com/jackual/p5mv/actions/workflows/test.yml/badge.svg)](https://github.com/jackual/p5mv/actions/workflows/test.yml)
+
 p5mv is a desktop tool for creating videos using p5.js sketches. It gives you a timeline, scenes, and an inspector UI so you can arrange sketches, tweak parameters, and render out video on macOS. The timeline is synced to a musical grid based on a set BPM so you can create visuals set to music.
 
 ## Features
