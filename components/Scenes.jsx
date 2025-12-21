@@ -35,7 +35,7 @@ export default function Scenes() {
         return (
             <aside>
                 <IconText as="h2" icon={ImageIcon}>{scene.title}</IconText>
-                <img src={`/sketches/${scene.id}/${scene.thumb}`} alt={scene.title} />
+                <img src={`./sketches/${scene.id}/${scene.thumb}`} alt={scene.title} />
                 <Details title="Inputs" icon={SlidersHorizontalIcon}>
                     {scene.inputs ? scene.inputs.map(input => (
                         <div key={input.id} className="input-detail">
@@ -62,7 +62,7 @@ export default function Scenes() {
                                 data-sketchid={sketch.id}
                                 className={selectedSketch === sketch.id ? 'selected' : ''}
                             >
-                                <img src={`/sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
+                                <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
                                 <div className='caption'>
                                     <div className='blob' style={{ backgroundColor: sketch.color }}></div>
                                     <p>{sketch.title}</p>
