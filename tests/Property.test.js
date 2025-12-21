@@ -82,10 +82,10 @@ describe('Property keyframe behavior', () => {
             { position: 10, value: 100, ease: false }
         ]
 
-        // before first keyframe uses first keyframe value
+        // before first keyframe uses first next keyframe value
         expect(prop.getTweenFromDelta(-5)).toBe(0)
-        // between keyframes, current implementation jumps to next keyframe value
-        expect(prop.getTweenFromDelta(5)).toBe(100)
+        // between keyframes with step behavior, holds previous value
+        expect(prop.getTweenFromDelta(5)).toBe(0)
         // after last keyframe stays on last keyframe value
         expect(prop.getTweenFromDelta(15)).toBe(100)
     })
@@ -119,5 +119,23 @@ describe('Property keyframe behavior', () => {
         const numericPlaceholder = parseFloat(form.placeholder)
         expect(numericPlaceholder).toBeGreaterThan(0)
         expect(numericPlaceholder).toBeLessThan(100)
+    })
+
+    it('getForm after last keyframe with value 0 does not show NaN', () => {
+        const prop = new Property(numberSetup)
+
+        // Last keyframe has value 0
+        prop.setKeyframeValue(0, 50)
+        prop.setKeyframeValue(10, 0)
+
+        // Delta after the last keyframe
+        const form = prop.getForm(15)
+
+        expect(form.activeKeyframe).toBe(false)
+        expect(form.value).toBe('')
+        // Bug: placeholder becomes "NaN…" because getTweenFromDelta returns 0,
+        // which then gets passed through convertValueGet
+        expect(form.placeholder).not.toContain('NaN')
+        expect(form.placeholder).toBe('0')
     })
 })
