@@ -17,7 +17,7 @@
         pointer-events: none;
         overflow: hidden;
         transform: translateX(32px);
-        transition: flex 500ms ease, max-width 1s ease, width 500ms ease, opacity 500ms ease, transform 500ms ease;
+        transition: flex 300ms ease, max-width 1s ease, width 300ms ease, opacity 300ms ease, transform 300ms ease;
         background: $background-gradient;
         border-left: 1px solid $border-color;
         padding: $page-padding;
@@ -44,16 +44,57 @@
             margin-top: $page-padding;
         }
     }
+
+    h2 {
+        margin: 10px 0;
+    }
+
+    .scene-page-split {
+        display: flex;
+        gap: 40px;
+
+        >div {
+            flex: 1;
+            min-width: 0;
+        }
+    }
 }
 
-.sketch-list {
+.sketch-gallery {
+    @include card-style;
     list-style: none;
-    padding: 20px 2px;
+    border-radius: $border-radius-md;
+    padding: 20px;
     margin: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    width: fit-content;
+    width: auto;
+    min-height: 130px;
+    max-height: clamp(240px, 55vh, 520px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba($text-color, 0.4) transparent;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba($text-color, 0.08);
+        border-radius: $border-radius-md;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($text-color, 0.45);
+        border-radius: $border-radius-md;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: rgba($text-color, 0.6);
+    }
 
     li {
         @include card-style;
@@ -65,6 +106,7 @@
         border-radius: 0 0 $border-radius-md $border-radius-md;
         padding-bottom: 4px;
         user-select: none;
+        width: 150px;
 
         @include hover-lift;
 
@@ -80,6 +122,8 @@
         height: 112px;
         object-fit: fill;
         margin-bottom: 4px;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
     }
 
     .caption {
@@ -92,6 +136,27 @@
             height: 10px;
             border: solid 1px rgba(0, 0, 0, 0.2);
             border-radius: 100%;
+        }
+    }
+
+    .add-card {
+        justify-content: flex-start;
+
+        .add-thumb {
+            width: 150px;
+            height: 112px;
+            margin-bottom: 4px;
+            border: 1px dashed $border-color;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba($text-color, 0.05);
+            color: $text-color;
+
+            svg {
+                width: 48px;
+                height: 48px;
+            }
         }
     }
 }

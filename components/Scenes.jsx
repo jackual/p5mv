@@ -3,7 +3,11 @@ import IconText from './IconText'
 import {
     SquaresFourIcon,
     ImageIcon,
-    SlidersHorizontalIcon
+    SlidersHorizontalIcon,
+    FileIcon,
+    FolderIcon,
+    FileDashedIcon,
+    PlusCircleIcon
 } from '@phosphor-icons/react'
 import { useState } from 'react'
 import Details from './Details'
@@ -45,28 +49,55 @@ export default function Scenes() {
     return (
         <div className='scenePage'>
             <div id='scene-main'>
-                <IconText as="h1" icon={SquaresFourIcon}>
-                    Scenes Library
+                <IconText as="h2" icon={FileIcon}>
+                    Project scenes
                 </IconText>
-                <ul className='sketch-list' onClick={handleClick}>
-                    {sketches.map(sketch => {
-                        if (sketch.noIndex) return null
-                        return (
-                            <li
-                                key={sketch.id}
-                                data-sketchid={sketch.id}
-                                className={selectedSketch === sketch.id ? 'selected' : ''}
-                            >
-                                <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
+                <ul className='sketch-gallery'>
+                    <IconText as="p" icon={FileDashedIcon}>
+                        No sketches in this project
+                    </IconText>
+                </ul>
+                <div className='scene-page-split'>
+                    <div>
+                        <IconText as="h2" icon={FolderIcon}>
+                            User scenes
+                        </IconText>
+                        <ul className='sketch-gallery'>
+                            <li className='add-card'>
+                                <div className='add-thumb'>
+                                    <PlusCircleIcon weight="duotone" size={32} />
+                                </div>
                                 <div className='caption'>
-                                    <div className='blob' style={{ backgroundColor: sketch.color }}></div>
-                                    <p>{sketch.title}</p>
+                                    <p>Add sketch</p>
                                 </div>
                             </li>
-                        )
-                    })}
-                </ul>
+                        </ul>
+                    </div>
+                    <div>
+                        <IconText as="h2" icon={SquaresFourIcon}>
+                            Preset Scenes
+                        </IconText>
+                        <ul className='sketch-gallery' onClick={handleClick}>
+                            {sketches.map(sketch => {
+                                if (sketch.noIndex) return null
+                                return (
+                                    <li
+                                        key={sketch.id}
+                                        data-sketchid={sketch.id}
+                                        className={selectedSketch === sketch.id ? 'selected' : ''}
+                                    >
+                                        <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
+                                        <div className='caption'>
+                                            <p>{sketch.title}</p>
+                                        </div>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                </div>
             </div>
+
             <aside
                 className={`scene-detail ${selectedScene ? ' is-active' : ''}`}
                 aria-hidden={selectedScene ? 'false' : 'true'}
