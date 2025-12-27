@@ -3,7 +3,36 @@ import path from 'path'
 import fs from 'fs-extra'
 import nodeZip from 'node-zip'
 
+const getProjectTempDir = () => path.join(app.getPath('temp'), 'open-project')
+
+const addDirectoryToZip = async (zipInstance, directory, basePath = '') => {
+    const entries = await fs.readdir(directory, { withFileTypes: true })
+    for (const entry of entries) {
+        const sourcePath = path.join(directory, entry.name)
+        const zipPath = (basePath ? path.join(basePath, entry.name) : entry.name).replace(/\\/g, '/')
+
+        if (entry.isDirectory()) {
+            await addDirectoryToZip(zipInstance, sourcePath, zipPath)
+        } else {
+            const fileBuffer = await fs.readFile(sourcePath)
+            zipInstance.file(zipPath, fileBuffer)
+        }
+    }
+}
+
 export function registerProjectHandlers() {
+    ipcMain.handle('project-init-temp', async () => {
+        try {
+            const tmpDir = getProjectTempDir()
+            await fs.ensureDir(tmpDir)
+            await fs.emptyDir(tmpDir)
+            return { success: true }
+        } catch (error) {
+            console.error('Project temp init error:', error)
+            return { success: false, error: error.message }
+        }
+    })
+
     ipcMain.handle('project-open', async () => {
         try {
             const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -17,7 +46,7 @@ export function registerProjectHandlers() {
 
             const filePath = filePaths[0]
             const fileBuffer = await fs.readFile(filePath)
-            const tmpDir = path.join(app.getPath('temp'), 'open-project')
+            const tmpDir = getProjectTempDir()
 
             await fs.ensureDir(tmpDir)
             await fs.emptyDir(tmpDir)
@@ -66,8 +95,14 @@ export function registerProjectHandlers() {
                 return { success: false, canceled: true }
             }
 
+            const tmpDir = getProjectTempDir()
+            await fs.ensureDir(tmpDir)
+
+            const projectJsonPath = path.join(tmpDir, 'project.json')
+            await fs.writeFile(projectJsonPath, projectData)
+
             const zip = new nodeZip()
-            zip.file('project.json', projectData)
+            await addDirectoryToZip(zip, tmpDir)
 
             const zipBuffer = zip.generate({
                 base64: false,
