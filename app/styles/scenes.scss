@@ -2,36 +2,42 @@
     display: flex;
     flex: 1;
     min-height: 0;
+    gap: 0;
 
     #scene-main {
+        flex: 1;
         padding: $page-padding;
     }
 
-    aside {
-        flex: 1;
+    .scene-detail {
+        flex: 0 0 0;
+        max-width: 0;
+        width: 0;
+        opacity: 0;
+        pointer-events: none;
+        overflow: hidden;
+        transform: translateX(32px);
+        transition: flex 500ms ease, max-width 1s ease, width 500ms ease, opacity 500ms ease, transform 500ms ease;
         background: $background-gradient;
         border-left: 1px solid $border-color;
         padding: $page-padding;
+        display: flex;
+        flex-direction: column;
+        will-change: transform, opacity;
 
-        &.no-scene {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-
-            .big-icon {
-                font-size: 80px;
-                color: rgba(71, 85, 105, 0.5);
-            }
-
-            h2 {
-                color: $text-color;
-            }
+        &.is-active {
+            flex: 0 0 clamp(280px, 32vw, 420px);
+            max-width: clamp(280px, 32vw, 420px);
+            width: clamp(280px, 32vw, 420px);
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
         }
 
         img {
             width: 100%;
             height: 300px;
+            padding-bottom: 10px;
             object-fit: cover;
             border-radius: $border-radius-md;
             box-shadow: $shadow-sm;
@@ -47,7 +53,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    max-width: 65vw;
     width: fit-content;
 
     li {

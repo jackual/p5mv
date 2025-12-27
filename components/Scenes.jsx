@@ -22,18 +22,9 @@ export default function Scenes() {
         setSelectedSketch(null)
     }
 
-    const noScene = () => {
+    const renderSceneDetails = scene => {
         return (
-            <aside className='no-scene'>
-                <div className='big-icon'><ImageIcon /></div>
-                <h2>No scene selected</h2>
-            </aside>
-        )
-    }
-
-    const sceneAside = scene => {
-        return (
-            <aside>
+            <>
                 <IconText as="h2" icon={ImageIcon}>{scene.title}</IconText>
                 <img src={`./sketches/${scene.id}/${scene.thumb}`} alt={scene.title} />
                 <Details title="Inputs" icon={SlidersHorizontalIcon}>
@@ -43,9 +34,13 @@ export default function Scenes() {
                         </div>
                     )) : <p>No inputs for this scene.</p>}
                 </Details>
-            </aside>
+            </>
         )
     }
+
+    const selectedScene = selectedSketch
+        ? sketches.find(s => s.id === selectedSketch)
+        : null
 
     return (
         <div className='scenePage'>
@@ -72,9 +67,12 @@ export default function Scenes() {
                     })}
                 </ul>
             </div>
-            {selectedSketch
-                ? sceneAside(sketches.find(s => s.id === selectedSketch))
-                : noScene()}
+            <aside
+                className={`scene-detail ${selectedScene ? ' is-active' : ''}`}
+                aria-hidden={selectedScene ? 'false' : 'true'}
+            >
+                {selectedScene && renderSceneDetails(selectedScene)}
+            </aside>
         </div>
     )
 }
