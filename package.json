@@ -29,6 +29,7 @@
     "fs-extra": "^11.3.2",
     "lodash.capitalize": "^4.2.1",
     "midi-parser-js": "^4.0.4",
+    "node-zip": "^1.1.1",
     "p5": "^2.0.5",
     "puppeteer": "^24.23.0",
     "react": "^19.0.0",
