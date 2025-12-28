@@ -14,6 +14,7 @@ import Details from './Details'
 
 export default function Scenes() {
     const [selectedSketch, setSelectedSketch] = useState(null)
+    const [isProjectDragActive, setIsProjectDragActive] = useState(false)
     const handleClick = (e) => {
         const li = e.target.closest('li')
         if (li) {
@@ -46,16 +47,57 @@ export default function Scenes() {
         ? sketches.find(s => s.id === selectedSketch)
         : null
 
+    const handleDragStart = (event, sketchId) => {
+        if (!sketchId) return
+        event.dataTransfer.setData('text/plain', sketchId)
+        event.dataTransfer.effectAllowed = 'copy'
+    }
+
+    const handleDragEnd = () => {
+        setIsProjectDragActive(false)
+    }
+
+    const handleProjectDragOver = event => {
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'copy'
+        if (!isProjectDragActive) {
+            setIsProjectDragActive(true)
+        }
+    }
+
+    const handleProjectDragLeave = event => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+            setIsProjectDragActive(false)
+        }
+    }
+
+    const handleProjectDrop = event => {
+        event.preventDefault()
+        const sketchId = event.dataTransfer.getData('text/plain')
+        setIsProjectDragActive(false)
+        if (sketchId) {
+            console.log(`Sketch ${sketchId} dropped into Project scenes`)
+        }
+    }
+
     return (
         <div className='scenePage'>
             <div id='scene-main'>
                 <IconText as="h2" icon={FileIcon}>
                     Project scenes
                 </IconText>
-                <ul className='sketch-gallery'>
-                    <IconText as="p" icon={FileDashedIcon}>
-                        No sketches in this project
-                    </IconText>
+                <ul
+                    className={`sketch-gallery${isProjectDragActive ? ' is-drop-target' : ''}`}
+                    onDragOver={handleProjectDragOver}
+                    onDragEnter={handleProjectDragOver}
+                    onDragLeave={handleProjectDragLeave}
+                    onDrop={handleProjectDrop}
+                >
+                    <p className='empty-state'>
+                        <IconText as="p" icon={FileDashedIcon}>
+                            No sketches in this project
+                        </IconText>
+                    </p>
                 </ul>
                 <div className='scene-page-split'>
                     <div>
@@ -85,6 +127,9 @@ export default function Scenes() {
                                         key={sketch.id}
                                         data-sketchid={sketch.id}
                                         className={selectedSketch === sketch.id ? 'selected' : ''}
+                                        draggable
+                                        onDragStart={event => handleDragStart(event, sketch.id)}
+                                        onDragEnd={handleDragEnd}
                                     >
                                         <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
                                         <div className='caption'>
