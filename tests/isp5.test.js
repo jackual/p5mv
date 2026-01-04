@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { isP5 } from '../lib/scene/sceneMethods.js'
+import { isP5 } from '../lib/scene/prepareScene.js'
 
 describe('isP5', () => {
     const OUT_DIR = path.join(__dirname, 'scene-convert', 'out');
