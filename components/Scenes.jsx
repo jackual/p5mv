@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react'
 import Details from './Details'
 
 export default function Scenes({ isActive }) {
-    const [selectedSketch, setSelectedSketch] = useState(null)
+    const [selectedSketch, setSelectedSketch] = useState(null) // { id, source }
     const [isProjectDragActive, setIsProjectDragActive] = useState(false)
     const [availableScenes, setAvailableScenes] = useState({
         defaultScenes: [],
@@ -34,12 +34,14 @@ export default function Scenes({ isActive }) {
         }
         loadScenes()
     }, [isActive])
+
     const handleClick = (e) => {
         const li = e.target.closest('li')
         if (li) {
             const sketchId = li.getAttribute('data-sketchid')
-            if (sketchId !== selectedSketch) {
-                setSelectedSketch(sketchId)
+            const source = li.getAttribute('data-source')
+            if (!selectedSketch || sketchId !== selectedSketch.id || source !== selectedSketch.source) {
+                setSelectedSketch({ id: sketchId, source })
                 return
             }
         }
@@ -50,9 +52,15 @@ export default function Scenes({ isActive }) {
     const allUserScenes = [...availableScenes.userDirectoryScenes]
     const allProjectScenes = [...availableScenes.openScenes]
 
-    const allScenes = [...allPresetScenes, ...allUserScenes, ...allProjectScenes]
     const selectedScene = selectedSketch
-        ? allScenes.find(s => s.id === selectedSketch)
+        ? (() => {
+            const sourceMap = {
+                'defaultScenes': allPresetScenes,
+                'userDirectoryScenes': allUserScenes,
+                'openScenes': allProjectScenes
+            }
+            return sourceMap[selectedSketch.source]?.find(s => s.id === selectedSketch.id)
+        })()
         : null
 
     const handleDragStart = (event, sketchId) => {
@@ -82,6 +90,9 @@ export default function Scenes({ isActive }) {
     const handleProjectDrop = event => {
         event.preventDefault()
         const sketchId = event.dataTransfer.getData('text/plain')
+        console.log('Origin node:', event.target.closest('ul'))
+        console.log('Target node:', event.currentTarget)
+        console.log('Sketch ID:', sketchId)
         setIsProjectDragActive(false)
         if (sketchId) {
             console.log(`Sketch ${sketchId} dropped into Project scenes`)
@@ -101,6 +112,27 @@ export default function Scenes({ isActive }) {
                     )) : <p>No inputs for this scene.</p>}
                 </Details>
             </>
+        )
+    }
+
+    const renderSceneItem = (source) => (sketch) => {
+        if (sketch.noIndex) return null
+        const isSelected = selectedSketch?.id === sketch.id && selectedSketch?.source === source
+        return (
+            <li
+                key={sketch.id}
+                data-sketchid={sketch.id}
+                data-source={source}
+                className={isSelected ? 'selected' : ''}
+                draggable
+                onDragStart={event => handleDragStart(event, sketch.id)}
+                onDragEnd={handleDragEnd}
+            >
+                <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
+                <div className='caption'>
+                    <p>{sketch.name}</p>
+                </div>
+            </li>
         )
     }
 
@@ -125,21 +157,7 @@ export default function Scenes({ isActive }) {
                             </IconText>
                         </li>
                     ) : (
-                        allProjectScenes.map(sketch => (
-                            <li
-                                key={sketch.id}
-                                data-sketchid={sketch.id}
-                                className={selectedSketch === sketch.id ? 'selected' : ''}
-                                draggable
-                                onDragStart={event => handleDragStart(event, sketch.id)}
-                                onDragEnd={handleDragEnd}
-                            >
-                                <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
-                                <div className='caption'>
-                                    <p>{sketch.name}</p>
-                                </div>
-                            </li>
-                        ))
+                        allProjectScenes.map(renderSceneItem('openScenes'))
                     )}
                 </ul>
                 <div className='scene-page-split'>
@@ -156,24 +174,7 @@ export default function Scenes({ isActive }) {
                                     <p>Add sketch</p>
                                 </div>
                             </li>
-                            {allUserScenes.map(sketch => {
-                                if (sketch.noIndex) return null
-                                return (
-                                    <li
-                                        key={sketch.id}
-                                        data-sketchid={sketch.id}
-                                        className={selectedSketch === sketch.id ? 'selected' : ''}
-                                        draggable
-                                        onDragStart={event => handleDragStart(event, sketch.id)}
-                                        onDragEnd={handleDragEnd}
-                                    >
-                                        <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
-                                        <div className='caption'>
-                                            <p>{sketch.name}</p>
-                                        </div>
-                                    </li>
-                                )
-                            })}
+                            {allUserScenes.map(renderSceneItem('userDirectoryScenes'))}
                         </ul>
                     </div>
                     <div>
@@ -181,24 +182,7 @@ export default function Scenes({ isActive }) {
                             Preset Scenes
                         </IconText>
                         <ul className='sketch-gallery' onClick={handleClick}>
-                            {allPresetScenes.map(sketch => {
-                                if (sketch.noIndex) return null
-                                return (
-                                    <li
-                                        key={sketch.id}
-                                        data-sketchid={sketch.id}
-                                        className={selectedSketch === sketch.id ? 'selected' : ''}
-                                        draggable
-                                        onDragStart={event => handleDragStart(event, sketch.id)}
-                                        onDragEnd={handleDragEnd}
-                                    >
-                                        <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
-                                        <div className='caption'>
-                                            <p>{sketch.name}</p>
-                                        </div>
-                                    </li>
-                                )
-                            })}
+                            {allPresetScenes.map(renderSceneItem('defaultScenes'))}
                         </ul>
                     </div>
                 </div>
