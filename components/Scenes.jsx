@@ -1,4 +1,3 @@
-import sketches from '../data/sketches'
 import IconText from './IconText'
 import {
     SquaresFourIcon,
@@ -9,12 +8,32 @@ import {
     FileDashedIcon,
     PlusCircleIcon
 } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Details from './Details'
 
-export default function Scenes() {
+export default function Scenes({ isActive }) {
     const [selectedSketch, setSelectedSketch] = useState(null)
     const [isProjectDragActive, setIsProjectDragActive] = useState(false)
+    const [availableScenes, setAvailableScenes] = useState({
+        defaultScenes: [],
+        openScenes: [],
+        userDirectoryScenes: []
+    })
+
+    useEffect(() => {
+        if (!isActive) return
+
+        const loadScenes = async () => {
+            const ipcRenderer = window.require?.('electron')?.ipcRenderer
+            if (!ipcRenderer) {
+                console.error('ipcRenderer not available')
+                return
+            }
+            const scenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(scenes)
+        }
+        loadScenes()
+    }, [isActive])
     const handleClick = (e) => {
         const li = e.target.closest('li')
         if (li) {
@@ -27,24 +46,13 @@ export default function Scenes() {
         setSelectedSketch(null)
     }
 
-    const renderSceneDetails = scene => {
-        return (
-            <>
-                <IconText as="h2" icon={ImageIcon}>{scene.title}</IconText>
-                <img src={`./sketches/${scene.id}/${scene.thumb}`} alt={scene.title} />
-                <Details title="Inputs" icon={SlidersHorizontalIcon}>
-                    {scene.inputs ? scene.inputs.map(input => (
-                        <div key={input.id} className="input-detail">
-                            <p>{input.label}</p> ({input.type})
-                        </div>
-                    )) : <p>No inputs for this scene.</p>}
-                </Details>
-            </>
-        )
-    }
+    const allPresetScenes = [...availableScenes.defaultScenes]
+    const allUserScenes = [...availableScenes.userDirectoryScenes]
+    const allProjectScenes = [...availableScenes.openScenes]
 
+    const allScenes = [...allPresetScenes, ...allUserScenes, ...allProjectScenes]
     const selectedScene = selectedSketch
-        ? sketches.find(s => s.id === selectedSketch)
+        ? allScenes.find(s => s.id === selectedSketch)
         : null
 
     const handleDragStart = (event, sketchId) => {
@@ -80,6 +88,22 @@ export default function Scenes() {
         }
     }
 
+    const renderSceneDetails = scene => {
+        return (
+            <>
+                <IconText as="h2" icon={ImageIcon}>{scene.name}</IconText>
+                <img src={`./sketches/${scene.id}/${scene.thumb}`} alt={scene.name} />
+                <Details title="Inputs" icon={SlidersHorizontalIcon}>
+                    {scene.inputs ? scene.inputs.map(input => (
+                        <div key={input.id} className="input-detail">
+                            <p>{input.label}</p> ({input.type})
+                        </div>
+                    )) : <p>No inputs for this scene.</p>}
+                </Details>
+            </>
+        )
+    }
+
     return (
         <div className='scenePage'>
             <div id='scene-main'>
@@ -92,19 +116,38 @@ export default function Scenes() {
                     onDragEnter={handleProjectDragOver}
                     onDragLeave={handleProjectDragLeave}
                     onDrop={handleProjectDrop}
+                    onClick={handleClick}
                 >
-                    <p className='empty-state'>
-                        <IconText as="p" icon={FileDashedIcon}>
-                            No sketches in this project
-                        </IconText>
-                    </p>
+                    {allProjectScenes.length === 0 ? (
+                        <li className='empty-state'>
+                            <IconText as="p" icon={FileDashedIcon}>
+                                No sketches in this project
+                            </IconText>
+                        </li>
+                    ) : (
+                        allProjectScenes.map(sketch => (
+                            <li
+                                key={sketch.id}
+                                data-sketchid={sketch.id}
+                                className={selectedSketch === sketch.id ? 'selected' : ''}
+                                draggable
+                                onDragStart={event => handleDragStart(event, sketch.id)}
+                                onDragEnd={handleDragEnd}
+                            >
+                                <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
+                                <div className='caption'>
+                                    <p>{sketch.name}</p>
+                                </div>
+                            </li>
+                        ))
+                    )}
                 </ul>
                 <div className='scene-page-split'>
                     <div>
                         <IconText as="h2" icon={FolderIcon}>
                             User scenes
                         </IconText>
-                        <ul className='sketch-gallery'>
+                        <ul className='sketch-gallery' onClick={handleClick}>
                             <li className='add-card'>
                                 <div className='add-thumb'>
                                     <PlusCircleIcon weight="duotone" size={32} />
@@ -113,14 +156,7 @@ export default function Scenes() {
                                     <p>Add sketch</p>
                                 </div>
                             </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <IconText as="h2" icon={SquaresFourIcon}>
-                            Preset Scenes
-                        </IconText>
-                        <ul className='sketch-gallery' onClick={handleClick}>
-                            {sketches.map(sketch => {
+                            {allUserScenes.map(sketch => {
                                 if (sketch.noIndex) return null
                                 return (
                                     <li
@@ -131,9 +167,34 @@ export default function Scenes() {
                                         onDragStart={event => handleDragStart(event, sketch.id)}
                                         onDragEnd={handleDragEnd}
                                     >
-                                        <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.title} />
+                                        <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
                                         <div className='caption'>
-                                            <p>{sketch.title}</p>
+                                            <p>{sketch.name}</p>
+                                        </div>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                    <div>
+                        <IconText as="h2" icon={SquaresFourIcon}>
+                            Preset Scenes
+                        </IconText>
+                        <ul className='sketch-gallery' onClick={handleClick}>
+                            {allPresetScenes.map(sketch => {
+                                if (sketch.noIndex) return null
+                                return (
+                                    <li
+                                        key={sketch.id}
+                                        data-sketchid={sketch.id}
+                                        className={selectedSketch === sketch.id ? 'selected' : ''}
+                                        draggable
+                                        onDragStart={event => handleDragStart(event, sketch.id)}
+                                        onDragEnd={handleDragEnd}
+                                    >
+                                        <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
+                                        <div className='caption'>
+                                            <p>{sketch.name}</p>
                                         </div>
                                     </li>
                                 )

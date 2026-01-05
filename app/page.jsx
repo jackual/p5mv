@@ -42,7 +42,7 @@ export default function Home() {
       "timeline": <Timeline project={project} snap={snap} />,
       "render": <Render project={project} snap={snap} />,
       "help": <Help />,
-      "scenes": <Scenes />
+      "scenes": <Scenes isActive={page === "scenes"} />
     }
 
   // Set up keyboard event handler
