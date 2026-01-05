@@ -48,19 +48,35 @@ export default function Scenes({ isActive }) {
         setSelectedSketch(null)
     }
 
-    const allPresetScenes = [...availableScenes.defaultScenes]
-    const allUserScenes = [...availableScenes.userDirectoryScenes]
-    const allProjectScenes = [...availableScenes.openScenes]
+    const sceneGallerySections = [
+        {
+            title: 'Project scenes',
+            icon: FileIcon,
+            source: 'openScenes',
+            scenes: [...availableScenes.openScenes],
+            emptyState: 'No sketches in this project',
+            dragDrop: true
+        },
+        {
+            title: 'User scenes',
+            icon: FolderIcon,
+            source: 'userDirectoryScenes',
+            scenes: [...availableScenes.userDirectoryScenes],
+            addCard: false,
+            emptyState: 'No user scenes found. Add scenes to your Videos/p5mv/Sketches folder.'
+        },
+        {
+            title: 'Preset Scenes',
+            icon: SquaresFourIcon,
+            source: 'defaultScenes',
+            scenes: [...availableScenes.defaultScenes]
+        }
+    ]
 
     const selectedScene = selectedSketch
-        ? (() => {
-            const sourceMap = {
-                'defaultScenes': allPresetScenes,
-                'userDirectoryScenes': allUserScenes,
-                'openScenes': allProjectScenes
-            }
-            return sourceMap[selectedSketch.source]?.find(s => s.id === selectedSketch.id)
-        })()
+        ? sceneGallerySections
+            .find(section => section.source === selectedSketch.source)
+            ?.scenes.find(s => s.id === selectedSketch.id)
         : null
 
     const handleDragStart = (event, sketchId) => {
@@ -128,7 +144,7 @@ export default function Scenes({ isActive }) {
                 onDragStart={event => handleDragStart(event, sketch.id)}
                 onDragEnd={handleDragEnd}
             >
-                <img src={`./sketches/${sketch.id}/${sketch.thumb}`} alt={sketch.name} />
+                <img src={`${sketch._path}/${sketch.thumb}`} alt={sketch.name} />
                 <div className='caption'>
                     <p>{sketch.name}</p>
                 </div>
@@ -136,36 +152,30 @@ export default function Scenes({ isActive }) {
         )
     }
 
-    return (
-        <div className='scenePage'>
-            <div id='scene-main'>
-                <IconText as="h2" icon={FileIcon}>
-                    Project scenes
-                </IconText>
-                <ul
-                    className={`sketch-gallery${isProjectDragActive ? ' is-drop-target' : ''}`}
-                    onDragOver={handleProjectDragOver}
-                    onDragEnter={handleProjectDragOver}
-                    onDragLeave={handleProjectDragLeave}
-                    onDrop={handleProjectDrop}
-                    onClick={handleClick}
-                >
-                    {allProjectScenes.length === 0 ? (
-                        <li className='empty-state'>
-                            <IconText as="p" icon={FileDashedIcon}>
-                                No sketches in this project
-                            </IconText>
-                        </li>
-                    ) : (
-                        allProjectScenes.map(renderSceneItem('openScenes'))
-                    )}
-                </ul>
-                <div className='scene-page-split'>
-                    <div>
-                        <IconText as="h2" icon={FolderIcon}>
-                            User scenes
+    const renderSceneGallery = ({ title, icon, source, scenes, addCard, emptyState, dragDrop }) => (
+        <div key={source}>
+            <IconText as="h2" icon={icon}>
+                {title}
+            </IconText>
+            <ul
+                className={`sketch-gallery${dragDrop && isProjectDragActive ? ' is-drop-target' : ''}`}
+                onClick={handleClick}
+                {...(dragDrop && {
+                    onDragOver: handleProjectDragOver,
+                    onDragEnter: handleProjectDragOver,
+                    onDragLeave: handleProjectDragLeave,
+                    onDrop: handleProjectDrop
+                })}
+            >
+                {emptyState && scenes.length === 0 ? (
+                    <li className='empty-state'>
+                        <IconText as="p" icon={FileDashedIcon}>
+                            {emptyState}
                         </IconText>
-                        <ul className='sketch-gallery' onClick={handleClick}>
+                    </li>
+                ) : (
+                    <>
+                        {addCard && (
                             <li className='add-card'>
                                 <div className='add-thumb'>
                                     <PlusCircleIcon weight="duotone" size={32} />
@@ -174,17 +184,20 @@ export default function Scenes({ isActive }) {
                                     <p>Add sketch</p>
                                 </div>
                             </li>
-                            {allUserScenes.map(renderSceneItem('userDirectoryScenes'))}
-                        </ul>
-                    </div>
-                    <div>
-                        <IconText as="h2" icon={SquaresFourIcon}>
-                            Preset Scenes
-                        </IconText>
-                        <ul className='sketch-gallery' onClick={handleClick}>
-                            {allPresetScenes.map(renderSceneItem('defaultScenes'))}
-                        </ul>
-                    </div>
+                        )}
+                        {scenes.map(renderSceneItem(source))}
+                    </>
+                )}
+            </ul>
+        </div>
+    )
+
+    return (
+        <div className='scenePage'>
+            <div id='scene-main'>
+                {sceneGallerySections[0] && renderSceneGallery(sceneGallerySections[0])}
+                <div className='scene-page-split'>
+                    {sceneGallerySections.slice(1).map(renderSceneGallery)}
                 </div>
             </div>
 
