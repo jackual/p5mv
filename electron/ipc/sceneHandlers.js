@@ -1,5 +1,5 @@
 import { ipcMain, dialog } from 'electron'
-import { getAvailableScenes, copySceneInternal } from '../../lib/scene/pageActions.js'
+import { getAvailableScenes, copySceneInternal, deleteScene } from '../../lib/scene/pageActions.js'
 
 export function registerSceneHandlers() {
     ipcMain.handle('scan-scenes', async () => {
@@ -23,5 +23,24 @@ export function registerSceneHandlers() {
 
         // Returns 0 for Cancel, 1 for Replace, 2 for Keep Both
         return result.response
+    })
+
+    ipcMain.handle('show-delete-scene-dialog', async (event, { sceneId }) => {
+        const result = await dialog.showMessageBox({
+            type: 'warning',
+            title: 'Delete Scene',
+            message: `Are you sure you want to delete "${sceneId}"?`,
+            detail: 'This action cannot be undone.',
+            buttons: ['Cancel', 'Delete'],
+            defaultId: 0,
+            cancelId: 0
+        })
+
+        // Returns 0 for Cancel, 1 for Delete
+        return result.response
+    })
+
+    ipcMain.handle('delete-scene', async (event, { sourceKey, sceneId }) => {
+        return await deleteScene(sourceKey, sceneId)
     })
 }

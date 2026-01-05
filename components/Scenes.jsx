@@ -36,6 +36,42 @@ export default function Scenes({ isActive }) {
         loadScenes()
     }, [isActive])
 
+    useEffect(() => {
+        if (!isActive) return
+
+        const handleKeyDown = async (e) => {
+            if (e.key === 'Backspace' && selectedSketch) {
+                // Don't allow deleting preset scenes
+                if (selectedSketch.source === 'defaultScenes') {
+                    return
+                }
+
+                const ipcRenderer = window.require?.('electron')?.ipcRenderer
+                if (!ipcRenderer) return
+
+                const choice = await ipcRenderer.invoke('show-delete-scene-dialog', { sceneId: selectedSketch.id })
+
+                if (choice === 1) { // Delete
+                    try {
+                        await ipcRenderer.invoke('delete-scene', {
+                            sourceKey: selectedSketch.source,
+                            sceneId: selectedSketch.id
+                        })
+                        setSelectedSketch(null)
+                        // Refresh after delete
+                        const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+                        setAvailableScenes(updatedScenes)
+                    } catch (error) {
+                        console.error('Error deleting scene:', error)
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [isActive, selectedSketch])
+
     const handleClick = (e) => {
         const li = e.target.closest('li')
         if (li) {
