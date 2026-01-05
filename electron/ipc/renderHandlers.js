@@ -117,7 +117,7 @@ export function registerRenderHandlers(broadcastProgress) {
     ipcMain.handle('open-latest-video', async () => {
         try {
             const videosDir = app.getPath('videos')
-            const filePath = path.join(videosDir, 'p5mv Videos', 'output.mp4')
+            const filePath = path.join(videosDir, 'p5mv', 'Renders', 'output.mp4')
             const openResult = await shell.openPath(filePath)
             if (openResult) {
                 console.warn('shell.openPath reported an issue (manual open):', openResult)
