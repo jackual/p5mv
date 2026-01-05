@@ -121,12 +121,68 @@ export default function Scenes({ isActive }) {
             const scenes = await ipcRenderer.invoke('scan-scenes')
             setAvailableScenes(scenes)
 
-            console.log({
-                originFolder: draggedSource,
-                targetFolder: source,
-                sketchId,
-                conflict: scenes[source].some(s => s.id === sketchId)
-            })
+            const hasConflict = scenes[source].some(s => s.id === sketchId)
+
+            if (hasConflict) {
+                const choice = await ipcRenderer.invoke('show-scene-conflict-dialog', { sketchId })
+
+                if (choice === 0) {
+                    // Cancel - do nothing
+                    return
+                } else if (choice === 1) {
+                    // Replace - copy with overwrite
+                    try {
+                        await ipcRenderer.invoke('copy-scene-internal', {
+                            sourceKey: draggedSource,
+                            targetKey: source,
+                            sceneId: sketchId,
+                            newSceneId: sketchId,
+                            overwrite: true
+                        })
+                        // Refresh after copy
+                        const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+                        setAvailableScenes(updatedScenes)
+                    } catch (error) {
+                        console.error('Error replacing scene:', error)
+                    }
+                } else if (choice === 2) {
+                    // Keep Both - copy with unique name
+                    try {
+                        const existingIds = scenes[source].map(s => s.id)
+                        const { getUniqueNameWithSuffix } = await import('../lib/utils.js')
+                        const uniqueId = getUniqueNameWithSuffix(existingIds, sketchId)
+
+                        await ipcRenderer.invoke('copy-scene-internal', {
+                            sourceKey: draggedSource,
+                            targetKey: source,
+                            sceneId: sketchId,
+                            newSceneId: uniqueId,
+                            overwrite: false
+                        })
+                        // Refresh after copy
+                        const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+                        setAvailableScenes(updatedScenes)
+                    } catch (error) {
+                        console.error('Error copying scene with unique name:', error)
+                    }
+                }
+            } else {
+                // No conflict - just copy
+                try {
+                    await ipcRenderer.invoke('copy-scene-internal', {
+                        sourceKey: draggedSource,
+                        targetKey: source,
+                        sceneId: sketchId,
+                        newSceneId: sketchId,
+                        overwrite: false
+                    })
+                    // Refresh after copy
+                    const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+                    setAvailableScenes(updatedScenes)
+                } catch (error) {
+                    console.error('Error copying scene:', error)
+                }
+            }
         }
     }
 
