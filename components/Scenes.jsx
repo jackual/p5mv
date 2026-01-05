@@ -105,16 +105,28 @@ export default function Scenes({ isActive }) {
         }
     }
 
-    const handleDrop = (source) => (event) => {
+    const handleDrop = (source) => async (event) => {
         event.preventDefault()
         const sketchId = event.dataTransfer.getData('text/plain')
-        console.log('Origin node:', event.target.closest('ul'))
-        console.log('Target node:', event.currentTarget)
-        console.log('Target source:', source)
-        console.log('Sketch ID:', sketchId)
         setActiveDragTarget(null)
+
         if (sketchId) {
-            console.log(`Sketch ${sketchId} dropped into ${source}`)
+            // Refresh scenes before completing the drop to avoid conflicts
+            const ipcRenderer = window.require?.('electron')?.ipcRenderer
+            if (!ipcRenderer) {
+                console.error('ipcRenderer not available')
+                return
+            }
+
+            const scenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(scenes)
+
+            console.log({
+                originFolder: draggedSource,
+                targetFolder: source,
+                sketchId,
+                conflict: scenes[source].some(s => s.id === sketchId)
+            })
         }
     }
 
