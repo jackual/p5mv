@@ -13,7 +13,8 @@ import Details from './Details'
 
 export default function Scenes({ isActive }) {
     const [selectedSketch, setSelectedSketch] = useState(null) // { id, source }
-    const [isProjectDragActive, setIsProjectDragActive] = useState(false)
+    const [activeDragTarget, setActiveDragTarget] = useState(null) // track which source is being dragged over
+    const [draggedSource, setDraggedSource] = useState(null) // track which source is being dragged from
     const [availableScenes, setAvailableScenes] = useState({
         defaultScenes: [],
         openScenes: [],
@@ -54,8 +55,7 @@ export default function Scenes({ isActive }) {
             icon: FileIcon,
             source: 'openScenes',
             scenes: [...availableScenes.openScenes],
-            emptyState: 'No sketches in this project',
-            dragDrop: true
+            emptyState: 'No sketches in this project'
         },
         {
             title: 'User scenes',
@@ -79,39 +79,42 @@ export default function Scenes({ isActive }) {
             ?.scenes.find(s => s.id === selectedSketch.id)
         : null
 
-    const handleDragStart = (event, sketchId) => {
+    const handleDragStart = (source) => (event, sketchId) => {
         if (!sketchId) return
         event.dataTransfer.setData('text/plain', sketchId)
         event.dataTransfer.effectAllowed = 'copy'
+        setDraggedSource(source)
     }
 
     const handleDragEnd = () => {
-        setIsProjectDragActive(false)
+        setActiveDragTarget(null)
+        setDraggedSource(null)
     }
 
-    const handleProjectDragOver = event => {
+    const handleDragOver = (source) => (event) => {
         event.preventDefault()
         event.dataTransfer.dropEffect = 'copy'
-        if (!isProjectDragActive) {
-            setIsProjectDragActive(true)
+        if (draggedSource !== source && activeDragTarget !== source) {
+            setActiveDragTarget(source)
         }
     }
 
-    const handleProjectDragLeave = event => {
+    const handleDragLeave = (source) => (event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
-            setIsProjectDragActive(false)
+            setActiveDragTarget(null)
         }
     }
 
-    const handleProjectDrop = event => {
+    const handleDrop = (source) => (event) => {
         event.preventDefault()
         const sketchId = event.dataTransfer.getData('text/plain')
         console.log('Origin node:', event.target.closest('ul'))
         console.log('Target node:', event.currentTarget)
+        console.log('Target source:', source)
         console.log('Sketch ID:', sketchId)
-        setIsProjectDragActive(false)
+        setActiveDragTarget(null)
         if (sketchId) {
-            console.log(`Sketch ${sketchId} dropped into Project scenes`)
+            console.log(`Sketch ${sketchId} dropped into ${source}`)
         }
     }
 
@@ -141,7 +144,7 @@ export default function Scenes({ isActive }) {
                 data-source={source}
                 className={isSelected ? 'selected' : ''}
                 draggable
-                onDragStart={event => handleDragStart(event, sketch.id)}
+                onDragStart={event => handleDragStart(source)(event, sketch.id)}
                 onDragEnd={handleDragEnd}
             >
                 <img src={`${sketch._path}/${sketch.thumb}`} alt={sketch.name} />
@@ -152,45 +155,48 @@ export default function Scenes({ isActive }) {
         )
     }
 
-    const renderSceneGallery = ({ title, icon, source, scenes, addCard, emptyState, dragDrop }) => (
-        <div key={source}>
-            <IconText as="h2" icon={icon}>
-                {title}
-            </IconText>
-            <ul
-                className={`sketch-gallery${dragDrop && isProjectDragActive ? ' is-drop-target' : ''}`}
-                onClick={handleClick}
-                {...(dragDrop && {
-                    onDragOver: handleProjectDragOver,
-                    onDragEnter: handleProjectDragOver,
-                    onDragLeave: handleProjectDragLeave,
-                    onDrop: handleProjectDrop
-                })}
-            >
-                {emptyState && scenes.length === 0 ? (
-                    <li className='empty-state'>
-                        <IconText as="p" icon={FileDashedIcon}>
-                            {emptyState}
-                        </IconText>
-                    </li>
-                ) : (
-                    <>
-                        {addCard && (
-                            <li className='add-card'>
-                                <div className='add-thumb'>
-                                    <PlusCircleIcon weight="duotone" size={32} />
-                                </div>
-                                <div className='caption'>
-                                    <p>Add sketch</p>
-                                </div>
-                            </li>
-                        )}
-                        {scenes.map(renderSceneItem(source))}
-                    </>
-                )}
-            </ul>
-        </div>
-    )
+    const renderSceneGallery = ({ title, icon, source, scenes, addCard, emptyState }) => {
+        const isDropTarget = source !== 'defaultScenes'
+        return (
+            <div key={source}>
+                <IconText as="h2" icon={icon}>
+                    {title}
+                </IconText>
+                <ul
+                    className={`sketch-gallery${isDropTarget && activeDragTarget === source ? ' is-drop-target' : ''}`}
+                    onClick={handleClick}
+                    {...(isDropTarget && {
+                        onDragOver: handleDragOver(source),
+                        onDragEnter: handleDragOver(source),
+                        onDragLeave: handleDragLeave(source),
+                        onDrop: handleDrop(source)
+                    })}
+                >
+                    {emptyState && scenes.length === 0 ? (
+                        <li className='empty-state'>
+                            <IconText as="p" icon={FileDashedIcon}>
+                                {emptyState}
+                            </IconText>
+                        </li>
+                    ) : (
+                        <>
+                            {addCard && (
+                                <li className='add-card'>
+                                    <div className='add-thumb'>
+                                        <PlusCircleIcon weight="duotone" size={32} />
+                                    </div>
+                                    <div className='caption'>
+                                        <p>Add sketch</p>
+                                    </div>
+                                </li>
+                            )}
+                            {scenes.map(renderSceneItem(source))}
+                        </>
+                    )}
+                </ul>
+            </div>
+        )
+    }
 
     return (
         <div className='scenePage'>
