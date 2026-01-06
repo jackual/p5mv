@@ -11,30 +11,10 @@ import {
 import { useState, useEffect } from 'react'
 import Details from './Details'
 
-export default function Scenes({ isActive }) {
+export default function Scenes({ isActive, availableScenes, setAvailableScenes }) {
     const [selectedSketch, setSelectedSketch] = useState(null) // { id, source }
     const [activeDragTarget, setActiveDragTarget] = useState(null) // track which source is being dragged over
     const [draggedSource, setDraggedSource] = useState(null) // track which source is being dragged from
-    const [availableScenes, setAvailableScenes] = useState({
-        defaultScenes: [],
-        openScenes: [],
-        userDirectoryScenes: []
-    })
-
-    useEffect(() => {
-        if (!isActive) return
-
-        const loadScenes = async () => {
-            const ipcRenderer = window.require?.('electron')?.ipcRenderer
-            if (!ipcRenderer) {
-                console.error('ipcRenderer not available')
-                return
-            }
-            const scenes = await ipcRenderer.invoke('scan-scenes')
-            setAvailableScenes(scenes)
-        }
-        loadScenes()
-    }, [isActive])
 
     useEffect(() => {
         if (!isActive) return

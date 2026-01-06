@@ -1,13 +1,12 @@
 import { timeReport } from '@/lib/timeUtils';
 import { BugIcon, ClockIcon, LineSegmentsIcon, ImageIcon, PencilIcon, ScissorsIcon, ShareIcon, TerminalIcon, TrashSimpleIcon, TimerIcon, HourglassHighIcon, CopyIcon, SquaresFourIcon } from '@phosphor-icons/react';
 import IconText from '../IconText';
-import sketches from '@/data/sketches';
 import BlendMenu from './BlendMenu';
 import Details from '../Details';
 import SceneInput from './SceneInput';
 import { ButtonStrip, ButtonStripButton } from '../ButtonStrip';
 
-export default function RegionForm({ project, snapshot }) {
+export default function RegionForm({ project, snapshot, openScenes = [] }) {
     const selectedRegion = project.selected[0];
     const times = timeReport(
         selectedRegion.position,
@@ -33,9 +32,9 @@ export default function RegionForm({ project, snapshot }) {
                     onChange={handleSceneChange}
                 >
                     <option value="">Select a scene...</option>
-                    {sketches.map(sketch => (
+                    {openScenes.map(sketch => (
                         <option key={sketch.id} value={sketch.id}>
-                            {sketch.title}
+                            {sketch.name}
                         </option>
                     ))}
                 </select>
@@ -46,7 +45,7 @@ export default function RegionForm({ project, snapshot }) {
                         <SceneInput
                             input={input}
                             index={index}
-                            key={input.id + selectedRegion.scene.title}
+                            key={input.id + selectedRegion.scene.name}
                             project={project}
                             region={selectedRegion}
                             snapshot={snapshot}

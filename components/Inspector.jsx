@@ -4,9 +4,9 @@ import WholeTrackForm from './inspector/WholeTrackForm';
 import MixedForm from './inspector/MixedForm';
 import ProjectSettingsForm from './inspector/ProjectSettingsForm';
 
-export default function Inspector({ project, snapshot }) {
+export default function Inspector({ project, snapshot, openScenes }) {
     const form = {
-        region: <RegionForm project={project} snapshot={snapshot} />,
+        region: <RegionForm project={project} snapshot={snapshot} openScenes={openScenes} />,
         'same-track': <SameTrackForm project={project} />,
         'whole-track': <WholeTrackForm project={project} snapshot={snapshot} />,
         mixed: <MixedForm />,

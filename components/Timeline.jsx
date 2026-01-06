@@ -4,7 +4,7 @@ import TimeGrid from '@/components/TimeGrid'
 import { useState, useEffect } from 'react'
 import useRegionResize from '@/hooks/useRegionResize'
 
-export default function Timeline({ project, snap }) {
+export default function Timeline({ project, snap, openScenes }) {
     const { resizeState, handleResizeStart } = useRegionResize(project)
     const [nearestBeat, setNearestBeat] = useState(null)
 
@@ -57,7 +57,7 @@ export default function Timeline({ project, snap }) {
                     snap={snap}
                     nearestBeat={nearestBeat}
                 /></div>
-            <Inspector project={project} snapshot={snap} />
+            <Inspector project={project} snapshot={snap} openScenes={openScenes} />
         </main>
     )
 }

@@ -1,6 +1,5 @@
 import { WarningCircleIcon } from "@phosphor-icons/react";
 import IconText from "./IconText";
-import sketches from "../data/sketches";
 
 export default function TrackRegions({ trackRegions, trackIndex, resizeState, handleResizeStart, project, snap }) {
   return trackRegions.map((region, index) => {
@@ -64,8 +63,8 @@ export default function TrackRegions({ trackRegions, trackIndex, resizeState, ha
           onMouseDown={event => handleResizeStart(event, trackIndex, index, 'left')}
         />
         <div>
-          {region.sceneId ? (
-            region.scene.title
+          {region.sceneId && region.scene ? (
+            region.scene.name
           ) : (
             <IconText icon={WarningCircleIcon} as="span" iconProps={{ weight: "fill" }}>
               {regionWidth >= minWidthForNoSceneText && "No scene"}

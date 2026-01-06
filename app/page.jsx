@@ -37,12 +37,34 @@ const projectFileMethods = {
 
 export default function Home() {
   const [page, setPage] = useState("timeline")
+  const [availableScenes, setAvailableScenes] = useState({
+    defaultScenes: [],
+    openScenes: [],
+    userDirectoryScenes: []
+  })
+
+  // Load scenes on mount and whenever page changes
+  React.useEffect(() => {
+    const loadScenes = async () => {
+      const ipcRenderer = window.require?.('electron')?.ipcRenderer
+      if (!ipcRenderer) {
+        console.error('ipcRenderer not available')
+        return
+      }
+      const scenes = await ipcRenderer.invoke('scan-scenes')
+      setAvailableScenes(scenes)
+      // Update project.openScenes for Region class to use
+      project.openScenes = scenes.openScenes
+    }
+    loadScenes()
+  }, [page])
+
   const snap = useSnapshot(project),
     pages = {
-      "timeline": <Timeline project={project} snap={snap} />,
+      "timeline": <Timeline project={project} snap={snap} openScenes={availableScenes.openScenes} />,
       "render": <Render project={project} snap={snap} />,
       "help": <Help />,
-      "scenes": <Scenes isActive={page === "scenes"} />
+      "scenes": <Scenes isActive={page === "scenes"} availableScenes={availableScenes} setAvailableScenes={setAvailableScenes} />
     }
 
   // Set up keyboard event handler
