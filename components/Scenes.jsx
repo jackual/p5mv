@@ -15,6 +15,29 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
     const [selectedSketch, setSelectedSketch] = useState(null) // { id, source }
     const [activeDragTarget, setActiveDragTarget] = useState(null) // track which source is being dragged over
     const [draggedSource, setDraggedSource] = useState(null) // track which source is being dragged from
+    const [isImporting, setIsImporting] = useState(false) // track import progress
+
+    useEffect(() => {
+        if (!isActive) return
+
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer) return
+
+        // Listen for import progress events
+        const handleImportProgress = (event, { status, path, error }) => {
+            if (status === 'importing') {
+                setIsImporting(true)
+            } else if (status === 'complete' || status === 'error') {
+                setIsImporting(false)
+            }
+        }
+
+        ipcRenderer.on('scene-import-progress', handleImportProgress)
+
+        return () => {
+            ipcRenderer.removeListener('scene-import-progress', handleImportProgress)
+        }
+    }, [isActive])
 
     useEffect(() => {
         if (!isActive) return
@@ -218,10 +241,11 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
     }
 
     const renderSceneDetails = scene => {
+        const detailThumbSrc = scene._path ? `scene://${scene._path}/${scene.thumb}` : `./sketches/${scene.id}/${scene.thumb}`
         return (
             <>
                 <IconText as="h2" icon={ImageIcon}>{scene.name}</IconText>
-                <img src={`./sketches/${scene.id}/${scene.thumb}`} alt={scene.name} />
+                <img src={detailThumbSrc} alt={scene.name} />
                 <Details title="Inputs" icon={SlidersHorizontalIcon}>
                     {scene.inputs ? scene.inputs.map(input => (
                         <div key={input.id} className="input-detail">
@@ -236,6 +260,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
     const renderSceneItem = (source) => (sketch) => {
         if (sketch.noIndex) return null
         const isSelected = selectedSketch?.id === sketch.id && selectedSketch?.source === source
+        const thumbSrc = sketch._path ? `scene://${sketch._path}/${sketch.thumb}` : `./sketches/${sketch.id}/${sketch.thumb}`
         return (
             <li
                 key={sketch.id}
@@ -246,7 +271,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                 onDragStart={event => handleDragStart(source)(event, sketch.id)}
                 onDragEnd={handleDragEnd}
             >
-                <img src={`${sketch._path}/${sketch.thumb}`} alt={sketch.name} />
+                <img src={thumbSrc} alt={sketch.name} />
                 <div className='caption'>
                     <p>{sketch.name}</p>
                 </div>
@@ -292,6 +317,14 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
     return (
         <div className='scenePage'>
+            {isImporting && (
+                <div className="import-overlay">
+                    <div className="import-message">
+                        <p>Importing sketch...</p>
+                        <p className="import-detail">Generating thumbnail and preparing scene</p>
+                    </div>
+                </div>
+            )}
             <div id='scene-main'>
                 {sceneGallerySections[0] && renderSceneGallery(sceneGallerySections[0])}
                 <div className='scene-page-split'>
