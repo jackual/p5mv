@@ -8,4 +8,9 @@ export function registerProtocols() {
         const filePath = path.join(videosDir, 'p5mv', 'Renders', url);
         callback({ path: filePath });
     });
+
+    protocol.registerFileProtocol('scene', (request, callback) => {
+        const url = request.url.substr(8); // Remove 'scene://'
+        callback({ path: decodeURIComponent(url) });
+    });
 }

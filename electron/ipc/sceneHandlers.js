@@ -59,8 +59,21 @@ export function registerSceneHandlers() {
             return null
         }
 
-        await importScene(result.filePaths[0], source)
-        return true
-
+        try {
+            await importScene(result.filePaths[0], source)
+            return true
+        } catch (error) {
+            console.error('Error importing scene:', error)
+            
+            await dialog.showMessageBox({
+                type: 'error',
+                title: 'Failed to Import Scene',
+                message: 'An error occurred while importing the scene.',
+                detail: error.message || 'Unknown error',
+                buttons: ['OK']
+            })
+            
+            return false
+        }
     })
 }
