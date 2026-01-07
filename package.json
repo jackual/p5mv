@@ -6,11 +6,10 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "generate-sketches": "node scripts/generate-sketches.js",
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
     "dev:vite": "vite",
     "dev:electron": "wait-on http://localhost:5173 && NODE_ENV=development electron .",
-    "build": "node scripts/generate-sketches.js && vite build",
+    "build": "vite build",
     "package": "npm run build && electron-forge package",
     "make": "npm run build && electron-forge make --platform=darwin",
     "start": "NODE_ENV=production electron .",

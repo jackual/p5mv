@@ -5,7 +5,6 @@
 @import 'ribbon';
 @import 'timeline';
 @import 'scenes';
-@import 'scene-colors';
 @import 'render';
 @import 'details';
 @import 'form';
@@ -49,7 +48,7 @@ body {
     display: flex;
 }
 
-.page-content > * {
+.page-content>* {
     flex: 1;
     min-height: 0;
 }
