@@ -71,14 +71,15 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
             icon: FileIcon,
             source: 'openScenes',
             scenes: [...availableScenes.openScenes],
-            emptyState: 'No sketches in this project'
+            emptyState: 'No sketches in this project',
+            addCard: true
         },
         {
             title: 'User scenes',
             icon: FolderIcon,
             source: 'userDirectoryScenes',
             scenes: [...availableScenes.userDirectoryScenes],
-            addCard: false,
+            addCard: true,
             emptyState: 'No user scenes found. Add scenes to your Videos/p5mv/Sketches folder.'
         },
         {
@@ -202,6 +203,20 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
         }
     }
 
+    const importScene = (source) => async (event) => {
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer) {
+            console.error('ipcRenderer not available')
+            return
+        }
+        const result = await ipcRenderer.invoke('show-open-scene-dialog', { source })
+        if (result) {
+            // Refresh scenes after import
+            const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(updatedScenes)
+        }
+    }
+
     const renderSceneDetails = scene => {
         return (
             <>
@@ -256,27 +271,20 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                         onDrop: handleDrop(source)
                     })}
                 >
-                    {emptyState && scenes.length === 0 ? (
-                        <li className='empty-state'>
-                            <IconText as="p" icon={FileDashedIcon}>
-                                {emptyState}
-                            </IconText>
-                        </li>
-                    ) : (
-                        <>
-                            {addCard && (
-                                <li className='add-card'>
-                                    <div className='add-thumb'>
-                                        <PlusCircleIcon weight="duotone" size={32} />
-                                    </div>
-                                    <div className='caption'>
-                                        <p>Add sketch</p>
-                                    </div>
-                                </li>
-                            )}
-                            {scenes.map(renderSceneItem(source))}
-                        </>
-                    )}
+
+                    <>
+                        {source != 'defaultScenes' && (
+                            <li className='add-card' onClick={importScene(source)}>
+                                <div className='add-thumb'>
+                                    <PlusCircleIcon weight="duotone" size={32} />
+                                </div>
+                                <div className='caption'>
+                                    <p>Import sketch</p>
+                                </div>
+                            </li>
+                        )}
+                        {scenes.map(renderSceneItem(source))}
+                    </>
                 </ul>
             </div>
         )

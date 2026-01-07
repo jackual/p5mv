@@ -53,3 +53,7 @@ dist/
 # Electron build artifacts
 *.log
 *.tmp
+
+# Ignore test projects
+
+tests/scene-convert/*

@@ -1,5 +1,7 @@
-import { ipcMain, dialog } from 'electron'
-import { getAvailableScenes, copySceneInternal, deleteScene } from '../../lib/scene/pageActions.js'
+import { ipcMain, dialog, app } from 'electron'
+import { getAvailableScenes, copySceneInternal, deleteScene, importScene } from '../../lib/scene/pageActions.js'
+import fs from 'fs-extra'
+import path from 'path'
 
 export function registerSceneHandlers() {
     ipcMain.handle('scan-scenes', async () => {
@@ -42,5 +44,23 @@ export function registerSceneHandlers() {
 
     ipcMain.handle('delete-scene', async (event, { sourceKey, sceneId }) => {
         return await deleteScene(sourceKey, sceneId)
+    })
+
+    ipcMain.handle('show-open-scene-dialog', async (event, { source }) => {
+        const result = await dialog.showOpenDialog({
+            title: 'Open Scene',
+            properties: ['openDirectory', 'openFile'],
+            filters: [
+                { name: 'Zip Files', extensions: ['zip'] }
+            ]
+        })
+
+        if (result.canceled || result.filePaths.length === 0) {
+            return null
+        }
+
+        await importScene(result.filePaths[0], source)
+        return true
+
     })
 }
