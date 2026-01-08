@@ -1,4 +1,4 @@
-import { ipcMain, dialog, app } from 'electron'
+import { ipcMain, dialog, app, shell } from 'electron'
 import { getAvailableScenes, copySceneInternal, deleteScene, importScene } from '../../lib/scene/pageActions.js'
 import fs from 'fs-extra'
 import path from 'path'
@@ -62,19 +62,19 @@ export function registerSceneHandlers() {
         try {
             // Notify renderer that import is starting
             event.sender.send('scene-import-progress', { status: 'importing', path: result.filePaths[0] })
-            
+
             await importScene(result.filePaths[0], source)
-            
+
             // Notify renderer that import is complete
             event.sender.send('scene-import-progress', { status: 'complete' })
-            
+
             return true
         } catch (error) {
             console.error('Error importing scene:', error)
-            
+
             // Notify renderer that import failed
             event.sender.send('scene-import-progress', { status: 'error', error: error.message })
-            
+
             await dialog.showMessageBox({
                 type: 'error',
                 title: 'Failed to Import Scene',
@@ -82,8 +82,12 @@ export function registerSceneHandlers() {
                 detail: error.message || 'Unknown error',
                 buttons: ['OK']
             })
-            
+
             return false
         }
+    })
+
+    ipcMain.handle('show-item-in-folder', async (event, folderPath) => {
+        shell.showItemInFolder(folderPath)
     })
 }

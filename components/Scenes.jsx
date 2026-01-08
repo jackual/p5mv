@@ -6,7 +6,9 @@ import {
     FileIcon,
     FolderIcon,
     FileDashedIcon,
-    PlusCircleIcon
+    PlusCircleIcon,
+    TrashIcon,
+    FolderOpenIcon
 } from '@phosphor-icons/react'
 import { useState, useEffect } from 'react'
 import Details from './Details'
@@ -240,19 +242,100 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
         }
     }
 
+    const handleAddToProject = async () => {
+        if (!selectedSketch || selectedSketch.source === 'openScenes') return
+
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer) return
+
+        try {
+            await ipcRenderer.invoke('copy-scene-internal', {
+                sourceKey: selectedSketch.source,
+                targetKey: 'openScenes',
+                sceneId: selectedSketch.id
+            })
+            // Refresh scenes after adding
+            const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(updatedScenes)
+        } catch (error) {
+            console.error('Error adding scene to project:', error)
+        }
+    }
+
+    const handleShowInFinder = async () => {
+        if (!selectedSketch || selectedSketch.source === 'defaultScenes') return
+
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer) return
+
+        const scene = selectedScene
+        if (scene?._path) {
+            await ipcRenderer.invoke('show-item-in-folder', scene._path)
+        }
+    }
+
+    const handleDeleteScene = async () => {
+        if (!selectedSketch || selectedSketch.source === 'defaultScenes') return
+
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer) return
+
+        const choice = await ipcRenderer.invoke('show-delete-scene-dialog', { sceneId: selectedSketch.id })
+
+        if (choice === 1) { // Delete
+            try {
+                await ipcRenderer.invoke('delete-scene', {
+                    sourceKey: selectedSketch.source,
+                    sceneId: selectedSketch.id
+                })
+                setSelectedSketch(null)
+                // Refresh after delete
+                const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+                setAvailableScenes(updatedScenes)
+            } catch (error) {
+                console.error('Error deleting scene:', error)
+            }
+        }
+    }
+
     const renderSceneDetails = scene => {
         const detailThumbSrc = scene._path ? `scene://${scene._path}/${scene.thumb}` : `./sketches/${scene.id}/${scene.thumb}`
+        const sourceInfo = sceneGallerySections.find(section => section.source === scene._source)
+        const source = selectedSketch?.source
+
         return (
             <>
                 <IconText as="h2" icon={ImageIcon}>{scene.name}</IconText>
+                <IconText as="p" icon={sourceInfo.icon}>{sourceInfo.title}</IconText>
                 <img src={detailThumbSrc} alt={scene.name} />
-                <Details title="Inputs" icon={SlidersHorizontalIcon}>
-                    {scene.inputs ? scene.inputs.map(input => (
-                        <div key={input.id} className="input-detail">
-                            <p>{input.label}</p> ({input.type})
-                        </div>
-                    )) : <p>No inputs for this scene.</p>}
-                </Details>
+
+                <div className="scene-actions">
+                    {source !== 'openScenes' && (
+                        <button onClick={handleAddToProject} title="Add to project">
+                            <PlusCircleIcon size={20} />
+                            Add to Project
+                        </button>
+                    )}
+                    {source !== 'defaultScenes' && (
+                        <button onClick={handleShowInFinder} title="Show in Finder">
+                            <FolderOpenIcon size={20} />
+                            Show in Finder
+                        </button>
+                    )}
+                    {source !== 'defaultScenes' && (
+                        <button onClick={handleDeleteScene} title="Delete scene">
+                            <TrashIcon size={20} />
+                            Delete
+                        </button>
+                    )}
+                </div>
+
+                <IconText as="h3" icon={SlidersHorizontalIcon}>Inputs</IconText>
+                {scene.inputs ? scene.inputs.map(input => (
+                    <div key={input.id} className="input-detail">
+                        <p>{input.label}</p> ({input.type})
+                    </div>
+                )) : <p>No inputs for this scene.</p>}
             </>
         )
     }
