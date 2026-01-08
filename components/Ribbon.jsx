@@ -28,9 +28,9 @@ const RibbonButton = ({ icon: Icon, label, onClick = () => { } }) => {
     )
 }
 
-const RibbonRadio = ({ icon: Icon, page, isSelected, onClick }) => {
+const RibbonRadio = ({ icon: Icon, page, label, isSelected, onClick }) => {
     return (
-        <div className={`ribbon-radio ${isSelected ? 'ribbon-selected' : ''}`} onClick={onClick} id={page + "-radio"} title={capitalize(page)}>
+        <div className={`ribbon-radio ${isSelected ? 'ribbon-selected' : ''}`} onClick={onClick} id={page + "-radio"} title={label || capitalize(page)}>
             <Icon size={24} weight={isSelected ? "regular" : "light"} />
         </div>
     )
@@ -84,7 +84,7 @@ const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
             <RibbonRadio icon={FilmStripIcon} page="timeline" isSelected={page === "timeline"} onClick={() => setPage("timeline")} />
             <RibbonRadio icon={SquaresFourIcon} page="scenes" isSelected={page === "scenes"} onClick={() => setPage("scenes")} />
             <RibbonRadio icon={ExportIcon} page="render" isSelected={page === "render"} onClick={() => setPage("render")} />
-            <RibbonRadio icon={QuestionIcon} page="help" isSelected={page === "help"} onClick={() => setPage("help")} />
+            <RibbonRadio icon={QuestionIcon} page="help" label="Documentation" isSelected={page === "help"} onClick={() => setPage("help")} />
         </div>
     )
 }
