@@ -1,0 +1,99 @@
+.help-page {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+
+    .help-nav {
+        width: 300px;
+        background: $background-gradient;
+        border-right: 1px solid $border-color;
+        padding: $page-padding;
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+
+            &.selected {
+                background: rgb(184, 184, 184);
+                font-weight: 600;
+            }
+        }
+    }
+
+    .help-content {
+        // flex: 1;
+
+        padding: 24px;
+        overflow: auto;
+
+        * {
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-top: 0;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
+
+        p,
+        li {
+            font-size: 14px;
+        }
+
+        ul,
+        ol {
+            padding-left: 24px;
+            margin: 4px;
+        }
+
+        a {
+            color: $p5-colour;
+            text-decoration: underline;
+
+            &:hover {
+                text-decoration: none;
+            }
+        }
+
+        pre *,
+        code *,
+        code,
+        pre {
+            font-family: 'Roboto Mono', monospace !important;
+            font-size: small;
+
+        }
+    }
+}
