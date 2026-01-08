@@ -31,7 +31,7 @@
                 margin: 0;
                 font-size: 16px;
                 font-weight: 600;
-                
+
                 &.import-detail {
                     margin-top: 8px;
                     font-size: 14px;
@@ -46,6 +46,7 @@
         from {
             opacity: 0;
         }
+
         to {
             opacity: 1;
         }
@@ -89,6 +90,77 @@
             border-radius: $border-radius-md;
             box-shadow: $shadow-sm;
             margin-top: $page-padding;
+        }
+
+        .scene-properties-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
+
+            .scene-property-group {
+                border: 1px solid $border-color;
+                background: $card-gradient;
+                box-shadow: $shadow-sm;
+                transition: all $transition-fast;
+                border-radius: $border-radius-md;
+                padding: 12px;
+
+                .property-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 12px;
+                    padding-bottom: 8px;
+                    border-bottom: 1px solid $border-color;
+
+                    h4 {
+                        margin: 0;
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: $text-color;
+                    }
+
+                    svg {
+                        color: $text-color;
+                        opacity: 0.5;
+                        cursor: pointer;
+                        transition: opacity $transition-fast;
+
+                        &:hover {
+                            opacity: 1;
+                            color: $p5-colour;
+                        }
+                    }
+                }
+
+                .form-group {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 4px;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+
+                    label {
+                        font-size: 11px;
+                        font-weight: 500;
+                        color: $text-color;
+                        min-width: 60px;
+                        flex-shrink: 0;
+                    }
+
+                    input,
+                    select {
+                        flex: 1;
+                        padding: 3px 5px;
+                        font-size: 12px;
+                    }
+                }
+            }
         }
     }
 

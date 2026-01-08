@@ -8,7 +8,8 @@ import {
     FileDashedIcon,
     PlusCircleIcon,
     TrashIcon,
-    FolderOpenIcon
+    FolderOpenIcon,
+    XCircleIcon
 } from '@phosphor-icons/react'
 import { useState, useEffect } from 'react'
 import Details from './Details'
@@ -330,12 +331,57 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                     )}
                 </div>
 
-                <IconText as="h3" icon={SlidersHorizontalIcon}>Inputs</IconText>
-                {scene.inputs ? scene.inputs.map(input => (
-                    <div key={input.id} className="input-detail">
-                        <p>{input.label}</p> ({input.type})
-                    </div>
-                )) : <p>No inputs for this scene.</p>}
+                <IconText as="h3" icon={SlidersHorizontalIcon}>Properties</IconText>
+                {scene.inputs && scene.inputs.length > 0 ? (
+                    <form className="scene-properties-form">
+                        {scene.inputs.map((input, idx) => (
+                            <div key={input.id} className="scene-property-group">
+                                <div className="property-header">
+                                    <h4>Property {idx + 1}</h4>
+                                    <XCircleIcon size={16} weight="fill" />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor={`scene-input-id-${input.id}`}>ID</label>
+                                    <input
+                                        type="text"
+                                        id={`scene-input-id-${input.id}`}
+                                        defaultValue={input.id}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor={`scene-input-label-${input.id}`}>Label</label>
+                                    <input
+                                        type="text"
+                                        id={`scene-input-label-${input.id}`}
+                                        defaultValue={input.label}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor={`scene-input-type-${input.id}`}>Type</label>
+                                    <select
+                                        id={`scene-input-type-${input.id}`}
+                                        defaultValue={input.type}
+                                    >
+                                        <option value="number">Number</option>
+                                        <option value="text">Text</option>
+                                        <option value="int">Integer</option>
+                                        <option value="float">Float</option>
+                                        <option value="percent">Percentage</option>
+                                        <option value="colour">Colour</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor={`scene-input-default-${input.id}`}>Default</label>
+                                    <input
+                                        type="text"
+                                        id={`scene-input-default-${input.id}`}
+                                        defaultValue={input.default || ''}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </form>
+                ) : <p>No properties for this scene.</p>}
             </>
         )
     }
