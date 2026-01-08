@@ -9,7 +9,8 @@ import {
     PlusCircleIcon,
     TrashIcon,
     FolderOpenIcon,
-    XCircleIcon
+    XCircleIcon,
+    PencilIcon
 } from '@phosphor-icons/react'
 import { useState, useEffect } from 'react'
 import Details from './Details'
@@ -18,7 +19,10 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
     const [selectedSketch, setSelectedSketch] = useState(null) // { id, source }
     const [activeDragTarget, setActiveDragTarget] = useState(null) // track which source is being dragged over
     const [draggedSource, setDraggedSource] = useState(null) // track which source is being dragged from
+    const [editingPropertyName, setEditingPropertyName] = useState(null) // track which property name is being edited
+    const [propertyNames, setPropertyNames] = useState({}) // store custom property names
     const [isImporting, setIsImporting] = useState(false) // track import progress
+    const [editingTitle, setEditingTitle] = useState(false) // track if scene title is being edited
 
     useEffect(() => {
         if (!isActive) return
@@ -306,55 +310,101 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         return (
             <>
-                <IconText as="h2" icon={ImageIcon}>{scene.name}</IconText>
+                <div className="scene-title-header">
+                    <ImageIcon size={24} weight="duotone" />
+                    {editingTitle ? (
+                        <input
+                            type="text"
+                            className="scene-title-input"
+                            defaultValue={scene.name}
+                            autoFocus
+                            onBlur={(e) => {
+                                scene.name = e.target.value
+                                setEditingTitle(false)
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    e.target.blur()
+                                }
+                            }}
+                        />
+                    ) : (
+                        <h2 onClick={() => setEditingTitle(true)}>
+                            {scene.name}
+                            <PencilIcon size={14} weight="regular" />
+                        </h2>
+                    )}
+                </div>
                 <IconText as="p" icon={sourceInfo.icon}>{sourceInfo.title}</IconText>
                 <img src={detailThumbSrc} alt={scene.name} />
 
                 <div className="scene-actions">
                     {source !== 'openScenes' && (
-                        <button onClick={handleAddToProject} title="Add to project">
-                            <PlusCircleIcon size={20} />
-                            Add to Project
+                        <button className="scene-action-button" onClick={handleAddToProject} title="Add to project">
+                            <PlusCircleIcon weight='duotone' size={20} />
+                            <span>Add to Project</span>
                         </button>
                     )}
                     {source !== 'defaultScenes' && (
-                        <button onClick={handleShowInFinder} title="Show in Finder">
-                            <FolderOpenIcon size={20} />
-                            Show in Finder
+                        <button className="scene-action-button" onClick={handleShowInFinder} title="Show in Finder">
+                            <FolderOpenIcon weight='duotone' size={20} />
+                            <span>Open Folder</span>
                         </button>
                     )}
                     {source !== 'defaultScenes' && (
-                        <button onClick={handleDeleteScene} title="Delete scene">
-                            <TrashIcon size={20} />
-                            Delete
+                        <button className="scene-action-button" onClick={handleDeleteScene} title="Delete scene">
+                            <TrashIcon weight='duotone' size={20} />
+                            <span>Delete</span>
                         </button>
                     )}
                 </div>
 
-                <IconText as="h3" icon={SlidersHorizontalIcon}>Properties</IconText>
+                <div className="properties-header">
+                    <IconText as="h3" icon={SlidersHorizontalIcon}>Properties</IconText>
+                    <PlusCircleIcon size={20} weight="fill" className="add-property-icon" title="Add new property" />
+                </div>
                 {scene.inputs && scene.inputs.length > 0 ? (
                     <form className="scene-properties-form">
                         {scene.inputs.map((input, idx) => (
                             <div key={input.id} className="scene-property-group">
                                 <div className="property-header">
-                                    <h4>Property {idx + 1}</h4>
+                                    {editingPropertyName === input.id ? (
+                                        <input
+                                            type="text"
+                                            className="property-name-input"
+                                            defaultValue={input.label}
+                                            autoFocus
+                                            onBlur={(e) => {
+                                                input.label = e.target.value
+                                                setEditingPropertyName(null)
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault()
+                                                    e.target.blur()
+                                                }
+                                            }}
+                                        />
+                                    ) : (
+                                        <h4 onClick={() => setEditingPropertyName(input.id)}>
+                                            {input.label}
+                                            <PencilIcon size={12} weight="regular" />
+                                        </h4>
+                                    )}
                                     <XCircleIcon size={16} weight="fill" />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor={`scene-input-id-${input.id}`}>ID</label>
-                                    <input
-                                        type="text"
-                                        id={`scene-input-id-${input.id}`}
-                                        defaultValue={input.id}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor={`scene-input-label-${input.id}`}>Label</label>
-                                    <input
-                                        type="text"
-                                        id={`scene-input-label-${input.id}`}
-                                        defaultValue={input.label}
-                                    />
+                                    <div className="id-input-wrapper">
+                                        <span className="id-prefix">p5mv.</span>
+                                        <input
+                                            type="text"
+                                            className="id-input"
+                                            id={`scene-input-id-${input.id}`}
+                                            defaultValue={input.id}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor={`scene-input-type-${input.id}`}>Type</label>

@@ -68,10 +68,15 @@
         transition: flex 300ms ease, max-width 1s ease, width 300ms ease, opacity 300ms ease, transform 300ms ease;
         background: $background-gradient;
         border-left: 1px solid $border-color;
-        padding: $page-padding;
         display: flex;
         flex-direction: column;
         will-change: transform, opacity;
+        height: 100%;
+        overflow-y: auto;
+
+        h2 {
+            margin-bottom: -5px;
+        }
 
         &.is-active {
             flex: 0 0 clamp(280px, 32vw, 420px);
@@ -82,82 +87,345 @@
             transform: translateX(0);
         }
 
+        >* {
+            padding: 0 $page-padding;
+        }
+
+        .scene-title-header {
+            display: flex;
+            align-items: center;
+            margin-top: $page-padding;
+
+            svg:first-child {
+                flex-shrink: 0;
+            }
+
+            h2 {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 4px 6px;
+                border-radius: $border-radius-sm;
+                transition: background $transition-fast;
+                flex: 1;
+                border: 1px solid transparent;
+
+                &:hover {
+                    background: rgba($text-color, 0.05);
+                    border-color: $border-color;
+                }
+
+                svg {
+                    opacity: 0.4;
+                    transition: opacity $transition-fast;
+                }
+
+                &:hover svg {
+                    opacity: 0.6;
+                }
+            }
+
+            .scene-title-input {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 600;
+                color: $text-color;
+                padding: 4px 6px;
+                border: 1px solid $p5-colour;
+                border-radius: $border-radius-sm;
+                background: white;
+                flex: 1;
+
+                &:focus {
+                    outline: none;
+                    box-shadow: 0 0 0 2px rgba($p5-colour, 0.1);
+                }
+            }
+        }
+
         img {
             width: 100%;
             height: 300px;
-            padding-bottom: 10px;
             object-fit: cover;
             border-radius: $border-radius-md;
-            box-shadow: $shadow-sm;
-            margin-top: $page-padding;
         }
 
-        .scene-properties-form {
+        .scene-actions {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 12px;
+            flex-direction: row;
+            gap: 8px;
 
-            .scene-property-group {
-                border: 1px solid $border-color;
-                background: $card-gradient;
-                box-shadow: $shadow-sm;
-                transition: all $transition-fast;
+
+            .scene-action-button {
+                @include card-style;
                 border-radius: $border-radius-md;
-                padding: 12px;
+                padding: 6px 9px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 13px;
+                font-weight: 600;
+                width: max-content;
+                color: $text-color;
+                background: $card-gradient;
 
-                .property-header {
+                @include hover-lift;
+
+                &:active {
+                    transform: translateY(0);
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                }
+
+                svg {
+                    flex-shrink: 0;
+                }
+
+                span {
+                    flex: 1;
+                }
+            }
+        }
+
+        .properties-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+
+            h3 {
+                margin: 0;
+            }
+
+            .add-property-icon {
+                color: $text-color;
+                opacity: 0.5;
+                cursor: pointer;
+                transition: all $transition-fast;
+
+                &:hover {
+                    opacity: 1;
+                    color: $p5-colour;
+                    transform: scale(1.1);
+                }
+            }
+        }
+
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+
+        .scene-action-button {
+            @include card-style;
+            border-radius: $border-radius-md;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: $text-color;
+            background: $card-gradient;
+
+            @include hover-lift;
+
+            &:active {
+                transform: translateY(0);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            svg {
+                flex-shrink: 0;
+            }
+
+            span {
+                flex: 1;
+            }
+        }
+    }
+
+    .properties-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 16px;
+
+        h3 {
+            margin: 0;
+        }
+
+        .add-property-icon {
+            color: $text-color;
+            opacity: 0.5;
+            cursor: pointer;
+            transition: all $transition-fast;
+
+            &:hover {
+                opacity: 1;
+                color: $p5-colour;
+                transform: scale(1.1);
+            }
+        }
+    }
+
+    .scene-properties-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 3px;
+
+        .scene-property-group {
+            border: 1px solid $border-color;
+            background: $card-gradient;
+            box-shadow: $shadow-sm;
+            transition: all $transition-fast;
+            border-radius: $border-radius-md;
+            padding: 10px;
+
+            .property-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid $border-color;
+
+                h4 {
+                    margin: 0;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: $text-color;
+                    cursor: pointer;
                     display: flex;
-                    justify-content: space-between;
                     align-items: center;
-                    margin-bottom: 12px;
-                    padding-bottom: 8px;
-                    border-bottom: 1px solid $border-color;
+                    gap: 4px;
+                    padding: 0px 2px;
+                    border-radius: $border-radius-sm;
+                    transition: background $transition-fast;
+                    flex: 1;
+                    border: 1px solid transparent;
 
-                    h4 {
-                        margin: 0;
-                        font-size: 13px;
-                        font-weight: 600;
-                        color: $text-color;
+                    &:hover {
+                        background: rgba($text-color, 0.05);
+                        border-color: $border-color;
                     }
 
                     svg {
-                        color: $text-color;
-                        opacity: 0.5;
-                        cursor: pointer;
+                        opacity: 0.4;
                         transition: opacity $transition-fast;
+                    }
 
-                        &:hover {
-                            opacity: 1;
-                            color: $p5-colour;
-                        }
+                    &:hover svg {
+                        opacity: 0.6;
                     }
                 }
 
-                .form-group {
+                .property-name-input {
+                    margin: 0;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: $text-color;
+                    padding: 2px 4px;
+                    border: 1px solid $p5-colour;
+                    border-radius: $border-radius-sm;
+                    background: white;
+                    flex: 1;
+                    margin-right: 8px;
+
+                    &:focus {
+                        outline: none;
+                        box-shadow: 0 0 0 2px rgba($p5-colour, 0.1);
+                    }
+                }
+
+                >svg {
+                    color: $text-color;
+                    opacity: 0.5;
+                    cursor: pointer;
+                    transition: opacity $transition-fast;
+                    flex-shrink: 0;
+
+                    &:hover {
+                        opacity: 1;
+                        color: $p5-colour;
+                    }
+                }
+            }
+
+            .form-group {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 4px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    color: $text-color;
+                    min-width: 60px;
+                    flex-shrink: 0;
+                }
+
+                input,
+                select {
+                    flex: 1;
+                    padding: 3px 5px;
+                    font-size: 12px;
+                }
+
+                .id-input-wrapper {
+                    flex: 1;
                     display: flex;
-                    flex-direction: row;
                     align-items: center;
-                    gap: 8px;
-                    margin-bottom: 4px;
+                    border: 1px solid $border-color;
+                    border-radius: $border-radius-sm;
+                    background: white;
+                    overflow: hidden;
+                    transition: all $transition-fast;
 
-                    &:last-child {
-                        margin-bottom: 0;
+                    &:hover {
+                        border-color: $border-color-hover;
+                        background: $card-gradient-hover;
                     }
 
-                    label {
-                        font-size: 11px;
-                        font-weight: 500;
-                        color: $text-color;
-                        min-width: 60px;
-                        flex-shrink: 0;
+                    &:focus-within {
+                        border-color: $p5-colour;
+                        box-shadow: $shadow-focus;
                     }
 
-                    input,
-                    select {
-                        flex: 1;
-                        padding: 3px 5px;
+                    .id-prefix {
+                        padding: 3px 0 3px 5px;
                         font-size: 12px;
+                        font-family: 'Roboto Mono', monospace;
+                        color: rgba($text-color, 0.5);
+                        user-select: none;
+                    }
+
+                    .id-input {
+                        border: none;
+                        padding: 3px 5px 3px 0;
+                        margin: 0;
+                        font-family: 'Roboto Mono', monospace;
+                        background: transparent;
+
+                        &:hover {
+                            border: none;
+                            background: transparent;
+                        }
+
+                        &:focus {
+                            border: none;
+                            box-shadow: none;
+                        }
                     }
                 }
             }
@@ -249,6 +517,7 @@
         height: 112px;
         object-fit: fill;
         margin-bottom: 4px;
+        user-select: none;
         -webkit-user-select: none;
         -webkit-user-drag: none;
     }
