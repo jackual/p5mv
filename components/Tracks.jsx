@@ -7,12 +7,20 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
         project.newRegion = [];
         project.playhead = nearestBeat + snap.view.start;
         if (event.target.classList.contains('new-region-indicator') && nearestBeat !== null) {
+            if (!project.openScenes || project.openScenes.length === 0) {
+                alert('No scenes available in this project. Go to the Scenes page and add scenes to your project before creating regions.');
+                return;
+            }
             const trackIndex = Number(event.target.parentElement.getAttribute('data-track-index'))
             console.log("Adding region at", nearestBeat + snap.view.start, "to track index", trackIndex);
             project.tracks[trackIndex].addRegionAt(nearestBeat + snap.view.start);
             return
         }
         if (event.target.classList.contains('track') && project.selectionMode == 'none' && nearestBeat !== null) {
+            if (!project.openScenes || project.openScenes.length === 0) {
+                alert('No scenes available in this project. Go to the Scenes page and add scenes to your project before creating regions.');
+                return;
+            }
             const trackIndex = Number(event.target.getAttribute('data-track-index'))
             project.newRegion = [trackIndex, nearestBeat + snap.view.start]
         }
