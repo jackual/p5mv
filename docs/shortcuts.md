@@ -1,16 +1,19 @@
 # Keyboard Shortcuts
 
-These shortcuts work while the **Timeline** page is active and focus is not in an input field.
+## Timeline Page
 
-## Navigation
+- **Left Arrow** – Move playhead left by the current snap value
+- **Right Arrow** – Move playhead right by the current snap value
+- **Cmd+A** – Select all regions
+- **Cmd+C** – Copy selected regions
+- **Cmd+V** – Paste copied regions at the playhead position
+- **Backspace / Delete** – Delete selected regions
+- **Esc** – Deselect all regions
 
-- **Left Arrow** – Move playhead left by the current snap value.
-- **Right Arrow** – Move playhead right by the current snap value.
+## Scenes Page
 
-## Selection and Editing
+- **Backspace / Delete** – Delete the selected scene (User/Project scenes only)
 
-- **⌘A** – Select all regions.
-- **⌘C** – Copy selected regions.
-- **⌘V** – Paste copied regions at the playhead.
-- **Delete / Backspace** – Delete selected regions.
-- **Esc** – Deselect everything.
+## General
+
+- **Cmd+Q** – Quit application (macOS)

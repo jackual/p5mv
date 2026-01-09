@@ -23,6 +23,7 @@ if (oneDarkNoFont['code[class*="language-"]']) {
 import introMd from '../docs/intro.md?raw';
 import installationMd from '../docs/installation.md?raw';
 import workflowMd from '../docs/workflow.md?raw';
+import layoutMd from '../docs/layout.md?raw';
 import keyframesMd from '../docs/keyframes.md?raw';
 import renderingMd from '../docs/rendering.md?raw';
 import customScenesMd from '../docs/custom-scenes.md?raw';
@@ -38,8 +39,12 @@ const docs = {
         content: installationMd,
     },
     workflow: {
-        title: 'Layout & Workflow',
+        title: 'Getting started',
         content: workflowMd,
+    },
+    layout: {
+        title: 'Layout',
+        content: layoutMd,
     },
     keyframes: {
         title: 'Keyframes & Animation',

@@ -1,48 +1,72 @@
 # Installation
 
-> These instructions are intended for GitHub as well as the in‑app Help page. Some details may change as releases are added.
+p5mv is available as a prebuilt Electron app or can be run from source for development.
 
-## Download a prebuilt binary (recommended)
+## Download Prebuilt App (Recommended)
 
-Prebuilt app bundles will be published on the GitHub Releases page:
+Prebuilt app bundles are published on the GitHub Releases page:
 
-- Releases: `https://github.com/jackual/music-tl/releases`
+**Releases:** <https://github.com/jackual/music-tl/releases>
 
-Download the latest release for your platform (for example, a `.dmg` or `.zip` for macOS) and open the app.
+Download the latest release for your platform
 
-### macOS: opening a non‑codesigned app
+## macOS: Opening Unsigned Apps ("p5mv" Is Damaged And Can't Be Opened)
 
-If you see a warning that the app is from an unidentified developer, follow Apple’s guidance on opening apps from unidentified developers:
+Since p5mv is not code-signed, macOS will show a security warning. To open the app:
 
-- Apple support article: <https://support.apple.com/HT202491>
+### With System Settings
 
-Typically you will need to:
+1. Open the app which will show a warning dialog
 
-1. Right‑click the app in Finder and choose **Open**.
-2. Confirm that you want to open it despite the warning.
+2. Open to System Settings.
 
-## Build from source
+3. Click Privacy & Security, scroll down and click the Open Anyway button
 
-You can also run p5mv directly from this repository.
+4. Select **Open** from the menu
+
+5. Click **Open** in the dialog that appears
+
+For more information, see Apple's guide: <https://support.apple.com/HT202491>
+
+### With Terminal
+
+Alternatively type the following with a space after into your Terminal and drag the p5mv app into the terminal to add the path
+
+```bash
+xattr -cr 
+
+```
+
+
+## Build from Source
+
+For development or contributing, you can run p5mv directly from the repository.
 
 ### Prerequisites
 
-- Node.js (LTS is recommended).
-- npm or a compatible package manager.
+- **Node.js** 16+ (LTS recommended)
+- **npm** or compatible package manager
 
 ### Steps
 
 ```bash
-git clone https://github.com/jackual/music-tl.git
+# Clone the repository
+git clone --depth 1 https://github.com/jackual/music-tl.git
 cd music-tl
+
+# Install dependencies
 npm install
 
-# During development
+# Run in development mode (with hot reload)
 npm run dev
 
-# For a packaged app (Electron in production)
-npm run build
-npm start
+# Package as Electron app
+npm run package
 ```
 
-`npm run dev` starts Vite and Electron together, giving you a live‑reload development environment.
+### Development Commands
+
+- `npm run dev` – Start Vite dev server + Electron with hot reload
+- `npm run build` – Build production bundle
+- `npm run package` – Create packaged Electron app
+- `npm test` – Run test suite

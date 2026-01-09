@@ -1,81 +1,194 @@
-# Adding Your Own Sketches (Scenes)
+# Creating Custom Scenes
 
-p5mv is designed so you can add your own p5 scenes using the existing file‑based system.
+p5mv allows you to create and import your own p5.js scenes. Scenes are standard p5.js sketches that p5mv automatically converts and enhances for use in the timeline.
 
-> A simpler CDN‑based system is planned, but this describes the current local‑file workflow.
+## Quick Start
 
-## 1. Create a scene folder
+The simplest way to create a custom scene:
 
-Scenes live under `public/sketches/`:
+1. Create a p5.js sketch using the [p5.js web editor](https://editor.p5js.org/)
+2. Download your sketch as a folder (File > Download)
+3. Import it into p5mv via the Scenes page
 
-```text
-public/
-  sketches/
-    your-scene-id/
-      info.js
-      sketch.js
+## Using p5mv Inputs
+
+The `p5mv` object is injected by p5mv's capture library and provides:
+- **p5mv.width** – Canvas width from project settings
+- **p5mv.height** – Canvas height from project settings
+- **p5mv.i** – Current frame index
+- **p5mv.percentElapsed** – Percentage through the region (0-100)
+- **p5mv.[inputId]** – Any custom inputs you define
+
+## Defining Inputs
+
+Inputs are defined in the `<script id="p5mv-json">` tag.
+
+### Example Schema
+
+```html
+<html>
+<head>
+  <script src="externals/p5.js" data-p5mv-type="p5-core"></script>
+  <script id="p5mv-json" type="application/json">
+{
+  "name": "My Custom Scene",
+  "thumb": "thumb.png",
+  "inputs": [
+    {
+      "id": "bgColor",
+      "label": "Background Color",
+      "type": "colour",
+      "default": "#000000"
+    },
+    {
+      "id": "circleSize",
+      "label": "Circle Size",
+      "type": "number",
+      "default": 50
+    },
+    {
+      "id": "circleCount",
+      "label": "Circle Count",
+      "type": "int",
+      "default": 5
+    }
+  ]
+}
+  </script>
+  <script src="externals/captureLib.js"></script>
+</head>
+<body>
+  <script src="sketch.js"></script>
+</body>
+</html>
 ```
 
-- `your-scene-id` should be a short identifier, e.g. `myScene`, `laser-grid`.
+To use your customised inputs with animated parameters, use the `p5mv` object:
 
-## 2. Define scene metadata (`info.js`)
+**sketch.js:**
+```javascript
+function setup() {
+  createCanvas(600, 600)
+}
 
-`info.js` exports metadata about the scene, such as title, thumbnail, and inputs. For example:
+function draw() {
+  // Access p5mv inputs with fallback defaults
+  const bgColor = p5mv.bgColor || '#000000'
+  const circleSize = p5mv.circleSize || 50
+  const circleCount = p5mv.circleCount || 5
+  
+  background(bgColor)
+  fill(255)
+  noStroke()
+  
+  for (let i = 0 i < circleCount i++) {
+    const x = map(i, 0, circleCount - 1, 50, width - 50)
+    circle(x, height/2, circleSize)
+  }
+}
+```
+
+### Always Use Fallbacks
+
+Since your sketch might run standalone (outside p5mv), always provide fallback values:
+
+```javascript
+const myValue = p5mv.myInput || defaultValue
+```
+
+To edit inputs:
+1. Select your scene from User Scenes or Project Scenes
+2. Click **Show in Finder** to open the scene folder
+3. Edit `index.html` and modify the JSON inside the `p5mv-json` script tag
+4. Save and reload the app to see changes
+
+### Input Types
+
+p5mv supports six input types:
 
 ```js
-export default {
-  id: 'myScene',
-  title: 'My Custom Scene',
-  thumb: 'thumb.png',
-  color: '#f97316',
-  inputs: [
-    { id: 'backgroundColour', label: 'Background Colour', type: 'colour' },
-    { id: 'strokeWeight', label: 'Stroke Weight', type: 'number', min: 0, max: 20 },
-  ],
-};
+| Type    | Description             | Example         |
+|---------|-------------------------|-----------------|
+| colour  | Hex color picker        | "#ff0000"       |
+| number  | Numeric value (any)     | 1.5             |
+| int     | Integer value           | 5               |
+| float   | Floating-point value    | 3.14            |
+| percent | Value between 0 and 1   | 0.5             |
+| text    | Text string             | "hello"         |
 ```
 
-The exact structure should follow the existing scenes in `public/sketches/*/info.js` and the central `data/sketches.js` index.
+Each input must have:
+- **id** – Unique identifier used as `p5mv.[id]` in your sketch
+- **label** – Display name in the Inspector
+- **type** – One of the types above
+- **default** – Initial value
 
-## 3. Implement the p5 sketch (`sketch.js`)
+## Importing Scenes
 
-`sketch.js` should export a p5 sketch that uses the p5mv runtime helpers. A typical pattern:
+### From a Folder
 
-```js
-import { createSketch } from 'p5mv-runtime'; // conceptual helper
+1. Go to the **Scenes** page
+2. Click the **+** card in User Scenes or Project Scenes
+3. Select a folder containing `index.html`
+4. Wait for conversion and thumbnail generation
+5. The scene appears in your library
 
-export const sketch = (p) => {
-  p.setup = () => {
-    p.createCanvas(p5mv.width, p5mv.height);
-  };
+### From a Zip File
 
-  p.draw = () => {
-    const bg = p5mv.inputs.backgroundColour; // hex colour
-    const w = p5mv.inputs.strokeWeight;      // number
+1. Create a `.zip` archive of your scene folder
+2. Go to the **Scenes** page
+3. Click the **+** card and select the zip file
+4. The scene is extracted, converted, and imported automatically
 
-    p.background(bg);
-    p.strokeWeight(w);
-    // ...draw frame...
-  };
-};
+## Scene Galleries
+
+Scenes are organised into three galleries:
+
+- **Project Scenes** – Saved with the current project (in temp directory, included in `.p5mvProject` files)
+- **User Scenes** – Your personal library (`~/Videos/p5mv/Sketches/`)
+- **Preset Scenes** – Built-in scenes (read-only, use `info.js` format instead of `p5mv-json`)
+
+Drag scenes between galleries to copy them, or use the action buttons in the sidebar.
+
+## Advanced: Using p5mv.setup()
+
+For quicker setup, use `p5mv.setup()`:
+
+```javascript
+function setup() {
+  p5mv.setup() // Creates canvas with project dimensions
+  // Your setup code here
+}
+
+function draw() {
+  // Use p5mv inputs
+  const color = p5mv.myColor || '#ff0000'
+  background(color)
+}
 ```
 
-In practice, follow the structure of an existing scene such as `public/sketches/matrix/sketch.js` to ensure you’re using the provided `p5mv` helpers correctly.
+`p5mv.setup()` automatically:
+- Creates a canvas matching project dimensions
+- Sets pixel density to 1 (for consistent rendering)
+- Configures the sketch for frame-by-frame capture
 
-## 4. Register the scene
+Pass `true` for WebGL mode: `p5mv.setup(true)`
 
-Scenes are indexed in the `data/sketches.js` file and/or via the `scripts/generate-sketches.js` script.
+## Tips
 
-- Either add your scene manually to `data/sketches.js`, or
-- Run the generator script (if configured) to pick up new `info.js` files:
+- **Use descriptive input IDs** – `strokeWidth` not `sw`
+- **Provide sensible defaults** – Your scene should look good with default values
+- **Test standalone first** – Verify your sketch works in the p5.js editor before importing
+- **Use keyframe-friendly inputs** – Numeric and color inputs animate smoothly
+- **Keep it simple** – Complex sketches with many particles may render slowly
+- **Use noLoop() in p5mv** – p5mv handles frame rendering, so `noLoop()` is automatically called
 
-```bash
-npm run generate-sketches
-```
+## Editing Imported Scenes
 
-Once registered, your custom scene appears in the **Scenes** page, and you can **select the desired sketch** when creating regions.
+Once imported, you can edit scenes:
 
-## 5. Sharing scenes and projects
+1. **Show in Finder** – Open the scene folder to edit files directly
+2. **Edit properties** – Modify input definitions in the UI (changes are saved to the `p5mv-json` script tag)
+3. **Regenerate thumbnail** – Delete `thumb.png` and reimport
 
-- Use the **Save** button in the ribbon to download a `.pvm5Project` file containing your project data.
-- Share both the `.pvm5Project` file and your `public/sketches/your-scene-id` folder with collaborators so they see the same visuals.
+Changes to scene files are reflected immediately when you reload or render.

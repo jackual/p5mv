@@ -1,33 +1,47 @@
-# Layout and Workflow
+## Basic Workflow
 
-## Layout
+### 1. Set up your project
 
-- **Ribbon** (top): project actions, zoom controls, transport shortcuts, and page selection.
-- **Timeline**: arrange regions on tracks against musical time.
-- **Scenes**: browse preset scenes (p5 sketches) and inspect their inputs.
-- **Render**: render the current project to a video file.
+- Set project metadata in the Inspector when no regions are selected:
+  - Title
+  - BPM (beats per minute)
+  - Width × Height (resolution)
+  - FPS (frame rate)
 
-p5mv comes bundled with preset scenes so you can get started without writing any code.
+### 2. Browse and select scenes
 
-## Core Workflow
+- Go to the **Scenes** page
+- Browse preset scenes or import your own
+- Click on a scene to view its details in the right sidebar
+- **Drag and drop into Project Scenes to use in project**
 
-1. Go to **Scenes** and **select the desired sketch**.
-2. In the **Timeline**, add a region on a track and assign that scene.
-3. Adjust region **length**, **position**, and **blend mode/opacity**.
-4. Use the **Inspector** to edit that region’s inputs (sliders, colours, toggles, etc.).
-5. Repeat with more tracks and regions to build your arrangement.
-6. Open **Render**, queue the project, and click **Render**.
-7. When encoding finishes, the video opens in your default video player.
+### 3. Add scenes to timeline
 
-## Timeline basics
+- Go back to **Timeline**
+- Click and drag on a track to create a region
+- With the region selected, choose a scene from the Inspector dropdown
+- Resize the region by dragging its edges
+- Move it by dragging the center
 
-- **Tracks**: horizontal lanes that hold regions.
-- **Regions**: blocks on tracks that reference a scene and define when it is visible.
-- **Playhead**: the current position in beats; used for editing and previewing.
-- **Snap**: controls how the playhead and regions snap to the grid (set in the ribbon).
+### 4. Customise scene parameters
 
-## Scenes and inputs
+- Select a region on the timeline
+- In the Inspector, you'll see all inputs for that scene
+- Set values using the form controls
+- Click the **+** icon to create a keyframe at the current playhead position
+- Move the playhead and set different values to create animation
 
-- Each scene is a p5 sketch with a unique **scene ID**.
-- Scenes declare a set of **inputs** (e.g. `backgroundColour`, `strokeWeight`) that appear in the inspector.
-- p5mv interpolates these inputs over time and passes them into the sketch for each frame.
+### 5. Layer and composite
+
+- Add regions to multiple tracks
+- Regions on higher tracks appear on top
+- Use the **Blend Mode** dropdown to change how layers composite
+- Adjust **Opacity** to make layers semi-transparent
+
+### 6. Render to video
+
+- Go to the **Render** page
+- Click **Set queue to project** to queue all regions
+- Click **Render** to start the capture/encode process
+- When complete, the video opens automatically in your default player
+- Find the output at: `~/Movies/p5mv/Renders/output.mp4`
