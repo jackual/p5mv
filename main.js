@@ -17,6 +17,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      webviewTag: true, // Enable webview tag
     },
   });
 
@@ -48,6 +49,40 @@ app.whenReady().then(() => {
   registerProtocols();
   registerIpcHandlers(broadcastProgress);
   createWindow();
+
+  // Listen for downloads from webviews
+  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+    // Send notification to renderer process
+    mainWindow.webContents.send('webview-download-started', {
+      filename: item.getFilename(),
+      totalBytes: item.getTotalBytes(),
+      url: item.getURL()
+    });
+
+    item.on('updated', (event, state) => {
+      if (state === 'progressing') {
+        mainWindow.webContents.send('webview-download-progress', {
+          filename: item.getFilename(),
+          receivedBytes: item.getReceivedBytes(),
+          totalBytes: item.getTotalBytes()
+        });
+      }
+    });
+
+    item.once('done', (event, state) => {
+      if (state === 'completed') {
+        mainWindow.webContents.send('webview-download-completed', {
+          filename: item.getFilename(),
+          savePath: item.getSavePath()
+        });
+      } else {
+        mainWindow.webContents.send('webview-download-failed', {
+          filename: item.getFilename(),
+          state
+        });
+      }
+    });
+  });
 });
 
 app.on('window-all-closed', () => {

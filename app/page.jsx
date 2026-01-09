@@ -9,6 +9,7 @@ import Timeline from '@/components/Timeline'
 import Render from '@/components/Render'
 import Help from '@/components/Help'
 import Scenes from '@/components/Scenes'
+import Editor from '@/components/Editor'
 import Ribbon from '@/components/Ribbon'
 import { newFile, openFile, saveFile } from '@/lib/projectFileMethods'
 
@@ -42,6 +43,7 @@ export default function Home() {
     openScenes: [],
     userDirectoryScenes: []
   })
+  const [editorNavigationCheck, setEditorNavigationCheck] = useState(null)
 
   // Load scenes on mount and whenever page changes
   React.useEffect(() => {
@@ -59,12 +61,24 @@ export default function Home() {
     loadScenes()
   }, [page])
 
+  const handlePageChange = (newPage) => {
+    // If leaving editor page, check if navigation should be blocked
+    if (page === "editor" && newPage !== "editor" && editorNavigationCheck) {
+      const canNavigate = editorNavigationCheck();
+      if (!canNavigate) {
+        return; // Cancel navigation
+      }
+    }
+    setPage(newPage);
+  };
+
   const snap = useSnapshot(project),
     pages = {
       "timeline": <Timeline project={project} snap={snap} openScenes={availableScenes.openScenes} />,
       "render": <Render project={project} snap={snap} />,
       "help": <Help />,
-      "scenes": <Scenes isActive={page === "scenes"} availableScenes={availableScenes} setAvailableScenes={setAvailableScenes} />
+      "scenes": <Scenes isActive={page === "scenes"} availableScenes={availableScenes} setAvailableScenes={setAvailableScenes} />,
+      "editor": <Editor isActive={page === "editor"} onNavigateAway={setEditorNavigationCheck} />
     }
 
   // Set up keyboard event handler
@@ -125,7 +139,7 @@ export default function Home() {
 
   return (
     <div className="app-shell">
-      <Ribbon page={page} setPage={setPage} project={project} projectFileMethods={projectFileMethods} />
+      <Ribbon page={page} setPage={handlePageChange} project={project} projectFileMethods={projectFileMethods} />
       <div className="page-content">
         {pages[page]}
       </div>

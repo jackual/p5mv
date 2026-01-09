@@ -14,7 +14,8 @@ import {
     FilmStripIcon,
     ExportIcon,
     ClipboardTextIcon,
-    CopyIcon
+    CopyIcon,
+    CodeIcon
 } from "@phosphor-icons/react"
 import capitalize from "lodash.capitalize"
 import { beatsToMusicalTimeString } from '@/lib/timeUtils'
@@ -83,6 +84,7 @@ const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
             <Divider />
             <RibbonRadio icon={FilmStripIcon} page="timeline" isSelected={page === "timeline"} onClick={() => setPage("timeline")} />
             <RibbonRadio icon={SquaresFourIcon} page="scenes" isSelected={page === "scenes"} onClick={() => setPage("scenes")} />
+            <RibbonRadio icon={CodeIcon} page="editor" isSelected={page === "editor"} onClick={() => setPage("editor")} />
             <RibbonRadio icon={ExportIcon} page="render" isSelected={page === "render"} onClick={() => setPage("render")} />
         </div>
     )
