@@ -5,53 +5,6 @@
     gap: 0;
     position: relative;
 
-    .import-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(4px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        animation: fadeIn 0.2s ease;
-
-        .import-message {
-            background: $card-gradient;
-            border: 1px solid $border-color;
-            padding: 32px 48px;
-            border-radius: $border-radius-lg;
-            box-shadow: $shadow-lg;
-            text-align: center;
-
-            p {
-                margin: 0;
-                font-size: 16px;
-                font-weight: 600;
-
-                &.import-detail {
-                    margin-top: 8px;
-                    font-size: 14px;
-                    font-weight: 400;
-                    opacity: 0.7;
-                }
-            }
-        }
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
     #scene-main {
         flex: 1;
         padding: $page-padding;

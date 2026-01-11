@@ -92,7 +92,7 @@ export function registerSceneHandlers() {
             // Notify renderer that import is starting
             event.sender.send('scene-import-progress', { status: 'importing', path: filePath })
 
-            await importScene(filePath, 'userDirectoryScenes')
+            await importScene(filePath, 'openScenes')
 
             // Clean up temp directory
             const tempDir = path.join(app.getPath('temp'), 'scene-temp-dl')
