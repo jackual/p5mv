@@ -1,6 +1,7 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, session } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs-extra';
 import { setupMenu } from './electron/menu.js';
 import { registerIpcHandlers } from './electron/ipc.js';
 import { registerProtocols } from './electron/protocols.js';
@@ -50,39 +51,57 @@ app.whenReady().then(() => {
   registerIpcHandlers(broadcastProgress);
   createWindow();
 
-  // Listen for downloads from webviews
-  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-    // Send notification to renderer process
-    mainWindow.webContents.send('webview-download-started', {
-      filename: item.getFilename(),
-      totalBytes: item.getTotalBytes(),
-      url: item.getURL()
-    });
+  // Set up download handler for both main session and webview partition
+  const setupDownloadHandler = (session) => {
+    session.on('will-download', (event, item, webContents) => {
+      console.log('Download initiated:', item.getFilename(), 'from', item.getURL());
 
-    item.on('updated', (event, state) => {
-      if (state === 'progressing') {
-        mainWindow.webContents.send('webview-download-progress', {
-          filename: item.getFilename(),
-          receivedBytes: item.getReceivedBytes(),
-          totalBytes: item.getTotalBytes()
-        });
-      }
-    });
+      // Set download path to temp directory
+      const downloadPath = path.join(app.getPath('temp'), 'scene-temp-dl');
+      fs.ensureDirSync(downloadPath);
 
-    item.once('done', (event, state) => {
-      if (state === 'completed') {
-        mainWindow.webContents.send('webview-download-completed', {
-          filename: item.getFilename(),
-          savePath: item.getSavePath()
-        });
-      } else {
-        mainWindow.webContents.send('webview-download-failed', {
-          filename: item.getFilename(),
-          state
-        });
-      }
+      const savePath = path.join(downloadPath, item.getFilename());
+      item.setSavePath(savePath);
+
+      // Send notification to renderer process
+      mainWindow.webContents.send('webview-download-started', {
+        filename: item.getFilename(),
+        totalBytes: item.getTotalBytes(),
+        url: item.getURL()
+      });
+
+      item.on('updated', (event, state) => {
+        if (state === 'progressing') {
+          mainWindow.webContents.send('webview-download-progress', {
+            filename: item.getFilename(),
+            receivedBytes: item.getReceivedBytes(),
+            totalBytes: item.getTotalBytes()
+          });
+        }
+      });
+
+      item.once('done', (event, state) => {
+        if (state === 'completed') {
+          mainWindow.webContents.send('webview-download-completed', {
+            filename: item.getFilename(),
+            savePath: item.getSavePath()
+          });
+        } else {
+          mainWindow.webContents.send('webview-download-failed', {
+            filename: item.getFilename(),
+            state
+          });
+        }
+      });
     });
-  });
+  };
+
+  // Set up for main session
+  setupDownloadHandler(mainWindow.webContents.session);
+
+  // Set up for webview partition
+  const webviewSession = session.fromPartition('persist:p5editor');
+  setupDownloadHandler(webviewSession);
 });
 
 app.on('window-all-closed', () => {

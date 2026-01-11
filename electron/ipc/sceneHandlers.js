@@ -62,19 +62,19 @@ export function registerSceneHandlers() {
         try {
             // Notify renderer that import is starting
             event.sender.send('scene-import-progress', { status: 'importing', path: result.filePaths[0] })
-            
+
             await importScene(result.filePaths[0], source)
-            
+
             // Notify renderer that import is complete
             event.sender.send('scene-import-progress', { status: 'complete' })
-            
+
             return true
         } catch (error) {
             console.error('Error importing scene:', error)
-            
+
             // Notify renderer that import failed
             event.sender.send('scene-import-progress', { status: 'error', error: error.message })
-            
+
             await dialog.showMessageBox({
                 type: 'error',
                 title: 'Failed to Import Scene',
@@ -82,7 +82,40 @@ export function registerSceneHandlers() {
                 detail: error.message || 'Unknown error',
                 buttons: ['OK']
             })
-            
+
+            return false
+        }
+    })
+
+    ipcMain.handle('import-downloaded-scene', async (event, { filePath }) => {
+        try {
+            // Notify renderer that import is starting
+            event.sender.send('scene-import-progress', { status: 'importing', path: filePath })
+
+            await importScene(filePath, 'userDirectoryScenes')
+
+            // Clean up temp directory
+            const tempDir = path.join(app.getPath('temp'), 'scene-temp-dl')
+            await fs.emptyDir(tempDir)
+
+            // Notify renderer that import is complete
+            event.sender.send('scene-import-progress', { status: 'complete' })
+
+            return true
+        } catch (error) {
+            console.error('Error importing downloaded scene:', error)
+
+            // Notify renderer that import failed
+            event.sender.send('scene-import-progress', { status: 'error', error: error.message })
+
+            await dialog.showMessageBox({
+                type: 'error',
+                title: 'Failed to Import Scene',
+                message: 'An error occurred while importing the downloaded scene.',
+                detail: error.message || 'Unknown error',
+                buttons: ['OK']
+            })
+
             return false
         }
     })

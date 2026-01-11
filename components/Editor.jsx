@@ -6,6 +6,7 @@ const DEFAULT_URL = 'https://editor.p5js.org/login';
 export default function Editor({ onNavigateAway }) {
     const webviewRef = useRef(null);
     const [currentUrl, setCurrentUrl] = useState(DEFAULT_URL);
+    const [isImporting, setIsImporting] = useState(false);
     const [initialUrl] = useState(() => {
         // Load cached URL on mount
         try {
@@ -22,6 +23,10 @@ export default function Editor({ onNavigateAway }) {
 
         const handleDidFinishLoad = () => {
             console.log('P5 editor loaded');
+            // Enable downloads in webview
+            webview.getWebContents().session.on('will-download', (event, item) => {
+                console.log('Webview download detected:', item.getFilename());
+            });
         };
 
         const handleConsoleMessage = (e) => {
@@ -92,14 +97,29 @@ export default function Editor({ onNavigateAway }) {
         // Listen for download events from main process
         const handleDownloadStarted = (event, data) => {
             console.log('Download started:', data.filename);
+            setIsImporting(true);
         };
 
-        const handleDownloadCompleted = (event, data) => {
+        const handleDownloadCompleted = async (event, data) => {
             console.log('Download completed:', data.filename, 'at', data.savePath);
+
+            // Import the downloaded scene
+            const ipcRenderer = window.require?.('electron')?.ipcRenderer;
+            if (ipcRenderer) {
+                try {
+                    await ipcRenderer.invoke('import-downloaded-scene', {
+                        filePath: data.savePath
+                    });
+                } catch (error) {
+                    console.error('Failed to import downloaded scene:', error);
+                    setIsImporting(false);
+                }
+            }
         };
 
         const handleDownloadFailed = (event, data) => {
             console.error('Download failed:', data.filename, data.state);
+            setIsImporting(false);
         };
 
         window.electronAPI = window.electronAPI || {};
@@ -110,24 +130,47 @@ export default function Editor({ onNavigateAway }) {
         });
 
         // Use IPC if available
-        if (window.electron?.ipcRenderer) {
-            window.electron.ipcRenderer.on('webview-download-started', handleDownloadStarted);
-            window.electron.ipcRenderer.on('webview-download-completed', handleDownloadCompleted);
-            window.electron.ipcRenderer.on('webview-download-failed', handleDownloadFailed);
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer;
+        if (ipcRenderer) {
+            const handleImportProgress = (event, { status }) => {
+                if (status === 'importing') {
+                    setIsImporting(true);
+                } else if (status === 'complete' || status === 'error') {
+                    setIsImporting(false);
+                }
+            };
+
+            ipcRenderer.on('webview-download-started', handleDownloadStarted);
+            ipcRenderer.on('webview-download-completed', handleDownloadCompleted);
+            ipcRenderer.on('webview-download-failed', handleDownloadFailed);
+            ipcRenderer.on('scene-import-progress', handleImportProgress);
 
             return () => {
-                window.electron.ipcRenderer.removeListener('webview-download-started', handleDownloadStarted);
-                window.electron.ipcRenderer.removeListener('webview-download-completed', handleDownloadCompleted);
-                window.electron.ipcRenderer.removeListener('webview-download-failed', handleDownloadFailed);
+                ipcRenderer.removeListener('webview-download-started', handleDownloadStarted);
+                ipcRenderer.removeListener('webview-download-completed', handleDownloadCompleted);
+                ipcRenderer.removeListener('webview-download-failed', handleDownloadFailed);
+                ipcRenderer.removeListener('scene-import-progress', handleImportProgress);
             };
         }
     }, []);
 
     return (
-        <webview
-            ref={webviewRef}
-            src={initialUrl}
-            style={{ width: '100%' }}
-        />
+        <>
+            {isImporting && (
+                <div className="import-overlay">
+                    <div className="import-message">
+                        <p>Downloading project...</p>
+                        <p className="import-detail">Generating thumbnail and preparing scene</p>
+                    </div>
+                </div>
+            )}
+            <webview
+                ref={webviewRef}
+                src={initialUrl}
+                style={{ width: '100%' }}
+                allowpopups="true"
+                partition="persist:p5editor"
+            />
+        </>
     );
 }
