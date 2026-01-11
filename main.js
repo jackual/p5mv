@@ -51,6 +51,34 @@ app.whenReady().then(() => {
   registerIpcHandlers(broadcastProgress);
   createWindow();
 
+  // Track popup windows created for downloads
+  const downloadWindows = [];
+  
+  // Intercept all webContents (including webviews) and set window open handlers
+  app.on('web-contents-created', (event, contents) => {
+    contents.setWindowOpenHandler(({ url }) => {
+      console.log('Window open request intercepted:', url);
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          show: false,
+          width: 1,
+          height: 1,
+          webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true
+          }
+        }
+      };
+    });
+    
+    // Track new windows created
+    contents.on('did-create-window', (window) => {
+      console.log('New window created');
+      downloadWindows.push(window);
+    });
+  });
+
   // Set up download handler for both main session and webview partition
   const setupDownloadHandler = (session) => {
     session.on('will-download', (event, item, webContents) => {
@@ -81,6 +109,21 @@ app.whenReady().then(() => {
       });
 
       item.once('done', (event, state) => {
+        // Close any download popup windows
+        setTimeout(() => {
+          downloadWindows.forEach(win => {
+            try {
+              if (win && !win.isDestroyed()) {
+                console.log('Closing download window');
+                win.close();
+              }
+            } catch (e) {
+              console.error('Failed to close download window:', e);
+            }
+          });
+          downloadWindows.length = 0;
+        }, 100);
+        
         if (state === 'completed') {
           mainWindow.webContents.send('webview-download-completed', {
             filename: item.getFilename(),

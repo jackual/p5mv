@@ -23,10 +23,6 @@ export default function Editor({ onNavigateAway }) {
 
         const handleDidFinishLoad = () => {
             console.log('P5 editor loaded');
-            // Enable downloads in webview
-            webview.getWebContents().session.on('will-download', (event, item) => {
-                console.log('Webview download detected:', item.getFilename());
-            });
         };
 
         const handleConsoleMessage = (e) => {
