@@ -58,6 +58,16 @@ app.whenReady().then(() => {
   app.on('web-contents-created', (event, contents) => {
     contents.setWindowOpenHandler(({ url }) => {
       console.log('Window open request intercepted:', url);
+      
+      // Immediately notify renderer that download is starting
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('webview-download-started', {
+          filename: 'project.zip',
+          totalBytes: 0,
+          url: url
+        });
+      }
+      
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
