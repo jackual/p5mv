@@ -63,8 +63,8 @@ export default function MetadataWizard({ onClose }) {
                 const propertyType = PropertyTypes[input.type]
                 let defaultValue = input.default
                 
-                // Use PropertyTypes.set to convert the value properly
-                if (propertyType && propertyType.set && defaultValue !== undefined && defaultValue !== '') {
+                // Use PropertyTypes.set to convert the value properly (except for colours)
+                if (input.type !== 'colour' && propertyType && propertyType.set && defaultValue !== undefined && defaultValue !== '') {
                     try {
                         defaultValue = propertyType.set(defaultValue)
                     } catch (e) {
