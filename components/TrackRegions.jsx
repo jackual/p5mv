@@ -39,6 +39,7 @@ export default function TrackRegions({ trackRegions, trackIndex, resizeState, ha
     return (
       <div
         data-region-index={index}
+        id={`region-${trackIndex}-${index}`}
         className={classNames.join(" ")}
         onMouseDown={event => {
           if (!event.target.classList.contains('resize-handle')) {

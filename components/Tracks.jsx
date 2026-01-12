@@ -48,7 +48,7 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
                 <a className="add-button"><PlusCircleIcon /></a>
                 <a className="remove-button"><MinusCircleIcon /></a>
             </div>
-            <div className="track" data-track-index={index} onClick={event => {
+            <div className="track" data-track-index={index} id={`track-${index}`} onClick={event => {
                 if (event.target.classList.contains('track')) {
                     project.deselectAll()
                 }

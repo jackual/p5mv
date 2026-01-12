@@ -1,4 +1,5 @@
 import IconText from './IconText'
+import Tooltip from './Tooltip'
 import {
     SquaresFourIcon,
     ImageIcon,
@@ -23,6 +24,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
     const [propertyNames, setPropertyNames] = useState({}) // store custom property names
     const [isImporting, setIsImporting] = useState(false) // track import progress
     const [editingTitle, setEditingTitle] = useState(false) // track if scene title is being edited
+    const [showEmptyTooltip, setShowEmptyTooltip] = useState(false)
 
     useEffect(() => {
         if (!isActive) return
@@ -41,10 +43,20 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         ipcRenderer.on('scene-import-progress', handleImportProgress)
 
+        // Check if project scenes is empty and show tooltip
+        if (availableScenes.openScenes.length === 0) {
+            const dismissed = sessionStorage.getItem('emptyScenesGuideDismissed')
+            if (!dismissed) {
+                setShowEmptyTooltip(true)
+            }
+        } else {
+            setShowEmptyTooltip(false)
+        }
+
         return () => {
             ipcRenderer.removeListener('scene-import-progress', handleImportProgress)
         }
-    }, [isActive])
+    }, [isActive, availableScenes.openScenes.length])
 
     useEffect(() => {
         if (!isActive) return
@@ -474,11 +486,12 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                         onDragLeave: handleDragLeave(source),
                         onDrop: handleDrop(source)
                     })}
+                    id={source === 'openScenes' ? 'project-scenes-gallery' : undefined}
                 >
 
                     <>
                         {source != 'defaultScenes' && (
-                            <li className='add-card' onClick={importScene(source)}>
+                            <li className='add-card' onClick={importScene(source)} id={source === 'openScenes' ? 'import-scene-card' : undefined}>
                                 <div className='add-thumb'>
                                     <PlusCircleIcon weight="duotone" size={32} />
                                 </div>
@@ -503,6 +516,20 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                         <p className="import-detail">Generating thumbnail and preparing scene</p>
                     </div>
                 </div>
+            )}
+            {showEmptyTooltip && (
+                <Tooltip
+                    target="project-scenes-gallery"
+                    message={
+                        <>
+                            Import a scene here, or drag and drop scenes from <strong>Preset Scenes</strong> or <strong>User scenes</strong> below
+                        </>
+                    }
+                    onClose={() => {
+                        setShowEmptyTooltip(false)
+                        sessionStorage.setItem('emptyScenesGuideDismissed', 'true')
+                    }}
+                />
             )}
             <div id='scene-main'>
                 {sceneGallerySections[0] && renderSceneGallery(sceneGallerySections[0])}

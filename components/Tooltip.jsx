@@ -7,17 +7,21 @@ export default function Tooltip({ target, message, onClose }) {
     useEffect(() => {
         if (!target) return
 
-        // Find the target element by ID
-        const targetElement = document.getElementById(`${target}-radio`)
-
+        // Find the target element by ID - try with -radio suffix first, then without
+        let targetElement = document.getElementById(`${target}-radio`)
+        
         if (!targetElement) {
-            console.warn(`Tooltip target element not found: ${target}-radio`)
+            targetElement = document.getElementById(target)
+        }
+        
+        if (!targetElement) {
+            console.warn(`Tooltip target element not found: ${target}`)
             return
         }
 
         // Get the bounding rectangle of the target element
         const rect = targetElement.getBoundingClientRect()
-
+        
         // Position the tooltip below the target element
         setPosition({
             top: rect.bottom + 10,
