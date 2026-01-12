@@ -25,6 +25,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
     const [isImporting, setIsImporting] = useState(false) // track import progress
     const [editingTitle, setEditingTitle] = useState(false) // track if scene title is being edited
     const [showEmptyTooltip, setShowEmptyTooltip] = useState(false)
+    const [savingScene, setSavingScene] = useState(false) // track if scene is being saved
 
     useEffect(() => {
         if (!isActive) return
@@ -95,6 +96,17 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         const handleKeyDown = async (e) => {
             if (e.key === 'Backspace' && selectedSketch) {
+                // Don't delete if user is typing in a form field
+                const activeElement = document.activeElement
+                if (activeElement && (
+                    activeElement.tagName === 'INPUT' ||
+                    activeElement.tagName === 'TEXTAREA' ||
+                    activeElement.tagName === 'SELECT' ||
+                    activeElement.isContentEditable
+                )) {
+                    return
+                }
+
                 // Don't allow deleting preset scenes
                 if (selectedSketch.source === 'defaultScenes') {
                     return
@@ -323,6 +335,144 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
         }
     }
 
+    const handleSaveSceneProperty = async (scene, inputId, field, value) => {
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer || !scene._path) return
+
+        try {
+            setSavingScene(true)
+            
+            // Get current scene info
+            const currentInfo = await ipcRenderer.invoke('read-scene-info', {
+                scenePath: scene._path
+            })
+
+            // Find the input to update
+            const inputIndex = currentInfo.inputs.findIndex(inp => inp.id === inputId)
+            if (inputIndex === -1) return
+
+            // Update the specific field
+            currentInfo.inputs[inputIndex][field] = value
+
+            // Save back to file
+            await ipcRenderer.invoke('update-scene-info', {
+                scenePath: scene._path,
+                updates: currentInfo
+            })
+
+            // Refresh scenes to get updated data
+            const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(updatedScenes)
+        } catch (error) {
+            console.error('Error saving scene property:', error)
+        } finally {
+            setSavingScene(false)
+        }
+    }
+
+    const handleSaveSceneTitle = async (scene, newTitle) => {
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer || !scene._path) return
+
+        try {
+            setSavingScene(true)
+            
+            const currentInfo = await ipcRenderer.invoke('read-scene-info', {
+                scenePath: scene._path
+            })
+
+            currentInfo.title = newTitle
+            currentInfo.name = newTitle
+
+            await ipcRenderer.invoke('update-scene-info', {
+                scenePath: scene._path,
+                updates: currentInfo
+            })
+
+            const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(updatedScenes)
+        } catch (error) {
+            console.error('Error saving scene title:', error)
+        } finally {
+            setSavingScene(false)
+        }
+    }
+
+    const handleAddSceneProperty = async (scene) => {
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer || !scene._path) return
+
+        try {
+            setSavingScene(true)
+            
+            const currentInfo = await ipcRenderer.invoke('read-scene-info', {
+                scenePath: scene._path
+            })
+
+            // Create new property with default values
+            const newProperty = {
+                id: `property${(currentInfo.inputs || []).length + 1}`,
+                label: `New Property`,
+                type: 'number',
+                default: 0
+            }
+
+            // Add to inputs array
+            if (!currentInfo.inputs) {
+                currentInfo.inputs = []
+            }
+            currentInfo.inputs.push(newProperty)
+
+            await ipcRenderer.invoke('update-scene-info', {
+                scenePath: scene._path,
+                updates: currentInfo
+            })
+
+            const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(updatedScenes)
+        } catch (error) {
+            console.error('Error adding scene property:', error)
+        } finally {
+            setSavingScene(false)
+        }
+    }
+
+    const handleDeleteSceneProperty = async (scene, inputId, inputLabel) => {
+        const result = await window.showDialog({
+            type: 'warning',
+            message: `Are you sure you want to delete the property "${inputLabel}"?`,
+            title: 'Delete Property'
+        })
+
+        if (!result) return
+
+        const ipcRenderer = window.require?.('electron')?.ipcRenderer
+        if (!ipcRenderer || !scene._path) return
+
+        try {
+            setSavingScene(true)
+            
+            const currentInfo = await ipcRenderer.invoke('read-scene-info', {
+                scenePath: scene._path
+            })
+
+            // Remove the input from the inputs array
+            currentInfo.inputs = currentInfo.inputs.filter(inp => inp.id !== inputId)
+
+            await ipcRenderer.invoke('update-scene-info', {
+                scenePath: scene._path,
+                updates: currentInfo
+            })
+
+            const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+            setAvailableScenes(updatedScenes)
+        } catch (error) {
+            console.error('Error deleting scene property:', error)
+        } finally {
+            setSavingScene(false)
+        }
+    }
+
     const handleDeleteScene = async () => {
         if (!selectedSketch || selectedSketch.source === 'defaultScenes') return
 
@@ -363,7 +513,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                             defaultValue={scene.name}
                             autoFocus
                             onBlur={(e) => {
-                                scene.name = e.target.value
+                                handleSaveSceneTitle(scene, e.target.value)
                                 setEditingTitle(false)
                             }}
                             onKeyDown={(e) => {
@@ -406,7 +556,13 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
                 <div className="properties-header">
                     <IconText as="h3" icon={SlidersHorizontalIcon}>Properties</IconText>
-                    <PlusCircleIcon size={20} weight="fill" className="add-property-icon" title="Add new property" />
+                    <PlusCircleIcon 
+                        size={20} 
+                        weight="fill" 
+                        className="add-property-icon" 
+                        title="Add new property"
+                        onClick={() => handleAddSceneProperty(scene)}
+                    />
                 </div>
                 {scene.inputs && scene.inputs.length > 0 ? (
                     <form className="scene-properties-form">
@@ -420,7 +576,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                             defaultValue={input.label}
                                             autoFocus
                                             onBlur={(e) => {
-                                                input.label = e.target.value
+                                                handleSaveSceneProperty(scene, input.id, 'label', e.target.value)
                                                 setEditingPropertyName(null)
                                             }}
                                             onKeyDown={(e) => {
@@ -436,7 +592,12 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                             <PencilIcon size={12} weight="regular" />
                                         </h4>
                                     )}
-                                    <XCircleIcon size={16} weight="fill" />
+                                    <XCircleIcon 
+                                        size={16} 
+                                        weight="fill" 
+                                        onClick={() => handleDeleteSceneProperty(scene, input.id, input.label)}
+                                        style={{ cursor: 'pointer' }}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor={`scene-input-id-${input.id}`}>ID</label>
@@ -447,6 +608,15 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                             className="id-input"
                                             id={`scene-input-id-${input.id}`}
                                             defaultValue={input.id}
+                                            onBlur={(e) => {
+                                                handleSaveSceneProperty(scene, input.id, 'id', e.target.value)
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault()
+                                                    e.target.blur()
+                                                }
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -455,6 +625,9 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                     <select
                                         id={`scene-input-type-${input.id}`}
                                         defaultValue={input.type}
+                                        onChange={(e) => {
+                                            handleSaveSceneProperty(scene, input.id, 'type', e.target.value)
+                                        }}
                                     >
                                         <option value="number">Number</option>
                                         <option value="text">Text</option>
@@ -470,6 +643,15 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                         type="text"
                                         id={`scene-input-default-${input.id}`}
                                         defaultValue={input.default || ''}
+                                        onBlur={(e) => {
+                                            handleSaveSceneProperty(scene, input.id, 'default', e.target.value)
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault()
+                                                e.target.blur()
+                                            }
+                                        }}
                                     />
                                 </div>
                             </div>

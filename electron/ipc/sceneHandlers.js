@@ -1,5 +1,6 @@
 import { ipcMain, dialog, app, shell } from 'electron'
 import { getAvailableScenes, copySceneInternal, deleteScene, importScene } from '../../lib/scene/pageActions.js'
+import { readSceneInfo, updateSceneInfo } from '../../lib/scene/sceneInfo.js'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -7,6 +8,15 @@ export function registerSceneHandlers() {
     ipcMain.handle('scan-scenes', async () => {
         return await getAvailableScenes()
     })
+
+    ipcMain.handle('read-scene-info', async (event, { scenePath }) => {
+        return await readSceneInfo(scenePath)
+    })
+
+    ipcMain.handle('update-scene-info', async (event, { scenePath, updates }) => {
+        return await updateSceneInfo(scenePath, updates)
+    })
+
 
     ipcMain.handle('copy-scene-internal', async (event, { sourceKey, targetKey, sceneId, newSceneId, overwrite = false }) => {
         return await copySceneInternal(sourceKey, targetKey, sceneId, newSceneId, overwrite)

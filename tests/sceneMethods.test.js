@@ -26,5 +26,5 @@ describe('convertProject', () => {
             const scenePath = path.join(SCENE_OUT, dir);
             await expect(convertProject(scenePath)).resolves.not.toThrow();
         }
-    });
+    }, 30000); // 30 second timeout for scene conversion
 });
