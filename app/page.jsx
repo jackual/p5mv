@@ -14,6 +14,7 @@ import Editor from '@/components/Editor'
 import Ribbon from '@/components/Ribbon'
 import Dialog from '@/components/Dialog'
 import Tooltip from '@/components/Tooltip'
+import MetadataWizard from '@/components/MetadataWizard'
 import { newFile, openFile, saveFile } from '@/lib/projectFileMethods'
 
 const project = proxy(new Project())
@@ -48,6 +49,7 @@ export default function Home() {
   const [showNoScenesGuide, setShowNoScenesGuide] = useState(false)
   const [tooltipTarget, setTooltipTarget] = useState(null)
   const [dialog, setDialog] = useState(null)
+  const [showMetadataWizard, setShowMetadataWizard] = useState(false)
 
   // Load scenes on mount and whenever page changes
   React.useEffect(() => {
@@ -213,7 +215,13 @@ export default function Home() {
 
   return (
     <div className="app-shell">
-      <Ribbon page={page} setPage={handlePageChange} project={project} projectFileMethods={projectFileMethods} />
+      <Ribbon 
+        page={page} 
+        setPage={handlePageChange} 
+        project={project} 
+        projectFileMethods={projectFileMethods}
+        onShowMetadataWizard={() => setShowMetadataWizard(true)}
+      />
       <div className="page-content">
         {pages[page]}
       </div>
@@ -233,6 +241,9 @@ export default function Home() {
       )}
       {dialog && (
         <Dialog {...dialog} />
+      )}
+      {showMetadataWizard && (
+        <MetadataWizard onClose={() => setShowMetadataWizard(false)} />
       )}
     </div>
   )

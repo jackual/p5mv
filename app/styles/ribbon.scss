@@ -35,6 +35,18 @@
             width: 20px;
             height: 20px;
         }
+
+        &.ribbon-button-labeled {
+            width: auto;
+            padding: 0 12px;
+            gap: 8px;
+
+            .ribbon-button-label {
+                font-size: 12px;
+                font-weight: 500;
+                color: $text-color;
+            }
+        }
     }
 
     .ribbon-radio {

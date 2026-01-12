@@ -1,0 +1,449 @@
+// Metadata Wizard Styles
+
+.metadata-wizard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.2s ease;
+}
+
+.metadata-wizard-container {
+    background: white;
+    border-radius: $border-radius-lg;
+    width: 90vw;
+    max-width: 1200px;
+    height: 80vh;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.metadata-wizard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+
+    h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: $text-color;
+    }
+}
+
+.metadata-wizard-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $text-color;
+    opacity: 0.5;
+    transition: opacity $transition-fast;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.metadata-wizard-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.metadata-wizard-left {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    border-right: 1px solid $border-color;
+
+    // Apply aside property styling from scenes
+    .properties-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 16px;
+
+        h3 {
+            margin: 0;
+        }
+    }
+
+    .add-property-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: white;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-md;
+        font-size: 13px;
+        font-weight: 500;
+        color: $text-color;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: rgba($p5-colour, 0.05);
+            border-color: $p5-colour;
+            color: $p5-colour;
+        }
+
+        &:active {
+            transform: translateY(1px);
+        }
+    }
+
+    .scene-properties-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 12px;
+
+        .scene-property-group {
+            border: 1px solid $border-color;
+            background: $card-gradient;
+            box-shadow: $shadow-sm;
+            transition: all $transition-fast;
+            border-radius: $border-radius-md;
+            padding: 10px;
+
+            .property-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid $border-color;
+
+                h4 {
+                    margin: 0;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: $text-color;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 2px 4px;
+                    border-radius: $border-radius-sm;
+                    transition: background $transition-fast;
+
+                    &:hover {
+                        background: rgba($text-color, 0.05);
+                    }
+
+                    svg {
+                        opacity: 0.4;
+                        transition: opacity $transition-fast;
+                    }
+
+                    &:hover svg {
+                        opacity: 0.6;
+                    }
+                }
+
+                .property-name-input {
+                    font-size: 14px;
+                    font-weight: 600;
+                    padding: 2px 4px;
+                    border: 1px solid $p5-colour;
+                    border-radius: $border-radius-sm;
+                    background: white;
+                    color: $text-color;
+                    flex: 1;
+
+                    &:focus {
+                        outline: none;
+                        box-shadow: 0 0 0 2px rgba($p5-colour, 0.1);
+                    }
+                }
+
+                svg {
+                    color: $text-color;
+                    opacity: 0.3;
+                    transition: all $transition-fast;
+
+                    &:hover {
+                        opacity: 1;
+                        color: #dc3545;
+                    }
+                }
+            }
+
+            .form-group {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    color: $text-color;
+                    min-width: 60px;
+                    flex-shrink: 0;
+                }
+
+                input,
+                select {
+                    flex: 1;
+                    padding: 4px 6px;
+                    font-size: 12px;
+                    border: 1px solid $border-color;
+                    border-radius: $border-radius-sm;
+                    background: white;
+
+                    &:focus {
+                        outline: none;
+                        border-color: $p5-colour;
+                        box-shadow: 0 0 0 2px rgba($p5-colour, 0.1);
+                    }
+
+                    &:read-only,
+                    &:disabled {
+                        background: #f8f9fa;
+                        color: #6c757d;
+                        cursor: not-allowed;
+                    }
+                }
+
+                .id-input-wrapper {
+                    display: flex;
+                    align-items: center;
+                    flex: 1;
+                    border: 1px solid $border-color;
+                    border-radius: $border-radius-sm;
+                    background: white;
+                    overflow: hidden;
+
+                    &:focus-within {
+                        border-color: $p5-colour;
+                        box-shadow: 0 0 0 2px rgba($p5-colour, 0.1);
+                    }
+
+                    .id-prefix {
+                        padding: 4px 0 4px 6px;
+                        font-size: 12px;
+                        color: #6c757d;
+                        font-weight: 500;
+                    }
+
+                    .id-input {
+                        border: none;
+                        padding: 4px 6px 4px 2px;
+                        flex: 1;
+
+                        &:focus {
+                            outline: none;
+                            box-shadow: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.metadata-wizard-right {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+}
+
+.metadata-wizard-code-header {
+    margin-bottom: 16px;
+
+    h3 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: $text-color;
+    }
+
+    p {
+        margin: 0;
+        font-size: 13px;
+        color: #6c757d;
+
+        code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+        }
+    }
+}
+
+.metadata-wizard-code {
+    flex: 1;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 16px;
+    border-radius: $border-radius-md;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow: auto;
+    margin: 0;
+
+    code {
+        display: block;
+        white-space: pre;
+    }
+}
+
+.metadata-wizard-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid $border-color;
+    background: #f8f9fa;
+}
+
+.metadata-wizard-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-md;
+    background: white;
+    color: $text-color;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+        background: #f8f9fa;
+        border-color: darken($border-color, 10%);
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
+}
+
+.metadata-wizard-button-primary {
+    background: $p5-colour;
+    color: white;
+    border-color: $p5-colour;
+
+    &:hover {
+        background: darken($p5-colour, 5%);
+        border-color: darken($p5-colour, 5%);
+    }
+}
+
+.scene-property-editor {
+    .scene-title-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+
+        h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 6px;
+            border-radius: $border-radius-sm;
+            transition: background $transition-fast;
+            flex: 1;
+            border: 1px solid transparent;
+
+            &:hover {
+                background: rgba($text-color, 0.05);
+                border-color: $border-color;
+            }
+
+            svg {
+                opacity: 0.4;
+                transition: opacity $transition-fast;
+            }
+
+            &:hover svg {
+                opacity: 0.6;
+            }
+        }
+
+        .scene-title-input {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: $text-color;
+            padding: 4px 6px;
+            border: 1px solid $p5-colour;
+            border-radius: $border-radius-sm;
+            background: white;
+            flex: 1;
+
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba($p5-colour, 0.1);
+            }
+        }
+    }
+
+    .add-property-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: white;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-md;
+        font-size: 13px;
+        font-weight: 500;
+        color: $text-color;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: rgba($p5-colour, 0.05);
+            border-color: $p5-colour;
+            color: $p5-colour;
+        }
+
+        &:active {
+            transform: translateY(1px);
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

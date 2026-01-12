@@ -15,7 +15,8 @@ import {
     ExportIcon,
     ClipboardTextIcon,
     CopyIcon,
-    CodeIcon
+    CodeIcon,
+    MagicWandIcon
 } from "@phosphor-icons/react"
 import capitalize from "lodash.capitalize"
 import { beatsToMusicalTimeString } from '@/lib/timeUtils'
@@ -44,7 +45,7 @@ const Divider = () => {
     )
 }
 
-const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
+const Ribbon = ({ page, setPage, project, projectFileMethods, onShowMetadataWizard }) => {
     return (
         <div className="ribbon">
             <img src="./logo.svg" className="ribbon-logo" />
@@ -94,9 +95,16 @@ const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
                 </>
             )}
             {page === "editor" && (
-                <div className="ribbon-message">
-                    Download sketch to add to your project
-                </div>
+                <>
+                    <div className="ribbon-button ribbon-button-labeled" onClick={onShowMetadataWizard} title="Metadata Wizard">
+                        <MagicWandIcon size={20} weight="light" />
+                        <span className="ribbon-button-label">Metadata Wizard</span>
+                    </div>
+                    <Divider />
+                    <div className="ribbon-message">
+                        Download sketch to add to your project
+                    </div>
+                </>
             )}
         </div>
     )
