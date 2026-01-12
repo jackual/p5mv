@@ -4,8 +4,24 @@ import IconText from './IconText'
 import { useState } from 'react'
 
 export default function MetadataWizard({ onClose }) {
+    // Extract title from webview's document.title (format: "p5.js Web Editor | sketch_name")
+    const getInitialTitle = () => {
+        const webview = document.querySelector('webview')
+        if (webview) {
+            try {
+                const title = webview.getTitle()
+                if (title && title.includes(' | ')) {
+                    return title.split(' | ')[1].trim()
+                }
+            } catch (error) {
+                console.error('Failed to get webview title:', error)
+            }
+        }
+        return 'My Scene'
+    }
+
     const [sceneInfo, setSceneInfo] = useState({
-        name: 'My Scene',
+        name: getInitialTitle(),
         thumb: 'thumb.jpg',
         inputs: []
     })
@@ -38,7 +54,7 @@ export default function MetadataWizard({ onClose }) {
                         <XIcon size={24} weight="bold" />
                     </button>
                 </div>
-                
+
                 <div className="metadata-wizard-content">
                     <div className="metadata-wizard-left">
                         <ScenePropertyEditor

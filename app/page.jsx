@@ -105,7 +105,7 @@ export default function Home() {
     }
 
     window.showConfirm = (message, title = 'Confirm') => {
-      return window.showDialog({ type: 'warning', title, message, confirmLabel: 'OK', onCancel: () => {} })
+      return window.showDialog({ type: 'warning', title, message, confirmLabel: 'OK', onCancel: () => { } })
     }
 
     // Listen for quit dialog from main process
@@ -121,7 +121,7 @@ export default function Home() {
         }
       }
       ipcRenderer.on('show-quit-dialog', handleQuitDialog)
-      
+
       return () => {
         ipcRenderer.removeListener('show-quit-dialog', handleQuitDialog)
         delete window.showDialog
@@ -215,10 +215,10 @@ export default function Home() {
 
   return (
     <div className="app-shell">
-      <Ribbon 
-        page={page} 
-        setPage={handlePageChange} 
-        project={project} 
+      <Ribbon
+        page={page}
+        setPage={handlePageChange}
+        project={project}
         projectFileMethods={projectFileMethods}
         onShowMetadataWizard={() => setShowMetadataWizard(true)}
       />

@@ -2,11 +2,11 @@ import { PlusCircleIcon, XCircleIcon, PencilIcon, SlidersHorizontalIcon } from '
 import IconText from './IconText'
 import { useState } from 'react'
 
-export default function ScenePropertyEditor({ 
-    sceneInfo, 
-    onUpdate, 
+export default function ScenePropertyEditor({
+    sceneInfo,
+    onUpdate,
     readOnly = false,
-    showTitle = false 
+    showTitle = false
 }) {
     const [editingPropertyName, setEditingPropertyName] = useState(null)
     const [editingTitle, setEditingTitle] = useState(false)
@@ -23,7 +23,7 @@ export default function ScenePropertyEditor({
             ...sceneInfo,
             inputs: [...(sceneInfo.inputs || []), newProperty]
         }
-        
+
         onUpdate(updatedInfo)
     }
 
@@ -40,18 +40,18 @@ export default function ScenePropertyEditor({
             ...sceneInfo,
             inputs: sceneInfo.inputs.filter(inp => inp.id !== inputId)
         }
-        
+
         onUpdate(updatedInfo)
     }
 
     const handleUpdateProperty = (inputId, field, value) => {
         const updatedInfo = {
             ...sceneInfo,
-            inputs: sceneInfo.inputs.map(inp => 
+            inputs: sceneInfo.inputs.map(inp =>
                 inp.id === inputId ? { ...inp, [field]: value } : inp
             )
         }
-        
+
         onUpdate(updatedInfo)
     }
 
@@ -60,7 +60,7 @@ export default function ScenePropertyEditor({
             ...sceneInfo,
             name: newTitle
         }
-        
+
         onUpdate(updatedInfo)
     }
 
