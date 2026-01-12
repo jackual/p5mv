@@ -4,6 +4,7 @@ import "./styles/main.scss"
 import React, { useState } from 'react'
 import { createRoot } from "react-dom/client"
 import { proxy, useSnapshot, subscribe } from 'valtio'
+import { SquaresFourIcon, CodeIcon } from '@phosphor-icons/react'
 import Project from '@/lib/classes/Project'
 import Timeline from '@/components/Timeline'
 import Render from '@/components/Render'
@@ -11,6 +12,8 @@ import Help from '@/components/Help'
 import Scenes from '@/components/Scenes'
 import Editor from '@/components/Editor'
 import Ribbon from '@/components/Ribbon'
+import Dialog from '@/components/Dialog'
+import Tooltip from '@/components/Tooltip'
 import { newFile, openFile, saveFile } from '@/lib/projectFileMethods'
 
 const project = proxy(new Project())
@@ -44,6 +47,8 @@ export default function Home() {
     userDirectoryScenes: []
   })
   const [editorNavigationCheck, setEditorNavigationCheck] = useState(null)
+  const [showNoScenesGuide, setShowNoScenesGuide] = useState(false)
+  const [tooltipTarget, setTooltipTarget] = useState(null)
 
   // Load scenes on mount and whenever page changes
   React.useEffect(() => {
@@ -57,6 +62,17 @@ export default function Home() {
       setAvailableScenes(scenes)
       // Update project.openScenes for Region class to use
       project.openScenes = scenes.openScenes
+
+      // Check if there are no scenes in the project and show guide on timeline page
+      if (scenes.openScenes.length === 0 && page === "timeline") {
+        // Check if user has dismissed the guide in this session
+        const dismissed = sessionStorage.getItem('noScenesGuideDismissed')
+        if (!dismissed) {
+          setTooltipTarget('scenes')
+        }
+      } else {
+        setTooltipTarget(null)
+      }
     }
     loadScenes()
   }, [page])
@@ -143,6 +159,20 @@ export default function Home() {
       <div className="page-content">
         {pages[page]}
       </div>
+      {tooltipTarget && (
+        <Tooltip
+          target={tooltipTarget}
+          message={
+            <>
+              Go to Scenes or Editor to add your first scene to the project.
+            </>
+          }
+          onClose={() => {
+            setTooltipTarget(null)
+            sessionStorage.setItem('noScenesGuideDismissed', 'true')
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -1,0 +1,86 @@
+.tooltip-pointer {
+    position: fixed;
+    z-index: 10000;
+    transform: translateX(-50%);
+    animation: tooltipBounce 0.5s ease-out;
+    pointer-events: auto;
+    user-select: none;
+
+    .tooltip-arrow {
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid rgba(255, 255, 255, 0.95);
+        margin: 0 auto;
+        filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    .tooltip-content {
+        background: rgba(255, 255, 255, 0.90);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.551);
+        border-radius: $border-radius-md;
+        padding: 10px 12px;
+        max-width: 240px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+        position: relative;
+        color: black;
+
+        .tooltip-close-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: none;
+            border: none;
+            color: black;
+            opacity: 0.4;
+            cursor: pointer;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            transition: all 0.2s;
+
+            &:hover {
+                opacity: 1;
+                background: rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        .tooltip-message {
+            font-size: 13px;
+            line-height: 1.4;
+            padding-right: 16px;
+
+            .tooltip-icon-label {
+                display: inline-flex;
+                align-items: center;
+
+                color: black;
+
+                svg {
+                    flex-shrink: 0;
+                }
+            }
+        }
+    }
+}
+
+@keyframes tooltipBounce {
+    0% {
+        transform: translateX(-50%) translateY(-10px);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(5px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
