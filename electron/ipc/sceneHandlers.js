@@ -25,7 +25,7 @@ export function registerSceneHandlers() {
     ipcMain.handle('show-scene-conflict-dialog', async (event, { sceneId }) => {
         // Send to renderer to show custom dialog
         event.sender.send('show-scene-conflict-dialog', { sceneId })
-        
+
         // Wait for response from renderer
         return new Promise((resolve) => {
             ipcMain.once('scene-conflict-dialog-response', (event, response) => {
@@ -37,7 +37,7 @@ export function registerSceneHandlers() {
     ipcMain.handle('show-delete-scene-dialog', async (event, { sceneId }) => {
         // Send to renderer to show custom dialog
         event.sender.send('show-delete-scene-dialog', { sceneId })
-        
+
         // Wait for response from renderer
         return new Promise((resolve) => {
             ipcMain.once('delete-scene-dialog-response', (event, response) => {

@@ -53,7 +53,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                 message: `A scene with the ID "${sceneId}" already exists in this location. What would you like to do?`,
                 confirmLabel: 'Replace',
                 cancelLabel: 'Cancel',
-                onCancel: () => {}
+                onCancel: () => { }
             })
             // Send response back: 0 for Cancel, 1 for Replace
             // For now we don't support "Keep Both" option
@@ -341,7 +341,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         try {
             setSavingScene(true)
-            
+
             // Get current scene info
             const currentInfo = await ipcRenderer.invoke('read-scene-info', {
                 scenePath: scene._path
@@ -376,7 +376,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         try {
             setSavingScene(true)
-            
+
             const currentInfo = await ipcRenderer.invoke('read-scene-info', {
                 scenePath: scene._path
             })
@@ -404,7 +404,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         try {
             setSavingScene(true)
-            
+
             const currentInfo = await ipcRenderer.invoke('read-scene-info', {
                 scenePath: scene._path
             })
@@ -451,7 +451,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         try {
             setSavingScene(true)
-            
+
             const currentInfo = await ipcRenderer.invoke('read-scene-info', {
                 scenePath: scene._path
             })
@@ -506,7 +506,9 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
             <>
                 <div className="scene-title-header">
                     <ImageIcon size={24} weight="duotone" />
-                    {editingTitle ? (
+                    {source === 'defaultScenes' ? (
+                        <h2>{scene.name}</h2>
+                    ) : editingTitle ? (
                         <input
                             type="text"
                             className="scene-title-input"
@@ -556,20 +558,24 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
                 <div className="properties-header">
                     <IconText as="h3" icon={SlidersHorizontalIcon}>Properties</IconText>
-                    <PlusCircleIcon 
-                        size={20} 
-                        weight="fill" 
-                        className="add-property-icon" 
-                        title="Add new property"
-                        onClick={() => handleAddSceneProperty(scene)}
-                    />
+                    {source !== 'defaultScenes' && (
+                        <PlusCircleIcon
+                            size={20}
+                            weight="fill"
+                            className="add-property-icon"
+                            title="Add new property"
+                            onClick={() => handleAddSceneProperty(scene)}
+                        />
+                    )}
                 </div>
                 {scene.inputs && scene.inputs.length > 0 ? (
                     <form className="scene-properties-form">
                         {scene.inputs.map((input, idx) => (
                             <div key={input.id} className="scene-property-group">
                                 <div className="property-header">
-                                    {editingPropertyName === input.id ? (
+                                    {source === 'defaultScenes' ? (
+                                        <h4>{input.label}</h4>
+                                    ) : editingPropertyName === input.id ? (
                                         <input
                                             type="text"
                                             className="property-name-input"
@@ -592,12 +598,14 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                             <PencilIcon size={12} weight="regular" />
                                         </h4>
                                     )}
-                                    <XCircleIcon 
-                                        size={16} 
-                                        weight="fill" 
-                                        onClick={() => handleDeleteSceneProperty(scene, input.id, input.label)}
-                                        style={{ cursor: 'pointer' }}
-                                    />
+                                    {source !== 'defaultScenes' && (
+                                        <XCircleIcon
+                                            size={16}
+                                            weight="fill"
+                                            onClick={() => handleDeleteSceneProperty(scene, input.id, input.label)}
+                                            style={{ cursor: 'pointer' }}
+                                        />
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor={`scene-input-id-${input.id}`}>ID</label>
@@ -608,8 +616,11 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                             className="id-input"
                                             id={`scene-input-id-${input.id}`}
                                             defaultValue={input.id}
+                                            readOnly={source === 'defaultScenes'}
                                             onBlur={(e) => {
-                                                handleSaveSceneProperty(scene, input.id, 'id', e.target.value)
+                                                if (source !== 'defaultScenes') {
+                                                    handleSaveSceneProperty(scene, input.id, 'id', e.target.value)
+                                                }
                                             }}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') {
@@ -625,8 +636,11 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                     <select
                                         id={`scene-input-type-${input.id}`}
                                         defaultValue={input.type}
+                                        disabled={source === 'defaultScenes'}
                                         onChange={(e) => {
-                                            handleSaveSceneProperty(scene, input.id, 'type', e.target.value)
+                                            if (source !== 'defaultScenes') {
+                                                handleSaveSceneProperty(scene, input.id, 'type', e.target.value)
+                                            }
                                         }}
                                     >
                                         <option value="number">Number</option>
@@ -643,8 +657,11 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
                                         type="text"
                                         id={`scene-input-default-${input.id}`}
                                         defaultValue={input.default || ''}
+                                        readOnly={source === 'defaultScenes'}
                                         onBlur={(e) => {
-                                            handleSaveSceneProperty(scene, input.id, 'default', e.target.value)
+                                            if (source !== 'defaultScenes') {
+                                                handleSaveSceneProperty(scene, input.id, 'default', e.target.value)
+                                            }
                                         }}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
