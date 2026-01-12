@@ -25,19 +25,17 @@ const projectFileMethods = {
   saveFile: () => saveFile(project)
 }
 
-// Auto-save project data whenever it changes
-// subscribe(project, () => {
-//   // const saveData = JSON.stringify({
-//   //   tracks: project.tracks.map(track => track.export()),
-//   //   meta: project.meta
-//   // })
-
-//   // Save to localStorage
-//   // localStorage.setItem('project-save-data', saveData)
-
-//   // Optional: Also log the save data to console for debugging
-//   // console.log('Project auto-saved:', saveData)
-// })
+// Track unsaved changes
+subscribe(project, () => {
+  if (typeof window !== 'undefined' && window.require) {
+    try {
+      const { ipcRenderer } = window.require('electron')
+      ipcRenderer.invoke('project-mark-unsaved', { title: project.meta.title })
+    } catch (error) {
+      console.error('Failed to mark project as unsaved:', error)
+    }
+  }
+})
 
 export default function Home() {
   const [page, setPage] = useState("timeline")

@@ -9,11 +9,11 @@ export default function Tooltip({ target, message, onClose }) {
 
         // Find the target element by ID - try with -radio suffix first, then without
         let targetElement = document.getElementById(`${target}-radio`)
-        
+
         if (!targetElement) {
             targetElement = document.getElementById(target)
         }
-        
+
         if (!targetElement) {
             console.warn(`Tooltip target element not found: ${target}`)
             return
@@ -21,7 +21,7 @@ export default function Tooltip({ target, message, onClose }) {
 
         // Get the bounding rectangle of the target element
         const rect = targetElement.getBoundingClientRect()
-        
+
         // Position the tooltip below the target element
         setPosition({
             top: rect.bottom + 10,

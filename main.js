@@ -1,4 +1,4 @@
-import { app, BrowserWindow, session } from 'electron';
+import { app, BrowserWindow, session, dialog } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
@@ -20,6 +20,29 @@ function createWindow() {
       contextIsolation: false,
       webviewTag: true, // Enable webview tag
     },
+  });
+
+  // Initialize unsaved changes tracking on window
+  mainWindow.hasUnsavedChanges = false;
+  mainWindow.projectTitle = 'Untitled Project';
+
+  // Handle window close event
+  mainWindow.on('close', (e) => {
+    if (mainWindow.hasUnsavedChanges) {
+      const choice = dialog.showMessageBoxSync(mainWindow, {
+        type: 'question',
+        buttons: ['Cancel', 'Quit'],
+        title: 'Unsaved Changes',
+        message: 'Do you really want to quit?',
+        detail: `You have unsaved changes in ${mainWindow.projectTitle}`,
+        defaultId: 0,
+        cancelId: 0
+      });
+      
+      if (choice === 0) {
+        e.preventDefault();
+      }
+    }
   });
 
   // Point Electron at Vite's dev server when developing, otherwise load the built bundle
@@ -48,7 +71,7 @@ app.whenReady().then(() => {
 
   setupMenu();
   registerProtocols();
-  registerIpcHandlers(broadcastProgress);
+  registerIpcHandlers(broadcastProgress, () => mainWindow);
   createWindow();
 
   // Track popup windows created for downloads

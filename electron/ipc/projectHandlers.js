@@ -20,7 +20,7 @@ const addDirectoryToZip = async (zipInstance, directory, basePath = '') => {
     }
 }
 
-export function registerProjectHandlers() {
+export function registerProjectHandlers(getMainWindow) {
     ipcMain.handle('project-init-temp', async () => {
         try {
             const tmpDir = getProjectTempDir()
@@ -31,6 +31,23 @@ export function registerProjectHandlers() {
             console.error('Project temp init error:', error)
             return { success: false, error: error.message }
         }
+    })
+
+    ipcMain.handle('project-mark-saved', async () => {
+        const mainWindow = getMainWindow();
+        if (mainWindow) {
+            mainWindow.hasUnsavedChanges = false;
+        }
+        return { success: true };
+    })
+
+    ipcMain.handle('project-mark-unsaved', async (event, { title }) => {
+        const mainWindow = getMainWindow();
+        if (mainWindow) {
+            mainWindow.hasUnsavedChanges = true;
+            mainWindow.projectTitle = title || 'Untitled Project';
+        }
+        return { success: true };
     })
 
     ipcMain.handle('project-open', async () => {
