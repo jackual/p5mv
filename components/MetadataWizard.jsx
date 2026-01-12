@@ -2,6 +2,14 @@ import { XIcon, CopyIcon, CheckIcon, MagicWandIcon } from '@phosphor-icons/react
 import ScenePropertyEditor from './ScenePropertyEditor'
 import IconText from './IconText'
 import { useState } from 'react'
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json'
+import htmlbars from 'react-syntax-highlighter/dist/esm/languages/hljs/htmlbars'
+import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import PropertyTypes from '@/data/PropertyTypes'
+
+SyntaxHighlighter.registerLanguage('json', json)
+SyntaxHighlighter.registerLanguage('html', htmlbars)
 
 export default function MetadataWizard({ onClose }) {
     // Extract title from webview's document.title (format: "p5.js Web Editor | sketch_name")
@@ -32,7 +40,8 @@ export default function MetadataWizard({ onClose }) {
     }
 
     const handleCopyToClipboard = async () => {
-        const fullTag = `<script id="p5mv-json" type="application/json">\n${JSON.stringify(sceneInfo, null, 2)}\n</script>`
+        const formattedInfo = formatSceneInfo(sceneInfo)
+        const fullTag = `<script id="p5mv-json" type="application/json">\n${JSON.stringify(formattedInfo, null, 2)}\n</script>`
         try {
             await navigator.clipboard.writeText(fullTag)
             setCopied(true)
@@ -42,7 +51,41 @@ export default function MetadataWizard({ onClose }) {
         }
     }
 
-    const json = JSON.stringify(sceneInfo, null, 2)
+    // Format scene info using PropertyTypes to get proper value types
+    const formatSceneInfo = (info) => {
+        const formatted = {
+            name: info.name,
+            thumb: info.thumb
+        }
+        
+        if (info.inputs && info.inputs.length > 0) {
+            formatted.inputs = info.inputs.map(input => {
+                const propertyType = PropertyTypes[input.type]
+                let defaultValue = input.default
+                
+                // Use PropertyTypes.set to convert the value properly
+                if (propertyType && propertyType.set && defaultValue !== undefined && defaultValue !== '') {
+                    try {
+                        defaultValue = propertyType.set(defaultValue)
+                    } catch (e) {
+                        // Keep original value if conversion fails
+                    }
+                }
+                
+                return {
+                    id: input.id,
+                    label: input.label,
+                    type: input.type,
+                    default: defaultValue
+                }
+            })
+        }
+        
+        return formatted
+    }
+
+    const formattedInfo = formatSceneInfo(sceneInfo)
+    const json = JSON.stringify(formattedInfo, null, 2)
     const fullTag = `<script id="p5mv-json" type="application/json">\n${json}\n</script>`
 
     return (
@@ -70,9 +113,23 @@ export default function MetadataWizard({ onClose }) {
                             <h3>HTML Output</h3>
                             <p>Add this to the <code>&lt;head&gt;</code> section of your sketch's HTML file</p>
                         </div>
-                        <pre className="metadata-wizard-code">
-                            <code>{fullTag}</code>
-                        </pre>
+                        <SyntaxHighlighter 
+                            language="html" 
+                            style={vs2015}
+                            customStyle={{
+                                margin: 0,
+                                borderRadius: '8px',
+                                flex: 1,
+                                fontSize: '13px',
+                                lineHeight: '1.5',
+                                fontFamily: "'Roboto Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+                            }}
+                            wrapLongLines={false}
+                            PreTag="pre"
+                            CodeTag="code"
+                        >
+                            {fullTag}
+                        </SyntaxHighlighter>
                     </div>
                 </div>
 
