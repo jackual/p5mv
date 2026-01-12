@@ -3,20 +3,21 @@
     display: flex;
     align-items: center;
     color: rgb(0, 0, 0);
-    padding: 12px 16px;
-    font-size: 14px;
+    padding: 8px 12px;
+    font-size: 13px;
     border-bottom: 1px solid $border-color;
     box-shadow: $shadow-sm;
-    gap: 8px;
+    gap: 6px;
+    height: 52px;
 
     .ribbon-logo {
-        width: 30px;
+        width: 24px;
     }
 
     .ribbon-button {
         @include card-style;
-        width: 35px;
-        height: 35px;
+        width: 30px;
+        height: 30px;
         border-radius: $border-radius-lg;
         display: flex;
         align-items: center;
@@ -31,29 +32,70 @@
 
         svg {
             color: $text-color;
+            width: 20px;
+            height: 20px;
         }
     }
 
     .ribbon-radio {
+        @include card-style;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 9px;
+        border-radius: $border-radius-lg;
         transition: .2s;
+        cursor: pointer;
+
+        @include hover-lift;
 
         &:hover {
             color: $p5-colour;
-            cursor: pointer;
+        }
+
+        &.ribbon-selected {
+            background: linear-gradient(135deg, rgba(237, 34, 93, 0.1) 0%, rgba(237, 34, 93, 0.15) 100%);
+            color: $p5-colour;
+            box-shadow: 0 2px 4px rgba(237, 34, 93, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .ribbon-radio-label {
+            font-size: 12px;
+            font-weight: 500;
         }
     }
 
     .ribbon-divider {
         width: 1px;
-        height: 25px;
+        height: 20px;
         background-color: rgba(0, 0, 0, 0.2);
-        margin: 0 6px;
+        margin: 0 4px;
     }
 
     .ribbon-snap-control {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
+
+        label {
+            font-size: 12px;
+        }
+
+        select {
+            width: 85px;
+            font-size: 12px;
+        }
+    }
+
+    .ribbon-message {
+        font-size: 12px;
+        color: $text-color;
+        padding: 0 6px;
     }
 
 }
