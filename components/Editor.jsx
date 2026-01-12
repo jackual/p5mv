@@ -97,15 +97,25 @@ export default function Editor({ onNavigateAway }) {
         };
 
         const handleDownloadCompleted = async (event, data) => {
-            console.log('Download completed:', data.filename, 'at', data.savePath);
+            console.log('Download completed:', data);
+
+            if (!data || !data.savePath) {
+                console.error('No save path in download data:', data);
+                setIsImporting(false);
+                return;
+            }
 
             // Import the downloaded scene
             const ipcRenderer = window.require?.('electron')?.ipcRenderer;
             if (ipcRenderer) {
                 try {
-                    await ipcRenderer.invoke('import-downloaded-scene', {
+                    const result = await ipcRenderer.invoke('import-downloaded-scene', {
                         filePath: data.savePath
                     });
+                    console.log('Import result:', result);
+                    if (!result.success) {
+                        console.error('Import failed:', result.error);
+                    }
                 } catch (error) {
                     console.error('Failed to import downloaded scene:', error);
                     setIsImporting(false);
@@ -131,8 +141,12 @@ export default function Editor({ onNavigateAway }) {
             const handleImportProgress = (event, { status }) => {
                 if (status === 'importing') {
                     setIsImporting(true);
-                } else if (status === 'complete' || status === 'error') {
+                } else if (status === 'complete') {
                     setIsImporting(false);
+                    alert('Sketch successfully imported to your project!');
+                } else if (status === 'error') {
+                    setIsImporting(false);
+                    alert('Failed to import sketch. Please try again.');
                 }
             };
 

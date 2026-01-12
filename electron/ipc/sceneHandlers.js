@@ -96,4 +96,33 @@ export function registerSceneHandlers() {
     ipcMain.handle('show-item-in-folder', async (event, folderPath) => {
         shell.showItemInFolder(folderPath)
     })
+
+    ipcMain.handle('import-downloaded-scene', async (event, { filePath }) => {
+        try {
+            if (!filePath) {
+                throw new Error('No file path provided for scene import')
+            }
+
+            console.log('Importing downloaded scene from:', filePath)
+
+            // Notify renderer that import is starting
+            event.sender.send('scene-import-progress', { status: 'importing', path: filePath })
+
+            // Import the scene to the open project
+            await importScene(filePath, 'openScenes')
+
+            // Notify renderer that import is complete
+            event.sender.send('scene-import-progress', { status: 'complete' })
+
+            console.log('Scene import completed successfully')
+            return { success: true }
+        } catch (error) {
+            console.error('Error importing downloaded scene:', error)
+
+            // Notify renderer that import failed
+            event.sender.send('scene-import-progress', { status: 'error', error: error.message })
+
+            return { success: false, error: error.message }
+        }
+    })
 }
