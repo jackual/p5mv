@@ -75,14 +75,15 @@ export default function Editor({ onNavigateAway }) {
     useEffect(() => {
         if (onNavigateAway) {
             // Register the check function - wrap in another function for setState
-            const checkFunction = () => {
+            const checkFunction = async () => {
                 // Check if we're on the login page
                 const isLoginPage = currentUrl.includes('/login') || currentUrl === DEFAULT_URL;
                 if (isLoginPage) {
                     return true; // Allow navigation without confirmation
                 }
-                return window.confirm(
-                    'You may have unsaved changes in the p5.js editor. Are you sure you want to leave this page?'
+                return await window.showConfirm(
+                    'You may have unsaved changes in the p5.js editor. Are you sure you want to leave this page?',
+                    'Unsaved Changes'
                 );
             };
             onNavigateAway(() => checkFunction);
@@ -143,10 +144,10 @@ export default function Editor({ onNavigateAway }) {
                     setIsImporting(true);
                 } else if (status === 'complete') {
                     setIsImporting(false);
-                    alert('Sketch successfully imported to your project!');
+                    window.showAlert('Sketch successfully imported to your project!', 'Success');
                 } else if (status === 'error') {
                     setIsImporting(false);
-                    alert('Failed to import sketch. Please try again.');
+                    window.showAlert('Failed to import sketch. Please try again.', 'Import Failed');
                 }
             };
 

@@ -8,7 +8,7 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
         project.playhead = nearestBeat + snap.view.start;
         if (event.target.classList.contains('new-region-indicator') && nearestBeat !== null) {
             if (!project.openScenes || project.openScenes.length === 0) {
-                alert('No scenes available in this project. Go to the Scenes page and add scenes to your project before creating regions.');
+                window.showAlert('No scenes available in this project. Go to the Scenes page and add scenes to your project before creating regions.', 'No Scenes Available');
                 return;
             }
             const trackIndex = Number(event.target.parentElement.getAttribute('data-track-index'))
@@ -37,8 +37,21 @@ export default function Tracks({ tracks, project, resizeState, handleResizeStart
                     project.addTrack()
                 } else if (clickedElement.classList.contains('remove-button') || clickedElement.closest('.remove-button')) {
                     console.log('Removing track')
-                    if (track.regions.length === 0 || confirm(`Are you sure you want to delete track "${track.name}"? This action cannot be undone.`)) {
+                    if (project.tracks.length === 1) {
+                        window.showAlert('Cannot delete the last track. A project must have at least one track.', 'Cannot Delete Track')
+                        return
+                    }
+                    if (track.regions.length === 0) {
                         project.removeTrack(index)
+                    } else {
+                        window.showConfirm(
+                            `Are you sure you want to delete track "${track.name}"? This action cannot be undone.`,
+                            'Delete Track'
+                        ).then(confirmed => {
+                            if (confirmed) {
+                                project.removeTrack(index)
+                            }
+                        })
                     }
                 } else if (event.target.classList.contains('trackHeader')) {
                     project.tracks[index].select()

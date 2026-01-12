@@ -50,6 +50,15 @@ export function registerProjectHandlers(getMainWindow) {
         return { success: true };
     })
 
+    ipcMain.handle('project-force-quit', async () => {
+        const mainWindow = getMainWindow();
+        if (mainWindow) {
+            mainWindow.hasUnsavedChanges = false;
+            mainWindow.close();
+        }
+        return { success: true };
+    })
+
     ipcMain.handle('project-open', async () => {
         try {
             const { canceled, filePaths } = await dialog.showOpenDialog({

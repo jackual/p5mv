@@ -58,12 +58,66 @@
         color: $p5-colour;
     }
 
+    .dialog-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 12px 0;
+        color: $text-color;
+    }
+
     .dialog-message {
         text-align: center;
         font-size: 15px;
         line-height: 1.5;
         margin: 0 0 20px 0;
         color: $text-color;
+    }
+
+    .dialog-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .dialog-button {
+        @include card-style;
+        border: none;
+        border-radius: $border-radius-md;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s ease;
+        flex: 1;
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+
+        &-confirm {
+            background: linear-gradient(135deg, $p5-colour 0%, darken($p5-colour, 5%) 100%);
+            color: white;
+
+            &:hover {
+                background: linear-gradient(135deg, lighten($p5-colour, 5%) 0%, $p5-colour 100%);
+                box-shadow: 0 4px 8px rgba(237, 34, 93, 0.3);
+            }
+        }
+
+        &-cancel {
+            background: $card-gradient;
+            color: $text-color;
+
+            &:hover {
+                background: $card-gradient-hover;
+            }
+        }
     }
 
     .dialog-action {

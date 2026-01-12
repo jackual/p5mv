@@ -13,33 +13,27 @@ export function registerSceneHandlers() {
     })
 
     ipcMain.handle('show-scene-conflict-dialog', async (event, { sceneId }) => {
-        const result = await dialog.showMessageBox({
-            type: 'question',
-            title: 'Scene Already Exists',
-            message: `A scene with the ID "${sceneId}" already exists in this location.`,
-            detail: 'What would you like to do?',
-            buttons: ['Cancel', 'Replace', 'Keep Both'],
-            defaultId: 0,
-            cancelId: 0
+        // Send to renderer to show custom dialog
+        event.sender.send('show-scene-conflict-dialog', { sceneId })
+        
+        // Wait for response from renderer
+        return new Promise((resolve) => {
+            ipcMain.once('scene-conflict-dialog-response', (event, response) => {
+                resolve(response)
+            })
         })
-
-        // Returns 0 for Cancel, 1 for Replace, 2 for Keep Both
-        return result.response
     })
 
     ipcMain.handle('show-delete-scene-dialog', async (event, { sceneId }) => {
-        const result = await dialog.showMessageBox({
-            type: 'warning',
-            title: 'Delete Scene',
-            message: `Are you sure you want to delete "${sceneId}"?`,
-            detail: 'This action cannot be undone.',
-            buttons: ['Cancel', 'Delete'],
-            defaultId: 0,
-            cancelId: 0
+        // Send to renderer to show custom dialog
+        event.sender.send('show-delete-scene-dialog', { sceneId })
+        
+        // Wait for response from renderer
+        return new Promise((resolve) => {
+            ipcMain.once('delete-scene-dialog-response', (event, response) => {
+                resolve(response)
+            })
         })
-
-        // Returns 0 for Cancel, 1 for Delete
-        return result.response
     })
 
     ipcMain.handle('delete-scene', async (event, { sourceKey, sceneId }) => {
@@ -78,16 +72,6 @@ export function registerSceneHandlers() {
 
             // Notify renderer that import failed
             event.sender.send('scene-import-progress', { status: 'error', error: error.message })
-
-
-            await dialog.showMessageBox({
-                type: 'error',
-                title: 'Failed to Import Scene',
-                message: 'An error occurred while importing the scene.',
-                detail: error.message || 'Unknown error',
-                buttons: ['OK']
-            })
-
 
             return false
         }

@@ -27,21 +27,14 @@ function createWindow() {
   mainWindow.projectTitle = 'Untitled Project';
 
   // Handle window close event
-  mainWindow.on('close', (e) => {
+  mainWindow.on('close', async (e) => {
     if (mainWindow.hasUnsavedChanges) {
-      const choice = dialog.showMessageBoxSync(mainWindow, {
-        type: 'question',
-        buttons: ['Cancel', 'Quit'],
-        title: 'Unsaved Changes',
-        message: 'Do you really want to quit?',
-        detail: `You have unsaved changes in ${mainWindow.projectTitle}`,
-        defaultId: 0,
-        cancelId: 0
-      });
+      e.preventDefault();
       
-      if (choice === 0) {
-        e.preventDefault();
-      }
+      // Send message to renderer to show dialog
+      mainWindow.webContents.send('show-quit-dialog', {
+        projectTitle: mainWindow.projectTitle
+      });
     }
   });
 
@@ -76,12 +69,12 @@ app.whenReady().then(() => {
 
   // Track popup windows created for downloads
   const downloadWindows = [];
-  
+
   // Intercept all webContents (including webviews) and set window open handlers
   app.on('web-contents-created', (event, contents) => {
     contents.setWindowOpenHandler(({ url }) => {
       console.log('Window open request intercepted:', url);
-      
+
       // Immediately notify renderer that download is starting
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('webview-download-started', {
@@ -90,7 +83,7 @@ app.whenReady().then(() => {
           url: url
         });
       }
-      
+
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
@@ -104,7 +97,7 @@ app.whenReady().then(() => {
         }
       };
     });
-    
+
     // Track new windows created
     contents.on('did-create-window', (window) => {
       console.log('New window created');
@@ -156,7 +149,7 @@ app.whenReady().then(() => {
           });
           downloadWindows.length = 0;
         }, 100);
-        
+
         if (state === 'completed') {
           mainWindow.webContents.send('webview-download-completed', {
             filename: item.getFilename(),

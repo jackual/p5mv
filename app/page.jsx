@@ -47,6 +47,7 @@ export default function Home() {
   const [editorNavigationCheck, setEditorNavigationCheck] = useState(null)
   const [showNoScenesGuide, setShowNoScenesGuide] = useState(false)
   const [tooltipTarget, setTooltipTarget] = useState(null)
+  const [dialog, setDialog] = useState(null)
 
   // Load scenes on mount and whenever page changes
   React.useEffect(() => {
@@ -75,10 +76,69 @@ export default function Home() {
     loadScenes()
   }, [page])
 
-  const handlePageChange = (newPage) => {
+  // Global dialog functions
+  React.useEffect(() => {
+    window.showDialog = (config) => {
+      return new Promise((resolve) => {
+        setDialog({
+          ...config,
+          onConfirm: () => {
+            setDialog(null)
+            resolve(true)
+          },
+          onCancel: config.onCancel ? () => {
+            setDialog(null)
+            resolve(false)
+          } : undefined,
+          onClose: () => {
+            setDialog(null)
+            resolve(false)
+          }
+        })
+      })
+    }
+
+    window.showAlert = (message, title = 'Alert') => {
+      return window.showDialog({ type: 'info', title, message, confirmLabel: 'OK' })
+    }
+
+    window.showConfirm = (message, title = 'Confirm') => {
+      return window.showDialog({ type: 'warning', title, message, confirmLabel: 'OK', onCancel: () => {} })
+    }
+
+    // Listen for quit dialog from main process
+    const ipcRenderer = window.require?.('electron')?.ipcRenderer
+    if (ipcRenderer) {
+      const handleQuitDialog = async (event, { projectTitle }) => {
+        const confirmed = await window.showConfirm(
+          `You have unsaved changes in ${projectTitle}`,
+          'Do you really want to quit?'
+        )
+        if (confirmed) {
+          await ipcRenderer.invoke('project-force-quit')
+        }
+      }
+      ipcRenderer.on('show-quit-dialog', handleQuitDialog)
+      
+      return () => {
+        ipcRenderer.removeListener('show-quit-dialog', handleQuitDialog)
+        delete window.showDialog
+        delete window.showAlert
+        delete window.showConfirm
+      }
+    }
+
+    return () => {
+      delete window.showDialog
+      delete window.showAlert
+      delete window.showConfirm
+    }
+  }, [])
+
+  const handlePageChange = async (newPage) => {
     // If leaving editor page, check if navigation should be blocked
     if (page === "editor" && newPage !== "editor" && editorNavigationCheck) {
-      const canNavigate = editorNavigationCheck();
+      const canNavigate = await editorNavigationCheck();
       if (!canNavigate) {
         return; // Cancel navigation
       }
@@ -170,6 +230,9 @@ export default function Home() {
             sessionStorage.setItem('noScenesGuideDismissed', 'true')
           }}
         />
+      )}
+      {dialog && (
+        <Dialog {...dialog} />
       )}
     </div>
   )

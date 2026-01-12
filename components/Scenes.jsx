@@ -36,12 +36,42 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
         const handleImportProgress = (event, { status, path, error }) => {
             if (status === 'importing') {
                 setIsImporting(true)
-            } else if (status === 'complete' || status === 'error') {
+            } else if (status === 'complete') {
                 setIsImporting(false)
+            } else if (status === 'error') {
+                setIsImporting(false)
+                window.showAlert(`An error occurred while importing the scene: ${error || 'Unknown error'}`, 'Failed to Import Scene')
             }
         }
 
+        // Listen for scene conflict dialog
+        const handleSceneConflictDialog = async (event, { sceneId }) => {
+            const result = await window.showDialog({
+                type: 'warning',
+                title: 'Scene Already Exists',
+                message: `A scene with the ID "${sceneId}" already exists in this location. What would you like to do?`,
+                confirmLabel: 'Replace',
+                cancelLabel: 'Cancel',
+                onCancel: () => {}
+            })
+            // Send response back: 0 for Cancel, 1 for Replace
+            // For now we don't support "Keep Both" option
+            ipcRenderer.send('scene-conflict-dialog-response', result ? 1 : 0)
+        }
+
+        // Listen for delete scene dialog
+        const handleDeleteSceneDialog = async (event, { sceneId }) => {
+            const result = await window.showConfirm(
+                `Are you sure you want to delete "${sceneId}"? This action cannot be undone.`,
+                'Delete Scene'
+            )
+            // Send response back: 0 for Cancel, 1 for Delete
+            ipcRenderer.send('delete-scene-dialog-response', result ? 1 : 0)
+        }
+
         ipcRenderer.on('scene-import-progress', handleImportProgress)
+        ipcRenderer.on('show-scene-conflict-dialog', handleSceneConflictDialog)
+        ipcRenderer.on('show-delete-scene-dialog', handleDeleteSceneDialog)
 
         // Check if project scenes is empty and show tooltip
         if (availableScenes.openScenes.length === 0) {
@@ -55,6 +85,8 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         return () => {
             ipcRenderer.removeListener('scene-import-progress', handleImportProgress)
+            ipcRenderer.removeListener('show-scene-conflict-dialog', handleSceneConflictDialog)
+            ipcRenderer.removeListener('show-delete-scene-dialog', handleDeleteSceneDialog)
         }
     }, [isActive, availableScenes.openScenes.length])
 

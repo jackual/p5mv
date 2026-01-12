@@ -57,8 +57,9 @@ const Ribbon = ({ page, setPage, project, projectFileMethods }) => {
             <Divider />
             {page === "timeline" && (
                 <>
-                    <RibbonButton icon={FilePlusIcon} label="New" onClick={() => {
-                        confirm("Are you sure you want to create a new project?") && projectFileMethods.newFile()
+                    <RibbonButton icon={FilePlusIcon} label="New" onClick={async () => {
+                        const confirmed = await window.showConfirm('Are you sure you want to create a new project?', 'New Project')
+                        if (confirmed) projectFileMethods.newFile()
                     }} />
                     <RibbonButton icon={FolderOpenIcon} label="Open" onClick={() => projectFileMethods.openFile()} />
                     <RibbonButton icon={FloppyDiskIcon} label="Save" onClick={() => projectFileMethods.saveFile()} />
