@@ -29,8 +29,7 @@ p5.prototype.createCanvas = function (...args) {
 
 const inputs = JSON.parse(document.querySelector('#p5mv-json').innerHTML).inputs
 for (let i of inputs) {
-    if (i.type == 'colour')
-        p5mv[i.id] = i.default
+    p5mv[i.id] = i.default
 }
 
 Object.freeze(p5mv)

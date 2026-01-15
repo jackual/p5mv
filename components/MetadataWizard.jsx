@@ -57,12 +57,12 @@ export default function MetadataWizard({ onClose }) {
             name: info.name,
             thumb: info.thumb
         }
-        
+
         if (info.inputs && info.inputs.length > 0) {
             formatted.inputs = info.inputs.map(input => {
                 const propertyType = PropertyTypes[input.type]
                 let defaultValue = input.default
-                
+
                 // Use PropertyTypes.set to convert the value properly (except for colours)
                 if (input.type !== 'colour' && propertyType && propertyType.set && defaultValue !== undefined && defaultValue !== '') {
                     try {
@@ -71,7 +71,7 @@ export default function MetadataWizard({ onClose }) {
                         // Keep original value if conversion fails
                     }
                 }
-                
+
                 return {
                     id: input.id,
                     label: input.label,
@@ -80,13 +80,13 @@ export default function MetadataWizard({ onClose }) {
                 }
             })
         }
-        
+
         return formatted
     }
 
     const formattedInfo = formatSceneInfo(sceneInfo)
     const json = JSON.stringify(formattedInfo, null, 2)
-    const fullTag = `<script id="p5mv-json" type="application/json">\n${json}\n</script>`
+    const fullTag = `<script id="p5mv-json" type="application/json">\n${json}\n</script>\n<script src="https://cdn.jsdelivr.net/gh/jackual/music-tl@dev/p5mv.js"></script>`
 
     return (
         <div className="metadata-wizard-overlay">
@@ -111,10 +111,10 @@ export default function MetadataWizard({ onClose }) {
                     <div className="metadata-wizard-right">
                         <div className="metadata-wizard-code-header">
                             <h3>HTML Output</h3>
-                            <p>Add this to the <code>&lt;head&gt;</code> section of your sketch's HTML file</p>
+                            <p>Add this to the <code>&lt;body&gt;</code> section of your sketch's HTML file before your sketch</p>
                         </div>
-                        <SyntaxHighlighter 
-                            language="html" 
+                        <SyntaxHighlighter
+                            language="html"
                             style={vs2015}
                             customStyle={{
                                 margin: 0,
