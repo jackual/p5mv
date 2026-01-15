@@ -7,6 +7,7 @@ export default function Editor({ onNavigateAway }) {
     const webviewRef = useRef(null);
     const [currentUrl, setCurrentUrl] = useState(DEFAULT_URL);
     const [isImporting, setIsImporting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [initialUrl] = useState(() => {
         // Load cached URL on mount
         try {
@@ -23,6 +24,7 @@ export default function Editor({ onNavigateAway }) {
 
         const handleDidFinishLoad = () => {
             console.log('P5 editor loaded');
+            setIsLoading(false);
         };
 
         const handleConsoleMessage = (e) => {
@@ -167,6 +169,14 @@ export default function Editor({ onNavigateAway }) {
 
     return (
         <>
+            {isLoading && (
+                <div className="import-overlay">
+                    <div className="import-message">
+                        <p>Loading p5.js Editor...</p>
+                        <p className="import-detail">Please wait while the editor loads</p>
+                    </div>
+                </div>
+            )}
             {isImporting && (
                 <div className="import-overlay">
                     <div className="import-message">
