@@ -55,6 +55,8 @@
     #scene-main {
         flex: 1;
         padding: $page-padding;
+        overflow-y: hidden;
+        min-height: 0;
     }
 
     .scene-detail {
@@ -461,13 +463,17 @@
     gap: 16px;
     width: auto;
     min-height: 130px;
-    max-height: clamp(240px, 55vh, 520px);
+    max-height: 390px;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
     scrollbar-width: thin;
     scrollbar-color: rgba($text-color, 0.4) transparent;
     position: relative;
+
+    &#project-scenes-gallery {
+        max-height: 189px;
+    }
 
     &::-webkit-scrollbar {
         width: 8px;

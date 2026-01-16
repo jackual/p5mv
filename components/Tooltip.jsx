@@ -23,9 +23,11 @@ export default function Tooltip({ target, message, onClose }) {
         const rect = targetElement.getBoundingClientRect()
 
         // Position the tooltip below the target element
+        // For track elements, position at the start (left edge) instead of center
+        const isTrack = target.startsWith('track-')
         setPosition({
             top: rect.bottom + 10,
-            left: rect.left + rect.width / 2
+            left: isTrack ? rect.left + 20 : rect.left + rect.width / 2
         })
     }, [target])
 
