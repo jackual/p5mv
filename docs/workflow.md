@@ -2,22 +2,41 @@
 
 ### 1. Set up your project
 
-- Set project metadata in the Inspector when no regions are selected:
-  - Title
-  - BPM (beats per minute)
-  - Width × Height (resolution)
-  - FPS (frame rate)
+When no regions are selected, the Inspector shows project settings where you can configure:
+  - **Title** – Project name
+  - **BPM** – Beats per minute for timeline grid
+  - **Width × Height** – Video resolution
+  - **FPS** – Frame rate for rendered video
 
-### 2. Browse and select scenes
+### 2. Create or import scenes
 
+You have several options:
+
+**Option A: Use the integrated p5.js editor**
+- Go to the **Editor** page
+- Create or modify your sketch in the embedded p5.js web editor
+- Use the **Metadata Wizard** (magic wand icon in ribbon) to:
+  - Define your scene name and custom inputs
+  - Generate the required p5mv metadata tags
+  - Copy the tags to paste into your sketch's HTML
+- Download your sketch from the p5.js editor
+- Import it via the Scenes page
+
+**Option B: Browse existing scenes**
 - Go to the **Scenes** page
-- Browse preset scenes or import your own
-- Click on a scene to view its details in the right sidebar
-- **Drag and drop into Project Scenes to use in project**
+- Browse preset scenes, user scenes, or project scenes
+- Click on a scene to view its details
+- Drag and drop scenes between categories to copy them
+
+**Option C: Import a local sketch**
+- Go to the **Scenes** page
+- Click the **+** card in User Scenes or Project Scenes
+- Select your p5.js sketch folder
+- The scene is automatically converted and ready to use
 
 ### 3. Add scenes to timeline
 
-- Go back to **Timeline**
+- Go to the **Timeline** page
 - Click and drag on a track to create a region
 - With the region selected, choose a scene from the Inspector dropdown
 - Resize the region by dragging its edges

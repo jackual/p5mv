@@ -4,11 +4,35 @@ p5mv allows you to create and import your own p5.js scenes. Scenes are standard 
 
 ## Quick Start
 
-The simplest way to create a custom scene:
+The fastest way to create a custom scene:
 
-1. Create a p5.js sketch using the [p5.js web editor](https://editor.p5js.org/)
-2. Download your sketch as a folder (File > Download)
-3. Import it into p5mv via the Scenes page
+1. Create a p5.js sketch using the [p5.js web editor](https://editor.p5js.org/) (or use the integrated **Editor** page)
+2. Use the **Metadata Wizard** to define your scene's inputs and generate p5mv tags
+3. Copy the generated tags into your sketch's HTML
+4. Download your sketch as a folder (File > Download in the p5.js editor)
+5. Import it into p5mv via the Scenes page
+
+## Using the Metadata Wizard
+
+The metadata wizard (magic wand icon in the ribbon) helps you create p5mv-compatible scenes:
+
+1. Open the **Editor** page and create your sketch
+2. Click the **magic wand icon** in the ribbon to open the metadata wizard
+3. Define your scene:
+   - **Scene name** – Auto-filled from your sketch title
+   - **Custom inputs** – Add parameters that can be animated on the timeline
+4. For each input, specify:
+   - **ID** – Variable name (e.g., `bgColor`)
+   - **Label** – Display name in Inspector (e.g., "Background Color")
+   - **Type** – colour, number, int, float, percent, or text
+   - **Default** – Initial value
+5. Click **Copy to Clipboard** to get the complete metadata tags
+6. In the p5.js editor, paste the tags into your HTML's `<head>` section
+7. Download and import your sketch
+
+The wizard generates two essential tags:
+- `<script id="p5mv-json">` – Scene metadata and input definitions
+- `<script src="...p5mv.js">` – p5mv capture library
 
 ## Using p5mv Inputs
 
@@ -25,14 +49,16 @@ Inputs are defined in the `<script id="p5mv-json">` tag.
 
 ### Example Schema
 
+When using the metadata wizard, it generates tags like this:
+
 ```html
 <html>
 <head>
-  <script src="externals/p5.js" data-p5mv-type="p5-core"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.0/p5.js"></script>
   <script id="p5mv-json" type="application/json">
 {
   "name": "My Custom Scene",
-  "thumb": "thumb.png",
+  "thumb": "thumb.jpg",
   "inputs": [
     {
       "id": "bgColor",
@@ -55,7 +81,7 @@ Inputs are defined in the `<script id="p5mv-json">` tag.
   ]
 }
   </script>
-  <script src="externals/captureLib.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/jackual/music-tl/p5mv.js"></script>
 </head>
 <body>
   <script src="sketch.js"></script>
@@ -97,10 +123,16 @@ const myValue = p5mv.myInput || defaultValue
 ```
 
 To edit inputs:
-1. Select your scene from User Scenes or Project Scenes
-2. Click **Show in Finder** to open the scene folder
-3. Edit `index.html` and modify the JSON inside the `p5mv-json` script tag
-4. Save and reload the app to see changes
+1. Select your scene from User Scenes or Project Scenes in the **Scenes** page
+2. In the scene details sidebar, click on any input to edit its properties
+3. Changes are automatically saved to the scene's metadata
+
+Alternatively, you can edit manually:
+1. Click **Show in Finder** to open the scene folder
+2. Edit `index.html` and modify the JSON inside the `p5mv-json` script tag
+3. Save and reload the app to see changes
+
+Or use the **Metadata Wizard** to regenerate the entire metadata block.
 
 ### Input Types
 
@@ -144,9 +176,9 @@ Each input must have:
 
 Scenes are organised into three galleries:
 
-- **Project Scenes** – Saved with the current project (in temp directory, included in `.p5mvProject` files)
+- **Default Scenes** – Built-in scenes that come with p5mv (read-only)
+- **Project Scenes** – Saved with the current project (included in `.p5mvProject` files)
 - **User Scenes** – Your personal library (`~/Videos/p5mv/Sketches/`)
-- **Preset Scenes** – Built-in scenes (read-only, use `info.js` format instead of `p5mv-json`)
 
 Drag scenes between galleries to copy them, or use the action buttons in the sidebar.
 

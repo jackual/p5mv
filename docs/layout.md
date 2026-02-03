@@ -2,7 +2,7 @@
 
 ## Application Layout
 
-The app consists of four main pages accessible via the ribbon:
+The app consists of five main pages accessible via the ribbon:
 
 ### 1. Timeline Page
 The main workspace for arranging and animating scenes:
@@ -13,19 +13,24 @@ The main workspace for arranging and animating scenes:
 
 ### 2. Scenes Page
 Scene library browser with three categories:
-- **Project Scenes** – Scenes included with the current project (stored in temp directory)
+- **Default Scenes** – Built-in scenes that come with p5mv
+- **Project Scenes** – Scenes included with the current project
 - **User Scenes** – Your personal scene library (`~/Videos/p5mv/Sketches/`)
-- **Preset Scenes** – Built-in scenes that come with p5mv
 
+### 3. Editor Page
+Integrated p5.js web editor for creating and testing sketches:
+- **Embedded p5.js editor** – Full-featured p5.js web editor
+- **Metadata wizard** – Generate p5mv metadata tags for your sketches
+- **URL persistence** – Automatically remembers your last viewed sketch
 
-### 3. Render Page
+### 4. Render Page
 Video rendering interface showing:
 - Queue status
 - Progress indicators (regions, composition, encoding)
 - Render controls
 - Output location
 
-### 4. Help Page
+### 5. Help Page
 Built-in documentation (what you're reading now!)
 
 ## Ribbon Controls
@@ -36,7 +41,8 @@ The top ribbon provides:
 - **Transport** – Move playhead, go to start
 - **Snap control** – Grid snap value (4, 1, 1/2, 1/3, 1/4, 1/8 beats)
 - **Edit tools** – Copy, paste regions
-- **Page selector** – Switch between Timeline, Scenes, Render, Help
+- **Metadata wizard** – Open the metadata wizard (magic wand icon) to generate p5mv tags
+- **Page selector** – Switch between Timeline, Scenes, Editor, Render, Help
 
 ## Scene Management
 

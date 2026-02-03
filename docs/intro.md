@@ -10,6 +10,8 @@
 - **Multi-track compositing** – Layer scenes with blend modes and opacity
 - **Offline rendering** – Capture frames and encode to video using FFmpeg
 - **Scene management** – Import, export, and edit scenes with an intuitive UI
+- **Integrated p5.js editor** – Create and test scenes using the embedded p5.js web editor
+- **Metadata wizard** – Generate p5mv metadata tags directly from the editor
 - **Project files** – Save and share complete projects as `.p5mvProject` files
 
 ## What p5mv is not
