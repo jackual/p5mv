@@ -5,7 +5,6 @@ import fs from 'fs-extra';
 import { setupMenu } from './electron/menu.js';
 import { registerIpcHandlers } from './electron/ipc.js';
 import { registerProtocols } from './electron/protocols.js';
-import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,7 +31,7 @@ function createWindow() {
   mainWindow.on('close', async (e) => {
     if (mainWindow.hasUnsavedChanges) {
       e.preventDefault();
-      
+
       // Send message to renderer to show dialog
       mainWindow.webContents.send('show-quit-dialog', {
         projectTitle: mainWindow.projectTitle
@@ -199,7 +198,7 @@ app.on('activate', () => {
 // Handle opening files on macOS (double-click .p5mvProject)
 app.on('open-file', (event, filePath) => {
   event.preventDefault();
-  
+
   if (mainWindow && !mainWindow.isDestroyed()) {
     // Window exists, send file data directly
     const fileData = fs.readFileSync(filePath, 'utf-8');
