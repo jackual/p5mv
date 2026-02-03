@@ -93,6 +93,35 @@ export default function Home() {
       "scenes": <Scenes />
     }
 
+  // Listen for file open events from Electron (double-click .p5mvProject)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.require) {
+      const { ipcRenderer } = window.require('electron');
+      
+      const handleOpenFile = (event, fileData) => {
+        try {
+          const loadedProject = new Project(fileData);
+          
+          // Clear all existing properties
+          Object.keys(project).forEach(key => {
+            delete project[key];
+          });
+          
+          // Add all loaded project properties
+          Object.assign(project, loadedProject);
+        } catch (error) {
+          alert('Error loading project: ' + error.message);
+        }
+      };
+      
+      ipcRenderer.on('open-project-file', handleOpenFile);
+      
+      return () => {
+        ipcRenderer.removeListener('open-project-file', handleOpenFile);
+      };
+    }
+  }, []);
+
   // Set up keyboard event handler
   React.useEffect(() => {
     const handleKeyDown = (e) => {
