@@ -41,7 +41,7 @@ export default function MetadataWizard({ onClose }) {
 
     const handleCopyToClipboard = async () => {
         const formattedInfo = formatSceneInfo(sceneInfo)
-        const fullTag = `<script id="p5mv-json" type="application/json">\n${JSON.stringify(formattedInfo, null, 2)}\n</script>`
+        const fullTag = `<script id="p5mv-json" type="application/json">\n${JSON.stringify(formattedInfo, null, 2)}\n</script>\n<script src="https://cdn.jsdelivr.net/gh/jackual/music-tl/p5mv.js"></script>`
         try {
             await navigator.clipboard.writeText(fullTag)
             setCopied(true)
@@ -86,7 +86,7 @@ export default function MetadataWizard({ onClose }) {
 
     const formattedInfo = formatSceneInfo(sceneInfo)
     const json = JSON.stringify(formattedInfo, null, 2)
-    const fullTag = `<script id="p5mv-json" type="application/json">\n${json}\n</script>\n<script src="https://cdn.jsdelivr.net/gh/jackual/music-tl@dev/p5mv.js"></script>`
+    const fullTag = `<script id="p5mv-json" type="application/json">\n${json}\n</script>\n<script src="https://cdn.jsdelivr.net/gh/jackual/music-tl/p5mv.js"></script>`
 
     return (
         <div className="metadata-wizard-overlay">
