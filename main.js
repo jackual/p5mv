@@ -5,11 +5,13 @@ import fs from 'fs-extra';
 import { setupMenu } from './electron/menu.js';
 import { registerIpcHandlers } from './electron/ipc.js';
 import { registerProtocols } from './electron/protocols.js';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow;
+let fileToOpen = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -44,6 +46,15 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173');
   } else {
     mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  }
+
+  // If a file was requested to be opened before window was ready, open it now
+  if (fileToOpen) {
+    mainWindow.webContents.on('did-finish-load', () => {
+      const fileData = fs.readFileSync(fileToOpen, 'utf-8');
+      mainWindow.webContents.send('open-project-file', fileData);
+      fileToOpen = null;
+    });
   }
 }
 
@@ -182,5 +193,19 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+  }
+});
+
+// Handle opening files on macOS (double-click .p5mvProject)
+app.on('open-file', (event, filePath) => {
+  event.preventDefault();
+  
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    // Window exists, send file data directly
+    const fileData = fs.readFileSync(filePath, 'utf-8');
+    mainWindow.webContents.send('open-project-file', fileData);
+  } else {
+    // Window doesn't exist yet, store for later
+    fileToOpen = filePath;
   }
 });
