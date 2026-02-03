@@ -49,6 +49,6 @@ dist/
 *.log
 *.tmp
 
-# Ignore test projects
-
+# Ignore test projects and artifacts
 tests/scene-convert/*
+tests/test-scenes-out/

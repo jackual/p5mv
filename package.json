@@ -15,7 +15,9 @@
     "start": "NODE_ENV=production electron .",
     "preview": "vite preview",
     "lint": "eslint .",
-    "test": "vitest"
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "test:all": "vitest run --config vitest.all.config.js"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
