@@ -1,19 +1,65 @@
 # Keyboard Shortcuts
 
-## Timeline Page
+## File Menu
 
-- **Left Arrow** – Move playhead left by the current snap value
-- **Right Arrow** – Move playhead right by the current snap value
-- **Cmd+A** – Select all regions
-- **Cmd+C** – Copy selected regions
-- **Cmd+V** – Paste copied regions at the playhead position
-- **Backspace / Delete** – Delete selected regions
+- **⌘N** – New Project
+- **⌘O** – Open Project...
+- **⌘S** – Save Project
+
+## Edit Menu
+
+The Edit menu is context-aware and works differently depending on whether you're editing text or working with timeline regions:
+
+### When editing text (inputs, text fields):
+- **⌘X** – Cut text
+- **⌘C** – Copy text
+- **⌘V** – Paste text
+- **⌘A** – Select all text
+- **⌫** – Delete text
+
+### When working with timeline regions:
+- **⌘X** – Cut selected regions
+- **⌘C** – Copy selected regions
+- **⌘V** – Paste regions at playhead
+- **⌘A** – Select all regions
+- **⌫** – Delete selected regions
+
+### When on Scenes page:
+- **⌫** – Delete selected scene (User/Project scenes only)
+
+## View Menu
+
+- **⌘1** – Switch to Timeline page
+- **⌘2** – Switch to Scenes page
+- **⌘3** – Switch to Editor page
+- **⌘4** – Switch to Render page
+- **⌘5** – Switch to Help page
+- **⌘⇧=** – Zoom UI In
+- **⌘⇧-** – Zoom UI Out
+- **⌘0** – Reset UI Zoom
+
+## Timeline Menu (Timeline page only)
+
+- **⌘=** – Zoom timeline in
+- **⌘-** – Zoom timeline out
+- **Home** – Move playhead to start
+- **Left Arrow** – Move playhead left by snap value
+- **Right Arrow** – Move playhead right by snap value
 - **Esc** – Deselect all regions
 
-## Scenes Page
+The Timeline menu also includes a **Snap** submenu with options for:
+- 1 bar (Semibreve)
+- 1 beat (Crotchet)
+- ½ beat (Quaver)
+- ⅓ beat (Quaver Triplet)
+- ¼ beat (Semiquaver)
+- ⅛ beat (Demisemiquaver)
 
-- **Backspace / Delete** – Delete the selected scene (User/Project scenes only)
+## Editor Menu (Editor page only)
+
+- **⌘M** – Open Metadata Wizard
 
 ## General
 
-- **Cmd+Q** – Quit application (macOS)
+- **⌘Q** – Quit application (macOS)
+- **⌘W** – Close window

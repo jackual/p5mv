@@ -15,7 +15,7 @@ You have several options:
 **Option A: Use the integrated p5.js editor**
 - Go to the **Editor** page
 - Create or modify your sketch in the embedded p5.js web editor
-- Use the **Metadata Wizard** (magic wand icon in ribbon) to:
+- Use the **Metadata Wizard** (or press **⌘M**) to:
   - Define your scene name and custom inputs
   - Generate the required p5mv metadata tags
   - Copy the tags to paste into your sketch's HTML

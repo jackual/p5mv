@@ -2,7 +2,7 @@
 
 ## Application Layout
 
-The app consists of five main pages accessible via the ribbon:
+The app consists of five main pages accessible via the ribbon or **View** menu:
 
 ### 1. Timeline Page
 The main workspace for arranging and animating scenes:
@@ -20,7 +20,7 @@ Scene library browser with three categories:
 ### 3. Editor Page
 Integrated p5.js web editor for creating and testing sketches:
 - **Embedded p5.js editor** – Full-featured p5.js web editor
-- **Metadata wizard** – Generate p5mv metadata tags for your sketches
+- **Metadata wizard** – Generate p5mv metadata tags for your sketches (Cmd+M)
 - **URL persistence** – Automatically remembers your last viewed sketch
 
 ### 4. Render Page
@@ -33,16 +33,39 @@ Video rendering interface showing:
 ### 5. Help Page
 Built-in documentation (what you're reading now!)
 
+## Menu Bar
+
+All functionality is now accessible via the native menu bar:
+
+### File Menu
+- **New Project** (Cmd+N) – Create a new project
+- **Open Project** (Cmd+O) – Open an existing project file
+- **Save Project** (Cmd+S) – Save the current project
+
+### Edit Menu
+Context-aware editing:
+- Cut, Copy, Paste, Delete work on text when editing inputs
+- Cut, Copy, Paste, Delete work on regions when on the timeline
+- Delete works on selected scene when on the Scenes page
+- **Select All** (Cmd+A) – Select all regions or all text depending on context
+
+### View Menu
+- **Switch pages** (Cmd+1-5) – Quickly navigate between Timeline, Scenes, Editor, Render, and Help
+- **Zoom UI** (Cmd+Shift+/-, Cmd+0) – Adjust interface zoom level
+
+### Timeline Menu (Timeline page only)
+- **Zoom In/Out** (Cmd+/-, Cmd+-) – Adjust timeline zoom
+- **Snap** submenu – Set grid snap value with musical note names
+- **Playhead navigation** (Home, Left/Right arrows, Esc)
+
+### Editor Menu (Editor page only)
+- **Metadata Wizard** (Cmd+M) – Open the metadata wizard to generate p5mv tags
+
 ## Ribbon Controls
 
-The top ribbon provides:
-- **File operations** – New, Open, Save project
-- **Zoom controls** – Zoom in/out timeline
-- **Transport** – Move playhead, go to start
-- **Snap control** – Grid snap value (4, 1, 1/2, 1/3, 1/4, 1/8 beats)
-- **Edit tools** – Copy, paste regions
-- **Metadata wizard** – Open the metadata wizard (magic wand icon) to generate p5mv tags
+The streamlined ribbon provides:
 - **Page selector** – Switch between Timeline, Scenes, Editor, Render, Help
+- **Metadata Wizard button** – Opens the metadata wizard (Editor page only)
 
 ## Scene Management
 
@@ -66,16 +89,15 @@ When viewing a scene in the right sidebar:
 ### Drag and Drop
 
 - Drag scenes between categories to copy them
-- If a scene with the same ID exists, you'll see options:
+- If a scene with the same ID exists, you'll see an option to:
   - **Cancel** – Don't copy
   - **Replace** – Overwrite the existing scene
-  - **Keep Both** – Copy with a unique name
 
 ## Project Files
 
-- **Save** projects as `.p5mvProject` files (File > Save)
+- **Save** projects as `.p5mvProject` files (File > Save or Cmd+S)
 - These are zip archives containing:
   - Project data (tracks, regions, keyframes)
   - Scene folders for all project scenes
-- **Open** projects to restore the complete state
+- **Open** projects to restore the complete state (File > Open or Cmd+O)
 - Share project files with others to collaborate
