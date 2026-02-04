@@ -39,6 +39,20 @@ subscribe(project, () => {
   }
 })
 
+// Track snap changes and update menu
+let previousSnap = 0.25;
+subscribe(project, () => {
+  if (typeof window !== 'undefined' && window.require && project.snap !== previousSnap) {
+    try {
+      const { ipcRenderer } = window.require('electron')
+      ipcRenderer.send('update-menu-snap', project.snap)
+      previousSnap = project.snap;
+    } catch (error) {
+      console.error('Failed to update menu snap:', error)
+    }
+  }
+});
+
 export default function Home() {
   const [page, setPage] = useState("timeline")
   const [availableScenes, setAvailableScenes] = useState({
@@ -191,6 +205,7 @@ export default function Home() {
       ipcRenderer.on('menu-timeline-move-right', handlers.handleTimelineMoveRight);
       ipcRenderer.on('menu-timeline-zoom-in', handlers.handleTimelineZoomIn);
       ipcRenderer.on('menu-timeline-zoom-out', handlers.handleTimelineZoomOut);
+      ipcRenderer.on('menu-timeline-set-snap', handlers.handleTimelineSetSnap)
       ipcRenderer.on('menu-view-page', handlers.handleViewPage);
 
       return () => {
@@ -209,6 +224,7 @@ export default function Home() {
         ipcRenderer.removeListener('menu-timeline-move-right', handlers.handleTimelineMoveRight);
         ipcRenderer.removeListener('menu-timeline-zoom-in', handlers.handleTimelineZoomIn);
         ipcRenderer.removeListener('menu-timeline-zoom-out', handlers.handleTimelineZoomOut);
+        ipcRenderer.removeListener('menu-timeline-set-snap', handlers.handleTimelineSetSnap)
         ipcRenderer.removeListener('menu-view-page', handlers.handleViewPage);
       };
     }

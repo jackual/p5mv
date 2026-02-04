@@ -1,8 +1,14 @@
 import { app, Menu, shell } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { beatsToMusicalTimeString } from '../lib/timeUtils.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const isMac = process.platform === 'darwin';
 
-const buildMenuTemplate = (currentPage = 'timeline') => [
+const buildMenuTemplate = (currentPage = 'timeline', currentSnap = 0.25) => [
     // { role: 'appMenu' }
     ...(isMac
         ? [{
@@ -258,6 +264,20 @@ const buildMenuTemplate = (currentPage = 'timeline') => [
             },
             { type: 'separator' },
             {
+                label: 'Snap',
+                submenu: [4, 1, 0.5, 1 / 3, 0.25, 0.125].map(value => ({
+                    label: `${beatsToMusicalTimeString(value, true)}`,
+                    type: 'radio',
+                    checked: currentSnap === value,
+                    click: (menuItem, browserWindow) => {
+                        if (browserWindow) {
+                            browserWindow.webContents.send('menu-timeline-set-snap', value);
+                        }
+                    },
+                })),
+            },
+            { type: 'separator' },
+            {
                 label: 'Deselect All',
                 accelerator: 'Escape',
                 click: (menuItem, browserWindow) => {
@@ -327,11 +347,11 @@ const buildMenuTemplate = (currentPage = 'timeline') => [
     },
 ];
 
-export function setupMenu(currentPage = 'timeline') {
-    const menu = Menu.buildFromTemplate(buildMenuTemplate(currentPage));
+export function setupMenu(currentPage = 'timeline', currentSnap = 0.25) {
+    const menu = Menu.buildFromTemplate(buildMenuTemplate(currentPage, currentSnap));
     Menu.setApplicationMenu(menu);
 }
 
-export function updateMenu(currentPage) {
-    setupMenu(currentPage);
+export function updateMenu(currentPage = 'timeline', currentSnap = 0.25) {
+    setupMenu(currentPage, currentSnap);
 }
