@@ -69,10 +69,41 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
             // Send response back: 0 for Cancel, 1 for Delete
             ipcRenderer.send('delete-scene-dialog-response', result ? 1 : 0)
         }
+        // Listen for delete scene command from menu
+        const handleDeleteSceneCommand = async () => {
+            if (!selectedSketch) return;
+            
+            // Don't allow deleting preset scenes
+            if (selectedSketch.source === 'defaultScenes') {
+                return;
+            }
 
+            const result = await window.showConfirm(
+                `Are you sure you want to delete "${selectedSketch.id}"? This action cannot be undone.`,
+                'Delete Scene'
+            );
+
+            if (result) {
+                try {
+                    await ipcRenderer.invoke('delete-scene', {
+                        sourceKey: selectedSketch.source,
+                        sceneId: selectedSketch.id
+                    });
+                    setSelectedSketch(null);
+                    // Refresh after delete
+                    const updatedScenes = await ipcRenderer.invoke('scan-scenes');
+                    setAvailableScenes(updatedScenes);
+                } catch (error) {
+                    console.error('Error deleting scene:', error);
+                }
+            }
+        };
         ipcRenderer.on('scene-import-progress', handleImportProgress)
         ipcRenderer.on('show-scene-conflict-dialog', handleSceneConflictDialog)
         ipcRenderer.on('show-delete-scene-dialog', handleDeleteSceneDialog)
+        
+        // Listen for menu delete command
+        window.addEventListener('menu-delete-scene', handleDeleteSceneCommand)
 
         // Check if project scenes is empty and show tooltip
         if (availableScenes.openScenes.length === 0) {
@@ -88,55 +119,9 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
             ipcRenderer.removeListener('scene-import-progress', handleImportProgress)
             ipcRenderer.removeListener('show-scene-conflict-dialog', handleSceneConflictDialog)
             ipcRenderer.removeListener('show-delete-scene-dialog', handleDeleteSceneDialog)
+            window.removeEventListener('menu-delete-scene', handleDeleteSceneCommand)
         }
-    }, [isActive, availableScenes.openScenes.length])
-
-    useEffect(() => {
-        if (!isActive) return
-
-        const handleKeyDown = async (e) => {
-            if (e.key === 'Backspace' && selectedSketch) {
-                // Don't delete if user is typing in a form field
-                const activeElement = document.activeElement
-                if (activeElement && (
-                    activeElement.tagName === 'INPUT' ||
-                    activeElement.tagName === 'TEXTAREA' ||
-                    activeElement.tagName === 'SELECT' ||
-                    activeElement.isContentEditable
-                )) {
-                    return
-                }
-
-                // Don't allow deleting preset scenes
-                if (selectedSketch.source === 'defaultScenes') {
-                    return
-                }
-
-                const ipcRenderer = window.require?.('electron')?.ipcRenderer
-                if (!ipcRenderer) return
-
-                const choice = await ipcRenderer.invoke('show-delete-scene-dialog', { sceneId: selectedSketch.id })
-
-                if (choice === 1) { // Delete
-                    try {
-                        await ipcRenderer.invoke('delete-scene', {
-                            sourceKey: selectedSketch.source,
-                            sceneId: selectedSketch.id
-                        })
-                        setSelectedSketch(null)
-                        // Refresh after delete
-                        const updatedScenes = await ipcRenderer.invoke('scan-scenes')
-                        setAvailableScenes(updatedScenes)
-                    } catch (error) {
-                        console.error('Error deleting scene:', error)
-                    }
-                }
-            }
-        }
-
-        window.addEventListener('keydown', handleKeyDown)
-        return () => window.removeEventListener('keydown', handleKeyDown)
-    }, [isActive, selectedSketch])
+    }, [isActive, availableScenes.openScenes.length, selectedSketch, setAvailableScenes])
 
     const handleClick = (e) => {
         const li = e.target.closest('li')
