@@ -240,8 +240,8 @@ const buildMenuTemplate = (currentPage = 'timeline', currentSnap = 0.25) => [
             { role: 'togglefullscreen' },
         ],
     },
-    // Timeline menu
-    {
+    // Timeline menu (only on timeline page)
+    ...(currentPage === 'timeline' ? [{
         label: 'Timeline',
         submenu: [
             {
@@ -315,7 +315,22 @@ const buildMenuTemplate = (currentPage = 'timeline', currentSnap = 0.25) => [
                 },
             },
         ],
-    },
+    }] : []),
+    // Editor menu (only on editor page)
+    ...(currentPage === 'editor' ? [{
+        label: 'Editor',
+        submenu: [
+            {
+                label: 'Metadata Wizard',
+                accelerator: 'CmdOrCtrl+M',
+                click: (menuItem, browserWindow) => {
+                    if (browserWindow) {
+                        browserWindow.webContents.send('menu-editor-metadata-wizard');
+                    }
+                },
+            },
+        ],
+    }] : []),
     // { role: 'windowMenu' }
     {
         label: 'Window',

@@ -207,6 +207,7 @@ export default function Home() {
       ipcRenderer.on('menu-timeline-zoom-out', handlers.handleTimelineZoomOut);
       ipcRenderer.on('menu-timeline-set-snap', handlers.handleTimelineSetSnap)
       ipcRenderer.on('menu-view-page', handlers.handleViewPage);
+      ipcRenderer.on('menu-editor-metadata-wizard', () => setShowMetadataWizard(true));
 
       return () => {
         ipcRenderer.removeListener('open-project-file', handlers.handleOpenFile);
@@ -226,6 +227,7 @@ export default function Home() {
         ipcRenderer.removeListener('menu-timeline-zoom-out', handlers.handleTimelineZoomOut);
         ipcRenderer.removeListener('menu-timeline-set-snap', handlers.handleTimelineSetSnap)
         ipcRenderer.removeListener('menu-view-page', handlers.handleViewPage);
+        ipcRenderer.removeListener('menu-editor-metadata-wizard', () => setShowMetadataWizard(true));
       };
     }
   }, [page]);
