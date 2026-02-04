@@ -1,20 +1,8 @@
 import {
-    FilePlusIcon,
-    FolderOpenIcon,
-    FloppyDiskIcon,
-    SelectionAllIcon,
-    TrashIcon,
     QuestionIcon,
-    MagnifyingGlassPlusIcon,
-    MagnifyingGlassMinusIcon,
-    ArrowLeftIcon,
-    ArrowRightIcon,
-    ArrowLineLeftIcon,
     SquaresFourIcon,
     FilmStripIcon,
     ExportIcon,
-    ClipboardTextIcon,
-    CopyIcon,
     CodeIcon,
     MagicWandIcon
 } from "@phosphor-icons/react"
@@ -58,19 +46,6 @@ const Ribbon = ({ page, setPage, project, projectFileMethods, onShowMetadataWiza
             <Divider />
             {page === "timeline" && (
                 <>
-                    <RibbonButton icon={FilePlusIcon} label="New" onClick={async () => {
-                        const confirmed = await window.showConfirm('Are you sure you want to create a new project?', 'New Project')
-                        if (confirmed) projectFileMethods.newFile()
-                    }} />
-                    <RibbonButton icon={FolderOpenIcon} label="Open" onClick={() => projectFileMethods.openFile()} />
-                    <RibbonButton icon={FloppyDiskIcon} label="Save" onClick={() => projectFileMethods.saveFile()} />
-                    <Divider />
-                    <RibbonButton icon={MagnifyingGlassPlusIcon} label="Zoom In" onClick={() => project.zoomIn()} />
-                    <RibbonButton icon={MagnifyingGlassMinusIcon} label="Zoom Out" onClick={() => project.zoomOut()} />
-                    <RibbonButton icon={ArrowLineLeftIcon} label="Move to start" onClick={() => project.moveToStart()} />
-                    <RibbonButton icon={ArrowLeftIcon} label="Left" onClick={() => project.moveLeft()} />
-                    <RibbonButton icon={ArrowRightIcon} label="Right" onClick={() => project.moveRight()} />
-                    <Divider />
                     <div className="ribbon-snap-control">
                         <label htmlFor="ribbon-snap">Snap:</label>
                         <select
@@ -87,11 +62,6 @@ const Ribbon = ({ page, setPage, project, projectFileMethods, onShowMetadataWiza
                             ))}
                         </select>
                     </div>
-                    <Divider />
-                    <RibbonButton icon={CopyIcon} label="Copy" onClick={() => project.copy()} />
-                    <RibbonButton icon={ClipboardTextIcon} label="Paste" onClick={() => project.paste()} />
-                    <RibbonButton icon={SelectionAllIcon} label="Select All" onClick={() => project.selectAll()} />
-                    <RibbonButton icon={TrashIcon} label="Delete" />
                 </>
             )}
             {page === "editor" && (

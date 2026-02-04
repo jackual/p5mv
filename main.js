@@ -2,7 +2,7 @@ import { app, BrowserWindow, session, dialog } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
-import { setupMenu } from './electron/menu.js';
+import { setupMenu, updateMenu } from './electron/menu.js';
 import { registerIpcHandlers } from './electron/ipc.js';
 import { registerProtocols } from './electron/protocols.js';
 

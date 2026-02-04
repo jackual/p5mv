@@ -16,6 +16,7 @@ import Dialog from '@/components/Dialog'
 import Tooltip from '@/components/Tooltip'
 import MetadataWizard from '@/components/MetadataWizard'
 import { newFile, openFile, saveFile } from '@/lib/projectFileMethods'
+import { createMenuHandlers } from '@/lib/menuHandlers'
 
 const project = proxy(new Project())
 
@@ -146,6 +147,16 @@ export default function Home() {
       }
     }
     setPage(newPage);
+
+    // Update menu to show current page
+    if (typeof window !== 'undefined' && window.require) {
+      try {
+        const { ipcRenderer } = window.require('electron');
+        ipcRenderer.send('update-menu-page', newPage);
+      } catch (error) {
+        console.error('Failed to update menu:', error);
+      }
+    }
   };
 
   const snap = useSnapshot(project),
@@ -161,86 +172,49 @@ export default function Home() {
   React.useEffect(() => {
     if (typeof window !== 'undefined' && window.require) {
       const { ipcRenderer } = window.require('electron');
-      
-      const handleOpenFile = (event, fileData) => {
-        try {
-          const loadedProject = new Project(fileData);
-          
-          // Clear all existing properties
-          Object.keys(project).forEach(key => {
-            delete project[key];
-          });
-          
-          // Add all loaded project properties
-          Object.assign(project, loadedProject);
-        } catch (error) {
-          alert('Error loading project: ' + error.message);
-        }
-      };
-      
-      ipcRenderer.on('open-project-file', handleOpenFile);
-      
+
+      // Create menu handlers with current dependencies
+      const handlers = createMenuHandlers(project, projectFileMethods, page, setPage);
+
+      ipcRenderer.on('open-project-file', handlers.handleOpenFile);
+      ipcRenderer.on('menu-new-project', handlers.handleMenuNewProject);
+      ipcRenderer.on('menu-open-project', handlers.handleMenuOpenProject);
+      ipcRenderer.on('menu-save-project', handlers.handleMenuSaveProject);
+      ipcRenderer.on('menu-edit-cut', handlers.handleEditCut);
+      ipcRenderer.on('menu-edit-copy', handlers.handleEditCopy);
+      ipcRenderer.on('menu-edit-paste', handlers.handleEditPaste);
+      ipcRenderer.on('menu-edit-delete', handlers.handleEditDelete);
+      ipcRenderer.on('menu-edit-select-all', handlers.handleEditSelectAll);
+      ipcRenderer.on('menu-timeline-deselect-all', handlers.handleTimelineDeselectAll);
+      ipcRenderer.on('menu-timeline-move-to-start', handlers.handleTimelineMoveToStart);
+      ipcRenderer.on('menu-timeline-move-left', handlers.handleTimelineMoveLeft);
+      ipcRenderer.on('menu-timeline-move-right', handlers.handleTimelineMoveRight);
+      ipcRenderer.on('menu-timeline-zoom-in', handlers.handleTimelineZoomIn);
+      ipcRenderer.on('menu-timeline-zoom-out', handlers.handleTimelineZoomOut);
+      ipcRenderer.on('menu-view-page', handlers.handleViewPage);
+
       return () => {
-        ipcRenderer.removeListener('open-project-file', handleOpenFile);
+        ipcRenderer.removeListener('open-project-file', handlers.handleOpenFile);
+        ipcRenderer.removeListener('menu-new-project', handlers.handleMenuNewProject);
+        ipcRenderer.removeListener('menu-open-project', handlers.handleMenuOpenProject);
+        ipcRenderer.removeListener('menu-save-project', handlers.handleMenuSaveProject);
+        ipcRenderer.removeListener('menu-edit-cut', handlers.handleEditCut);
+        ipcRenderer.removeListener('menu-edit-copy', handlers.handleEditCopy);
+        ipcRenderer.removeListener('menu-edit-paste', handlers.handleEditPaste);
+        ipcRenderer.removeListener('menu-edit-delete', handlers.handleEditDelete);
+        ipcRenderer.removeListener('menu-edit-select-all', handlers.handleEditSelectAll);
+        ipcRenderer.removeListener('menu-timeline-deselect-all', handlers.handleTimelineDeselectAll);
+        ipcRenderer.removeListener('menu-timeline-move-to-start', handlers.handleTimelineMoveToStart);
+        ipcRenderer.removeListener('menu-timeline-move-left', handlers.handleTimelineMoveLeft);
+        ipcRenderer.removeListener('menu-timeline-move-right', handlers.handleTimelineMoveRight);
+        ipcRenderer.removeListener('menu-timeline-zoom-in', handlers.handleTimelineZoomIn);
+        ipcRenderer.removeListener('menu-timeline-zoom-out', handlers.handleTimelineZoomOut);
+        ipcRenderer.removeListener('menu-view-page', handlers.handleViewPage);
       };
     }
-  }, []);
+  }, [page]);
 
-  // Set up keyboard event handler
-  React.useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Check if focus is on an input field
-      const activeElement = document.activeElement
-      const isInputFocused = activeElement && (
-        activeElement.tagName === 'INPUT' ||
-        activeElement.tagName === 'TEXTAREA' ||
-        activeElement.tagName === 'SELECT' ||
-        activeElement.contentEditable === 'true'
-      )
-
-      // Only handle shortcuts when not focused on input fields
-      if (page == "timeline" && !isInputFocused) {
-        switch (e.key) {
-          case "Delete":
-          case "Backspace":
-            project.selected.forEach(region => region.del())
-            break
-          case "Escape":
-            project.deselectAll()
-            break
-          case "ArrowLeft":
-            project.playhead = Math.max(0, project.playhead - project.snap)
-            e.preventDefault()
-            break
-          case "ArrowRight":
-            project.playhead = project.playhead + project.snap
-            e.preventDefault()
-            break
-          case "a":
-            if (e.metaKey || e.ctrlKey) {
-              project.selectAll()
-              e.preventDefault()
-            }
-            break
-          case "c":
-            if (e.metaKey || e.ctrlKey) {
-              project.copy()
-              e.preventDefault()
-            }
-            break
-          case "v":
-            if (e.metaKey || e.ctrlKey) {
-              project.paste()
-              e.preventDefault()
-            }
-            break
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [page])
+  // All keyboard shortcuts are now handled by the native menu system
 
   return (
     <div className="app-shell">
