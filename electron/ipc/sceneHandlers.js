@@ -22,46 +22,6 @@ export function registerSceneHandlers() {
         return await copySceneInternal(sourceKey, targetKey, sceneId, newSceneId, overwrite)
     })
 
-    ipcMain.handle('show-scene-conflict-dialog', async (event, { sceneId }) => {
-        // Send to renderer to show custom dialog
-        event.sender.send('show-scene-conflict-dialog', { sceneId })
-
-        // Wait for response from renderer with timeout and cleanup
-        return new Promise((resolve) => {
-            const timeout = setTimeout(() => {
-                ipcMain.removeListener('scene-conflict-dialog-response', handler)
-                resolve(null)
-            }, 60000) // 60 second timeout
-
-            const handler = (event, response) => {
-                clearTimeout(timeout)
-                resolve(response)
-            }
-
-            ipcMain.once('scene-conflict-dialog-response', handler)
-        })
-    })
-
-    ipcMain.handle('show-delete-scene-dialog', async (event, { sceneId }) => {
-        // Send to renderer to show custom dialog
-        event.sender.send('show-delete-scene-dialog', { sceneId })
-
-        // Wait for response from renderer with timeout and cleanup
-        return new Promise((resolve) => {
-            const timeout = setTimeout(() => {
-                ipcMain.removeListener('delete-scene-dialog-response', handler)
-                resolve(null)
-            }, 60000) // 60 second timeout
-
-            const handler = (event, response) => {
-                clearTimeout(timeout)
-                resolve(response)
-            }
-
-            ipcMain.once('delete-scene-dialog-response', handler)
-        })
-    })
-
     ipcMain.handle('delete-scene', async (event, { sourceKey, sceneId }) => {
         return await deleteScene(sourceKey, sceneId)
     })

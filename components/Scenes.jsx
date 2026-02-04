@@ -45,34 +45,10 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
             }
         }
 
-        // Listen for scene conflict dialog
-        const handleSceneConflictDialog = async (event, { sceneId }) => {
-            const result = await window.showDialog({
-                type: 'warning',
-                title: 'Scene Already Exists',
-                message: `A scene with the ID "${sceneId}" already exists in this location. What would you like to do?`,
-                confirmLabel: 'Replace',
-                cancelLabel: 'Cancel',
-                onCancel: () => { }
-            })
-            // Send response back: 0 for Cancel, 1 for Replace
-            // For now we don't support "Keep Both" option
-            ipcRenderer.send('scene-conflict-dialog-response', result ? 1 : 0)
-        }
-
-        // Listen for delete scene dialog
-        const handleDeleteSceneDialog = async (event, { sceneId }) => {
-            const result = await window.showConfirm(
-                `Are you sure you want to delete "${sceneId}"? This action cannot be undone.`,
-                'Delete Scene'
-            )
-            // Send response back: 0 for Cancel, 1 for Delete
-            ipcRenderer.send('delete-scene-dialog-response', result ? 1 : 0)
-        }
         // Listen for delete scene command from menu
         const handleDeleteSceneCommand = async () => {
             if (!selectedSketch) return;
-            
+
             // Don't allow deleting preset scenes
             if (selectedSketch.source === 'defaultScenes') {
                 return;
@@ -99,9 +75,7 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
             }
         };
         ipcRenderer.on('scene-import-progress', handleImportProgress)
-        ipcRenderer.on('show-scene-conflict-dialog', handleSceneConflictDialog)
-        ipcRenderer.on('show-delete-scene-dialog', handleDeleteSceneDialog)
-        
+
         // Listen for menu delete command
         window.addEventListener('menu-delete-scene', handleDeleteSceneCommand)
 
@@ -117,8 +91,6 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
 
         return () => {
             ipcRenderer.removeListener('scene-import-progress', handleImportProgress)
-            ipcRenderer.removeListener('show-scene-conflict-dialog', handleSceneConflictDialog)
-            ipcRenderer.removeListener('show-delete-scene-dialog', handleDeleteSceneDialog)
             window.removeEventListener('menu-delete-scene', handleDeleteSceneCommand)
         }
     }, [isActive, availableScenes.openScenes.length, selectedSketch, setAvailableScenes])
@@ -212,47 +184,34 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
             const hasConflict = scenes[source].some(s => s.id === sketchId)
 
             if (hasConflict) {
-                const choice = await ipcRenderer.invoke('show-scene-conflict-dialog', { sketchId })
+                const result = await window.showDialog({
+                    type: 'warning',
+                    title: 'Scene Already Exists',
+                    message: `A scene with the ID "${sketchId}" already exists in this location. What would you like to do?`,
+                    confirmLabel: 'Replace',
+                    cancelLabel: 'Cancel',
+                    onCancel: () => { }
+                })
 
-                if (choice === 0) {
+                if (!result) {
                     // Cancel - do nothing
                     return
-                } else if (choice === 1) {
-                    // Replace - copy with overwrite
-                    try {
-                        await ipcRenderer.invoke('copy-scene-internal', {
-                            sourceKey: draggedSource,
-                            targetKey: source,
-                            sceneId: sketchId,
-                            newSceneId: sketchId,
-                            overwrite: true
-                        })
-                        // Refresh after copy
-                        const updatedScenes = await ipcRenderer.invoke('scan-scenes')
-                        setAvailableScenes(updatedScenes)
-                    } catch (error) {
-                        console.error('Error replacing scene:', error)
-                    }
-                } else if (choice === 2) {
-                    // Keep Both - copy with unique name
-                    try {
-                        const existingIds = scenes[source].map(s => s.id)
-                        const { getUniqueNameWithSuffix } = await import('../lib/utils.js')
-                        const uniqueId = getUniqueNameWithSuffix(existingIds, sketchId)
+                }
 
-                        await ipcRenderer.invoke('copy-scene-internal', {
-                            sourceKey: draggedSource,
-                            targetKey: source,
-                            sceneId: sketchId,
-                            newSceneId: uniqueId,
-                            overwrite: false
-                        })
-                        // Refresh after copy
-                        const updatedScenes = await ipcRenderer.invoke('scan-scenes')
-                        setAvailableScenes(updatedScenes)
-                    } catch (error) {
-                        console.error('Error copying scene with unique name:', error)
-                    }
+                // Replace - copy with overwrite
+                try {
+                    await ipcRenderer.invoke('copy-scene-internal', {
+                        sourceKey: draggedSource,
+                        targetKey: source,
+                        sceneId: sketchId,
+                        newSceneId: sketchId,
+                        overwrite: true
+                    })
+                    // Refresh after copy
+                    const updatedScenes = await ipcRenderer.invoke('scan-scenes')
+                    setAvailableScenes(updatedScenes)
+                } catch (error) {
+                    console.error('Error replacing scene:', error)
                 }
             } else {
                 // No conflict - just copy
@@ -464,9 +423,12 @@ export default function Scenes({ isActive, availableScenes, setAvailableScenes }
         const ipcRenderer = window.require?.('electron')?.ipcRenderer
         if (!ipcRenderer) return
 
-        const choice = await ipcRenderer.invoke('show-delete-scene-dialog', { sceneId: selectedSketch.id })
+        const result = await window.showConfirm(
+            `Are you sure you want to delete "${selectedSketch.id}"? This action cannot be undone.`,
+            'Delete Scene'
+        )
 
-        if (choice === 1) { // Delete
+        if (result) {
             try {
                 await ipcRenderer.invoke('delete-scene', {
                     sourceKey: selectedSketch.source,
