@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-04
+
+### Added
+
+- **Native Menu Bar System** - Complete migration from ribbon-based UI to native Electron menus
+  - File menu with New (⌘N), Open (⌘O), Save (⌘S) shortcuts
+  - Context-aware Edit menu that intelligently switches between text editing and timeline operations
+  - View menu with page navigation shortcuts (⌘1-5) and UI zoom controls
+  - Timeline menu (visible only on Timeline page) with zoom, navigation, and snap controls
+  - Editor menu (visible only on Editor page) with Metadata Wizard shortcut (⌘M)
+- **Comprehensive Keyboard Shortcuts** - Extensive keyboard shortcut support throughout the app
+  - Copy/Paste/Cut/Delete work contextually on text inputs or timeline regions
+  - Arrow keys, Home, and Escape for timeline navigation
+  - Page switching with ⌘1-5
+  - Timeline zoom with ⌘+/- (UI zoom with ⌘⇧+/-)
+- **Musical Time Notation** - Snap menu displays values with both fractional beats and British note names
+  - 1 bar (Semibreve), 1 beat (Crotchet), ½ beat (Quaver), etc.
+  - Added support for Minim (2 beats) and Breve (8 beats)
+  - Uses Unicode vulgar fractions for clean display
+- **Dynamic Menu Updates** - Menus update in real-time based on context
+  - Current page shown with checkmark in View menu
+  - Current snap value shown with radio button in Timeline menu
+  - Timeline and Editor menus only appear when relevant
+- **Tests** - Added tests for time utility functions
+
+### Changed
+
+- **Streamlined Ribbon** - Reduced ribbon to essential page navigation and Metadata Wizard button
+- **Organized IPC Handlers** - Refactored menu-related IPC handlers into separate files for better maintainability
+- **Removed Redundant IPC** - Eliminated unnecessary IPC roundtrips for custom dialogs in Scenes component
+- **Updated Documentation** - Updated to reflect menu system
+
+### Fixed
+
+- Fixed vulgar-fractions module import issues in both Electron main process and Vite renderer
+- Improved Dialog Flow - Simplified scene conflict and delete dialogs to use direct window methods
+- Fixed beat pluralization logic ("½ beat" not "½ beats")
+- Fixed useEffect dependencies in Scenes component for proper event handler cleanup
+
 ## [0.3.0] - 2026-02-03
 
 ### Added
